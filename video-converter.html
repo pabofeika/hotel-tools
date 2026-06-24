@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>电视开机视频制作</title>
+<style>
+:root {
+  --bg-primary: #000;
+  --bg-surface: rgba(255,255,255,.04);
+  --bg-elevated: rgba(255,255,255,.07);
+  --bg-hover: rgba(255,255,255,.1);
+  --border-subtle: rgba(255,255,255,.08);
+  --border-default: rgba(255,255,255,.12);
+  --text-primary: rgba(255,255,255,.92);
+  --text-secondary: rgba(255,255,255,.6);
+  --text-tertiary: rgba(255,255,255,.35);
+  --accent: #0071E3;
+  --accent-hover: #0077ED;
+  --accent-bg: rgba(0,113,227,.12);
+  --success: #30D158;
+  --warning: #FFD60A;
+  --error: #FF453A;
+  --radius-sm: 8px;
+  --radius: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:var(--bg-primary);
+  color:var(--text-primary);
+  font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text','Helvetica Neue',sans-serif;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+.container{max-width:680px;margin:0 auto;padding:20px 16px 40px}
+h1{font-size:24px;font-weight:600;margin-bottom:4px;letter-spacing:-0.3px}
+.subtitle{font-size:13px;color:var(--text-tertiary);margin-bottom:24px}
+
+/* Upload */
+.upload-zone{
+  border:2px dashed var(--border-default);
+  border-radius:var(--radius-lg);
+  padding:36px 24px;
+  text-align:center;
+  cursor:pointer;
+  transition:all .2s;
+  background:var(--bg-surface);
+  position:relative;
+  overflow:hidden;
+}
+.upload-zone:hover,.upload-zone.drag-over{border-color:var(--accent);background:var(--accent-bg)}
+.upload-zone.has-file{border-style:solid;border-color:var(--accent);padding:14px 20px;text-align:left}
+.upload-icon{font-size:40px;margin-bottom:10px;opacity:.6}
+.upload-zone.has-file .upload-icon,.upload-zone.has-file .upload-sub{display:none}
+.upload-text{font-size:14px;font-weight:500;color:var(--text-secondary);margin:0}
+.upload-zone.has-file .upload-text{font-size:13px;color:var(--text-primary)}
+.upload-sub{font-size:11px;color:var(--text-tertiary);margin-top:6px}
+.upload-info{display:none;font-size:12px;color:var(--text-secondary)}
+.upload-zone.has-file .upload-info{display:block;margin-top:4px}
+
+/* Video Preview */
+.preview-section{display:none;margin-top:20px}
+.preview-section.show{display:block}
+.section-title{font-size:13px;font-weight:600;color:var(--text-secondary);margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px}
+video{
+  width:100%;
+  border-radius:var(--radius);
+  background:#111;
+  display:block;
+  max-height:360px;
+}
+.video-controls{display:flex;align-items:center;gap:10px;margin-top:8px}
+.play-btn{
+  background:var(--bg-elevated);
+  border:1px solid var(--border-default);
+  color:var(--text-primary);
+  width:36px;height:36px;
+  border-radius:50%;
+  cursor:pointer;
+  font-size:16px;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .15s;
+}
+.play-btn:hover{background:var(--bg-hover)}
+.time-display{font-size:12px;color:var(--text-tertiary);font-variant-numeric:tabular-nums}
+
+/* Trim Section */
+.trim-section{display:none;margin-top:20px}
+.trim-section.show{display:block}
+
+/* Custom Dual Range Slider */
+.range-slider{
+  position:relative;
+  height:48px;
+  margin:16px 0 8px;
+  user-select:none;
+  -webkit-user-select:none;
+  cursor:pointer;
+}
+.range-track{
+  position:absolute;
+  top:50%;left:0;right:0;
+  height:4px;
+  background:var(--bg-elevated);
+  border-radius:2px;
+  transform:translateY(-50%);
+}
+.range-fill{
+  position:absolute;
+  top:50%;transform:translateY(-50%);
+  height:4px;
+  background:var(--accent);
+  border-radius:2px;
+  pointer-events:none;
+}
+.range-thumb{
+  position:absolute;
+  top:50%;transform:translate(-50%,-50%);
+  width:20px;height:20px;
+  background:#fff;
+  border:3px solid var(--accent);
+  border-radius:50%;
+  cursor:grab;
+  z-index:2;
+  transition:box-shadow .15s;
+}
+.range-thumb:active{cursor:grabbing;box-shadow:0 0 0 6px var(--accent-bg)}
+.range-thumb-label{
+  position:absolute;
+  top:-22px;
+  left:50%;
+  transform:translateX(-50%);
+  font-size:11px;
+  font-weight:600;
+  color:var(--text-primary);
+  white-space:nowrap;
+  font-variant-numeric:tabular-nums;
+  background:var(--bg-elevated);
+  padding:2px 8px;
+  border-radius:4px;
+}
+.range-thumb.start .range-thumb-label{color:var(--accent)}
+.range-thumb.end .range-thumb-label{color:var(--success)}
+.range-ticks{
+  display:flex;
+  justify-content:space-between;
+  padding:0 10px;
+  font-size:10px;
+  color:var(--text-tertiary);
+  margin-bottom:12px;
+  font-variant-numeric:tabular-nums;
+}
+.trim-stats{
+  display:flex;
+  gap:16px;
+  flex-wrap:wrap;
+  font-size:12px;
+  color:var(--text-secondary);
+  margin-bottom:4px;
+}
+.trim-stats span{display:flex;align-items:center;gap:4px}
+.trim-stats strong{color:var(--text-primary);font-variant-numeric:tabular-nums}
+.trim-warn{color:var(--warning);font-size:11px;display:none}
+
+/* Render Settings */
+.render-section{display:none;margin-top:20px}
+.render-section.show{display:block}
+.settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(min-width:500px){.settings-grid{grid-template-columns:1fr 1fr 1fr}}
+.field{margin-bottom:0}
+.field label{display:block;font-size:11px;color:var(--text-tertiary);margin-bottom:6px;font-weight:500;text-transform:uppercase;letter-spacing:.5px}
+select{
+  width:100%;
+  padding:10px 12px;
+  background:var(--bg-surface);
+  border:1px solid var(--border-default);
+  border-radius:var(--radius-sm);
+  color:var(--text-primary);
+  font-size:13px;
+  font-family:inherit;
+  outline:none;
+  cursor:pointer;
+  -webkit-appearance:none;
+  appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M3 4.5l3 3 3-3' stroke='rgba(255,255,255,.4)' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;
+  background-position:right 12px center;
+  padding-right:32px;
+}
+select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-bg)}
+
+/* Convert Section */
+.convert-section{display:none;margin-top:20px}
+.convert-section.show{display:block}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  padding:12px 24px;
+  font-size:14px;font-weight:600;
+  border:none;border-radius:var(--radius);
+  cursor:pointer;transition:all .15s;
+  font-family:inherit;
+  width:100%;margin-top:0;
+}
+.btn:disabled{opacity:.4;cursor:not-allowed;pointer-events:none}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover:not(:disabled){background:var(--accent-hover)}
+.btn-download{background:var(--success);color:#000;display:none}
+.btn-download.show{display:inline-flex}
+.btn-down{display:none;margin-top:10px}
+.btn-down.show{display:block}
+
+/* Progress */
+.progress-wrap{display:none;margin-top:14px}
+.progress-wrap.show{display:block}
+.progress-bar{
+  height:4px;border-radius:2px;background:var(--bg-elevated);
+  overflow:hidden;margin-bottom:6px;
+}
+.progress-fill{
+  height:100%;background:var(--accent);
+  border-radius:2px;transition:width .3s;
+  width:0;
+}
+.progress-text{font-size:11px;color:var(--text-tertiary);text-align:center}
+
+/* FFmpeg Loading */
+.ffmpeg-status{
+  font-size:12px;color:var(--text-tertiary);
+  text-align:center;margin-top:20px;display:none;
+}
+.ffmpeg-status.show{display:block}
+.ffmpeg-status.loading{color:var(--warning)}
+.ffmpeg-status.ready{color:var(--success)}
+.ffmpeg-status.error{color:var(--error)}
+.spinner{
+  display:inline-block;width:14px;height:14px;
+  border:2px solid var(--bg-elevated);
+  border-top-color:var(--accent);
+  border-radius:50%;
+  animation:spin .6s linear infinite;
+  vertical-align:middle;margin-right:6px;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Error / Notice */
+.notice{
+  background:rgba(255,69,58,.08);
+  border:1px solid rgba(255,69,58,.2);
+  border-radius:var(--radius-sm);
+  padding:10px 14px;
+  font-size:12px;color:var(--error);
+  margin-top:12px;
+  display:none;
+}
+.notice.show{display:block}
+
+/* 环境检测徽章 */
+.env-badge{
+  display:inline-block;
+  padding:4px 12px;
+  border-radius:20px;
+  font-size:12px;font-weight:500;
+  margin-bottom:12px;
+}
+.env-badge.ok{background:#d1fae5;color:#065f46}
+.env-badge.no{background:#fee2e2;color:#991b1b}
+.env-badge.checking{background:#f3f4f6;color:#6b7280}
+
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>📺 电视开机视频制作</h1>
+  <p class="subtitle">导入视频（≥ 15 秒）→ 截取片段（≤ 45 秒）→ 渲染设置 → 导出 .ts 格式</p>
+  <div class="env-badge" id="envBadge">⏳ 检测环境...</div>
+
+
+  <!-- FFmpeg 加载状态 -->
+  <div class="ffmpeg-status show" id="ffmpegStatus">
+    📤 请上传视频文件，引擎将在上传后自动加载
+  </div>
+
+  <!-- 上传 -->
+  <div class="upload-zone" id="uploadZone">
+    <div class="upload-icon">🎬</div>
+    <p class="upload-text">拖拽或点击上传视频文件</p>
+    <p class="upload-sub">支持 MP4 / MOV / AVI / MKV / WebM / FLV / WMV · 需 ≥ 15 秒</p>
+    <p class="upload-info" id="uploadInfo"></p>
+  </div>
+  <input type="file" id="fileInput" accept="video/*,.mov,.avi,.mkv,.webm,.flv,.wmv,.ts" style="display:none">
+
+  <div class="notice" id="notice"></div>
+
+  <!-- 视频预览 -->
+  <div class="preview-section" id="previewSection">
+    <div class="section-title">🎥 视频预览</div>
+    <video id="videoPlayer" controls crossorigin="anonymous"></video>
+  </div>
+
+  <!-- 片段截取 -->
+  <div class="trim-section" id="trimSection">
+    <div class="section-title">✂️ 片段截取 <span style="font-weight:400;color:var(--text-tertiary)">（最长 45 秒）</span></div>
+    <div class="range-slider" id="rangeSlider">
+      <div class="range-track"></div>
+      <div class="range-fill" id="rangeFill"></div>
+      <div class="range-thumb start" id="thumbStart">
+        <div class="range-thumb-label" id="labelStart">00:00</div>
+      </div>
+      <div class="range-thumb end" id="thumbEnd">
+        <div class="range-thumb-label" id="labelEnd">00:00</div>
+      </div>
+    </div>
+    <div class="trim-stats">
+      <span>起始：<strong id="trimStart">00:00.0</strong></span>
+      <span>结束：<strong id="trimEnd">00:00.0</strong></span>
+      <span>时长：<strong id="trimDuration">0.0s</strong> / 45s</span>
+    </div>
+    <p class="trim-warn" id="trimWarn">⚠️ 截取时长不能超过 45 秒</p>
+  </div>
+
+  <!-- 渲染设置 -->
+  <div class="render-section" id="renderSection">
+    <div class="section-title">⚙️ 渲染设置</div>
+    <div class="settings-grid">
+      <div class="field">
+        <label>输出分辨率</label>
+        <select id="resolution">
+          <option value="1920x1080" selected>1920×1080 (Full HD)</option>
+          <option value="3840x2160">3840×2160 (4K)</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>视频画质</label>
+        <select id="quality">
+          <option value="high">高 (CRF 18)</option>
+          <option value="medium" selected>中 (CRF 23)</option>
+          <option value="low">低 (CRF 28)</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>帧率</label>
+        <select id="framerate">
+          <option value="original">原始帧率</option>
+          <option value="30" selected>30 fps</option>
+          <option value="25">25 fps</option>
+          <option value="24">24 fps</option>
+          <option value="15">15 fps</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- 转换 -->
+  <div class="convert-section" id="convertSection">
+    <div class="section-title">🚀 导出</div>
+    <button class="btn btn-primary" id="convertBtn">▶ 开始转换为 .ts 格式</button>
+    <div class="progress-wrap" id="progressWrap">
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      <p class="progress-text" id="progressText">准备中...</p>
+    </div>
+    <div class="btn-down" id="btnDown">
+      <button class="btn btn-download show" id="downloadBtn">📥 下载 .ts 文件</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+// ── DOM refs ──
+var $=function(id){return document.getElementById(id);};
+var fileInput=$('fileInput'),uploadZone=$('uploadZone'),uploadInfo=$('uploadInfo');
+var ffmpegStatus=$('ffmpegStatus'),notice=$('notice');
+var previewSection=$('previewSection'),videoPlayer=$('videoPlayer');
+var trimSection=$('trimSection'),renderSection=$('renderSection'),convertSection=$('convertSection');
+var rangeSlider=$('rangeSlider'),rangeFill=$('rangeFill');
+var thumbStart=$('thumbStart'),thumbEnd=$('thumbEnd');
+var labelStart=$('labelStart'),labelEnd=$('labelEnd');
+var trimStartEl=$('trimStart'),trimEndEl=$('trimEnd'),trimDurationEl=$('trimDuration'),trimWarn=$('trimWarn');
+var resolution=$('resolution'),quality=$('quality'),framerate=$('framerate');
+var convertBtn=$('convertBtn'),progressWrap=$('progressWrap'),progressFill=$('progressFill'),progressText=$('progressText');
+var btnDown=$('btnDown'),downloadBtn=$('downloadBtn');
+
+// ── Environment Check ──
+var backendAvailable = false;
+(function() {
+  fetch('/api/ping').then(function(r) {
+    if (r.ok) {
+      backendAvailable = true;
+      envBadge.textContent = '✅ 环境就绪（后端 ffmpeg 可用）';
+      envBadge.className = 'env-badge ok';
+    }
+  }).catch(function() {
+    backendAvailable = false;
+    envBadge.innerHTML = '⚠️ 视频转换需本地启动 — 终端运行 <code>node server.js</code> 后访问 <code>localhost:8765</code>';
+    envBadge.className = 'env-badge no';
+  });
+})();
+
+// ── State ──
+var videoFile=null;
+var videoDuration=0;
+var trimStart=0,trimEnd=0;
+var isDragging=null;
+var outputBlob=null;
+var outputFilename='';
+
+// ── Helpers ──
+function fmtTime(sec){
+  if(isNaN(sec)||sec<0)sec=0;
+  var m=Math.floor(sec/60),s=Math.floor(sec%60),ms=Math.floor((sec%1)*10);
+  return (m<10?'0':'')+m+':'+(s<10?'0':'')+s+'.'+ms;
+}
+function fmtTimeShort(sec){
+  if(isNaN(sec)||sec<0)sec=0;
+  var m=Math.floor(sec/60),s=Math.floor(sec%60);
+  return (m<10?'0':'')+m+':'+(s<10?'0':'')+s;
+}
+function showNotice(msg){notice.textContent=msg;notice.classList.add('show');setTimeout(function(){notice.classList.remove('show');},5000);}
+
+// ── Upload ──
+// Both click and drag work — click opens file picker, drag accepts dropped files
+uploadZone.addEventListener('click',function(e){
+  if(!uploadZone.classList.contains('has-file'))fileInput.click();
+});
+uploadZone.addEventListener('dragover',function(e){e.preventDefault();e.stopPropagation();uploadZone.classList.add('drag-over');});
+uploadZone.addEventListener('dragleave',function(e){e.preventDefault();e.stopPropagation();uploadZone.classList.remove('drag-over');});
+uploadZone.addEventListener('drop',function(e){
+  e.preventDefault();e.stopPropagation();
+  uploadZone.classList.remove('drag-over');
+  var f=e.dataTransfer.files[0];
+  if(f)handleFile(f);
+});
+fileInput.addEventListener('change',function(){
+  var f=fileInput.files[0];
+  if(f)handleFile(f);
+});
+
+function handleFile(file){
+  if(!file.type.startsWith('video/')&&
+     !/\.(mp4|mov|avi|mkv|webm|flv|wmv|ts|m4v|3gp)$/i.test(file.name)){
+    showNotice('请上传视频文件（MP4/MOV/AVI/MKV/WebM 等）');
+    return;
+  }
+  if(file.size>800*1024*1024){
+    showNotice('文件过大（超过800MB），建议压缩后再上传');
+    return;
+  }
+  videoFile=file;
+  var sizeMB=(file.size/(1024*1024)).toFixed(1);
+  uploadInfo.textContent=file.name+' — '+sizeMB+' MB';
+  uploadZone.classList.add('has-file');
+
+  // Load video for preview and duration
+  var url=URL.createObjectURL(file);
+  videoPlayer.src=url;
+  videoPlayer.onloadedmetadata=function(){
+    videoDuration=videoPlayer.duration;
+
+    // 视频低于 15 秒：拒绝，无法切片
+    if(videoDuration<15){
+      showNotice('视频时长不足（需 ≥ 15 秒），当前仅 '+videoDuration.toFixed(1)+' 秒，无法满足开机视频切片要求');
+      uploadZone.classList.remove('has-file');
+      uploadInfo.textContent='';
+      videoFile=null;
+      videoPlayer.src='';
+      previewSection.classList.remove('show');
+      trimSection.classList.remove('show');
+      renderSection.classList.remove('show');
+      convertSection.classList.remove('show');
+      videoDuration=0;
+      return;
+    }
+
+    trimStart=0;
+    trimEnd=Math.min(videoDuration,45);
+    updateTrimUI();
+    previewSection.classList.add('show');
+    trimSection.classList.add('show');
+    renderSection.classList.add('show');
+    convertSection.classList.add('show');
+    convertBtn.disabled = false;
+    convertBtn.textContent = '▶ 开始转换为 .ts 格式';
+  };
+  videoPlayer.onerror=function(){
+    showNotice('无法播放此视频格式，可能是浏览器不支持该编码');
+  };
+}
+
+// ── Dual Range Slider ──
+function updateTrimUI(){
+  var max=videoDuration;
+  var rng=rangeSlider.getBoundingClientRect();
+  var w=rng.width;
+  var p1=(trimStart/max)*w;
+  var p2=(trimEnd/max)*w;
+  thumbStart.style.left=p1+'px';
+  thumbEnd.style.left=p2+'px';
+  rangeFill.style.left=p1+'px';
+  rangeFill.style.width=(p2-p1)+'px';
+  labelStart.textContent=fmtTimeShort(trimStart);
+  labelEnd.textContent=fmtTimeShort(trimEnd);
+  trimStartEl.textContent=fmtTime(trimStart);
+  trimEndEl.textContent=fmtTime(trimEnd);
+  var dur=trimEnd-trimStart;
+  trimDurationEl.textContent=dur.toFixed(1)+'s';
+  trimWarn.style.display=dur>45?'block':'none';
+  if(dur>45)trimDurationEl.style.color='var(--warning)';
+  else trimDurationEl.style.color='';
+}
+
+function getThumbPos(e){
+  var r=rangeSlider.getBoundingClientRect();
+  var x=e.clientX-r.left;
+  return Math.max(0,Math.min(r.width,x))/r.width*videoDuration;
+}
+
+function startDrag(thumb,e){
+  e.preventDefault();
+  isDragging=thumb;
+  thumb.classList.add('active');
+  document.addEventListener('mousemove',onDrag);
+  document.addEventListener('mouseup',stopDrag);
+  document.addEventListener('touchmove',onDrag,{passive:false});
+  document.addEventListener('touchend',stopDrag);
+}
+
+function onDrag(e){
+  if(!isDragging)return;
+  e.preventDefault();
+  var pos=getThumbPos(e.touches?e.touches[0]:e);
+  var MAX_GAP=45;
+  if(isDragging==='start'){
+    trimStart=Math.max(0,Math.min(pos,trimEnd-0.5));
+    if(trimEnd-trimStart>MAX_GAP)trimStart=trimEnd-MAX_GAP;
+  }else{
+    trimEnd=Math.min(videoDuration,Math.max(pos,trimStart+0.5));
+    if(trimEnd-trimStart>MAX_GAP)trimEnd=trimStart+MAX_GAP;
+  }
+  updateTrimUI();
+}
+function stopDrag(){isDragging=null;document.removeEventListener('mousemove',onDrag);document.removeEventListener('mouseup',stopDrag);document.removeEventListener('touchmove',onDrag);document.removeEventListener('touchend',stopDrag);}
+
+thumbStart.addEventListener('mousedown',function(e){startDrag('start',e);});
+thumbStart.addEventListener('touchstart',function(e){startDrag('start',e);},{passive:false});
+thumbEnd.addEventListener('mousedown',function(e){startDrag('end',e);});
+thumbEnd.addEventListener('touchstart',function(e){startDrag('end',e);},{passive:false});
+
+// Click on track to move nearest thumb
+rangeSlider.addEventListener('click',function(e){
+  if(e.target.classList.contains('range-thumb'))return;
+  var pos=getThumbPos(e);
+  var d1=Math.abs(pos-trimStart),d2=Math.abs(pos-trimEnd);
+  var MAX_GAP=45;
+  if(d1<=d2){
+    trimStart=Math.max(0,Math.min(pos,trimEnd-0.5));
+    if(trimEnd-trimStart>MAX_GAP)trimStart=trimEnd-MAX_GAP;
+  }else{
+    trimEnd=Math.min(videoDuration,Math.max(pos,trimStart+0.5));
+    if(trimEnd-trimStart>MAX_GAP)trimEnd=trimStart+MAX_GAP;
+  }
+  updateTrimUI();
+});
+
+// ── Conversion ──
+function getSettings(){
+  return {
+    resolution:resolution.value,
+    quality:quality.value,
+    framerate:framerate.value
+  };
+}
+
+convertBtn.addEventListener('click',async function(){
+  if(!backendAvailable){
+    showNotice('视频转换需要本地服务支持 — 请终端运行 node server.js 后访问 localhost:8765');
+    return;
+  }
+  if(!videoFile){showNotice('请先上传视频文件');return;}
+  var dur=trimEnd-trimStart;
+  if(dur<=0){showNotice('请设置有效的截取范围');return;}
+  if(dur>45){showNotice('截取时长不能超过45秒');return;}
+
+  convertBtn.disabled=true;
+  progressWrap.classList.add('show');
+  progressFill.style.width='0%';
+  progressText.textContent='准备中...';
+  btnDown.classList.remove('show');
+  outputBlob=null;
+
+  try{
+    var settings=getSettings();
+    var crfMap={high:'18',medium:'23',low:'28'};
+    var crf=crfMap[settings.quality]||'23';
+    outputFilename=videoFile.name.replace(/\.[^.]+$/,'')+'_boot.ts';
+
+    // 进度通过 XHR (XMLHttpRequest) 获取上传/下载进度
+    var xhr=new XMLHttpRequest();
+
+    await new Promise(function(resolve,reject){
+      xhr.open('POST','/api/convert?start='+trimStart.toFixed(2)+'&duration='+dur.toFixed(2)+'&resolution='+settings.resolution+'&crf='+crf+'&fps='+(settings.framerate==='original'?'':settings.framerate));
+      xhr.responseType='blob';
+      xhr.timeout=600000; // 10分钟超时（大视频）
+
+      xhr.upload.addEventListener('progress',function(e){
+        if(e.lengthComputable){
+          var pct=Math.round(e.loaded/e.total*30);
+          progressFill.style.width=pct+'%';
+          progressText.textContent='上传中... '+pct+'%';
+        }
+      });
+
+      xhr.addEventListener('progress',function(e){
+        if(e.lengthComputable){
+          var pct=Math.round(30+e.loaded/e.total*65);
+          progressFill.style.width=pct+'%';
+          progressText.textContent='下载中... '+Math.round(e.loaded/e.total*100)+'%';
+        }
+      });
+
+      xhr.addEventListener('load',function(){
+        if(xhr.status>=200&&xhr.status<300){
+          progressFill.style.width='100%';
+          outputBlob=xhr.response;
+          var sizeMB=(outputBlob.size/1024/1024).toFixed(1);
+          progressText.textContent='✅ 转换完成！文件大小: '+sizeMB+' MB';
+          btnDown.classList.add('show');
+          resolve();
+        }else{
+          // 尝试读取错误信息
+          var fr=new FileReader();
+          fr.onload=function(){reject(new Error(fr.result));};
+          fr.onerror=function(){reject(new Error('HTTP '+xhr.status));};
+          fr.readAsText(xhr.response);
+        }
+      });
+
+      xhr.addEventListener('error',function(){
+        reject(new Error('网络错误，请确认后端已启动（node server.js）'));
+      });
+
+      xhr.addEventListener('timeout',function(){
+        reject(new Error('转换超时（10分钟），请尝试更短片段或更低分辨率'));
+      });
+
+      xhr.send(videoFile);
+    });
+
+  }catch(err){
+    progressText.textContent='❌ 转换失败: '+err.message;
+    showNotice('转换失败: '+err.message);
+    console.error('Convert error:', err);
+  }finally{
+    convertBtn.disabled=false;
+  }
+});
+
+// Download
+downloadBtn.addEventListener('click',function(){
+  if(!outputBlob)return;
+  var url=URL.createObjectURL(outputBlob);
+  var a=document.createElement('a');
+  a.href=url;
+  a.download=outputFilename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+});
+
+// Resize handler
+window.addEventListener('resize',function(){if(videoDuration)updateTrimUI();});
+
+})();
+</script>
+</body>
+</html>

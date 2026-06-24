@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>Logo 文字生成器</title>
+<style>
+:root {
+  --bg-primary: #000000;
+  --bg-surface: rgba(255,255,255,0.04);
+  --bg-surface-hover: rgba(255,255,255,0.06);
+  --bg-input: rgba(255,255,255,0.06);
+  --bg-input-focus: rgba(255,255,255,0.08);
+  --accent: #0071E3;
+  --accent-hover: #0077ED;
+  --accent-subtle: rgba(0,113,227,0.12);
+  --text-primary: rgba(255,255,255,0.92);
+  --text-secondary: rgba(255,255,255,0.55);
+  --text-tertiary: rgba(255,255,255,0.32);
+  --border-subtle: rgba(255,255,255,0.06);
+  --border-default: rgba(255,255,255,0.1);
+  --border-focus: rgba(0,113,227,0.4);
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", sans-serif;
+  --transition: 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--font-sans);background:var(--bg-primary);min-height:100vh;color:var(--text-primary);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;padding:24px 16px}
+.container{max-width:900px;margin:0 auto}
+.card{background:var(--bg-surface);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:24px;margin-bottom:16px;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+.section-title{font-size:12px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:16px}
+.form-group{margin-bottom:16px}
+.form-group:last-child{margin-bottom:0}
+label{display:block;font-size:12px;font-weight:500;color:var(--text-secondary);margin-bottom:8px;letter-spacing:0.2px}
+input[type="text"],textarea{width:100%;padding:12px 14px;background:var(--bg-input);border:1px solid var(--border-subtle);border-radius:var(--radius-md);color:var(--text-primary);font-size:14px;font-family:var(--font-sans);outline:none;transition:all var(--transition)}
+input[type="text"]:focus,textarea:focus{border-color:var(--border-focus);background:var(--bg-input-focus);box-shadow:0 0 0 3px var(--accent-subtle)}
+textarea{resize:vertical;line-height:1.5;min-height:50px}
+input[type="color"]{width:100%;height:40px;padding:4px;background:var(--bg-input);border:1px solid var(--border-subtle);border-radius:var(--radius-md);cursor:pointer}
+.btn{width:100%;padding:14px;border:none;border-radius:var(--radius-xl);font-size:15px;font-weight:500;font-family:var(--font-sans);cursor:pointer;transition:all var(--transition);letter-spacing:0.2px}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:active{transform:scale(0.98);opacity:0.9}
+.btn-secondary{background:transparent;border:1px solid var(--border-default);color:var(--text-secondary);margin-top:8px}
+.btn-secondary:hover{background:var(--bg-surface-hover);color:var(--text-primary)}
+
+.size-toggle{display:flex;gap:8px;margin-top:8px}
+.size-btn{flex:1;padding:10px;border:1px solid var(--border-default);background:transparent;border-radius:var(--radius-md);color:var(--text-secondary);font-size:14px;cursor:pointer;transition:all var(--transition)}
+.size-btn:hover{background:var(--bg-surface-hover)}
+.size-btn.active{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:500}
+
+.preview-area{background:var(--bg-input);border-radius:var(--radius-lg);padding:32px;display:flex;align-items:center;justify-content:center;min-height:180px;overflow-x:auto}
+.preview-inner{position:relative;display:inline-block}
+.preview-inner canvas{display:block;max-width:100%;height:auto}
+.export-outline{position:absolute;inset:0;border:2px dashed rgba(255,255,255,0.2);border-radius:2px;pointer-events:none}
+.export-size{position:absolute;bottom:-22px;right:0;font-size:10px;color:var(--text-tertiary);font-family:var(--font-mono, monospace);white-space:nowrap}
+.ph{color:var(--text-tertiary);font-size:13px;text-align:center}
+
+@font-face{font-family:'AlimamaLogo';src:url('./AlimamaShuHeiTi.ttf') format('truetype');font-weight:400;font-style:normal}
+h1{text-align:center;margin-bottom:24px;font-size:24px;font-weight:600;color:var(--text-primary);letter-spacing:-0.3px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.info-row{display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--bg-input);border-radius:var(--radius-md);font-size:12px;color:var(--text-secondary)}
+.info-row .val{color:var(--accent);font-weight:500}
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Logo 文字生成器</h1>
+
+  <div class="card">
+    <div class="section-title">实时预览</div>
+    <div class="preview-area" id="previewArea">
+      <div class="ph" id="ph">请输入文字内容</div>
+      <div class="preview-inner" id="previewInner" style="display:none">
+        <canvas id="previewCanvas"></canvas>
+        <div class="export-outline" id="exportOutline"></div>
+        <div class="export-size" id="exportSize"></div>
+      </div>
+    </div>
+    <div class="info-row" style="margin-top:12px">
+      <span>导出尺寸：</span>
+      <span class="val" id="sizeInfo">—</span>
+      <span style="margin-left:auto;font-size:11px;color:var(--text-tertiary)">左对齐 · 70px 高</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="section-title">文字内容</div>
+    <div class="form-group">
+      <textarea id="textInput" rows="2" placeholder="输入要生成的文字...">Logo 文字</textarea>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="section-title">字体样式</div>
+    <div class="form-group">
+      <label>字体</label>
+      <div style="padding:12px 14px;background:var(--bg-input);border:1px solid var(--border-subtle);border-radius:var(--radius-md);color:var(--text-primary);font-size:14px">Alimama ShuHeiTi · Regular</div>
+    </div>
+    <div class="form-group">
+      <label>字号</label>
+      <div class="size-toggle">
+        <button class="size-btn" data-size="50">50px</button>
+        <button class="size-btn active" data-size="60">60px</button>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>文字颜色</label>
+      <input type="color" id="textColor" value="#ffffff">
+    </div>
+    <div class="form-group">
+      <label>预览背景色</label>
+      <input type="color" id="previewBg" value="#1a1a2e">
+    </div>
+  </div>
+
+	  <button class="btn btn-primary" id="downloadBtn">⬇️ 下载 PNG（透明背景）</button>
+	  <button class="btn btn-secondary" id="resetBtn">↺ 重置默认</button>
+</div>
+
+<script>
+const canvas=document.getElementById('previewCanvas'),ctx=canvas.getContext('2d');
+const ph=document.getElementById('ph');
+const previewInner=document.getElementById('previewInner');
+const textInput=document.getElementById('textInput');
+const textColor=document.getElementById('textColor');
+const previewBg=document.getElementById('previewBg');
+const sizeInfo=document.getElementById('sizeInfo');
+const exportSize=document.getElementById('exportSize');
+const H=70;
+let fontSize=60;
+
+document.querySelectorAll('.size-btn').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    document.querySelectorAll('.size-btn').forEach(function(b){b.classList.remove('active')});
+    this.classList.add('active');
+    fontSize=parseInt(this.dataset.size);
+    render();
+  });
+});
+
+function render(){
+  var text=textInput.value.trim();
+  if(!text){ph.style.display='';previewInner.style.display='none';return}
+  ph.style.display='none';previewInner.style.display='inline-block';
+
+  var ls=2;
+  ctx.font='normal '+fontSize+'px "AlimamaLogo","Alimama ShuHeiTi",sans-serif';
+
+  var chars=text.split('');
+  var tw=0;
+  chars.forEach(function(c,i){
+    if(i>0)tw+=ls;
+    tw+=ctx.measureText(c).width;
+  });
+
+  canvas.width=tw;canvas.height=H;
+
+  // 透明背景
+  ctx.clearRect(0,0,tw,H);
+
+  // 文字
+  ctx.font='normal '+fontSize+'px "AlimamaLogo","Alimama ShuHeiTi",sans-serif';
+  ctx.fillStyle=textColor.value;
+  ctx.textAlign='left';
+  ctx.textBaseline='middle';
+
+  var cx=0;
+  chars.forEach(function(c){
+    ctx.fillText(c,cx,H/2);
+    cx+=ctx.measureText(c).width+ls;
+  });
+
+  // 更新尺寸信息
+  sizeInfo.textContent=tw+' × '+H+' px';
+  exportSize.textContent=tw+'×'+H+'px · PNG透明';
+}
+
+// 预览背景色变化时更新预览区
+previewBg.addEventListener('input',function(){
+  document.getElementById('previewArea').style.background=this.value;
+});
+
+textInput.addEventListener('input',render);
+textColor.addEventListener('input',render);
+
+	document.getElementById('downloadBtn').addEventListener('click',function(){
+	  var a=document.createElement('a');
+	  a.download='logo_'+Date.now()+'.png';
+	  a.href=canvas.toDataURL('image/png',1);
+	  a.click();
+	});
+
+	document.getElementById('resetBtn').addEventListener('click',function(){
+  textInput.value='Logo 文字';
+  fontSize=60;
+  document.querySelectorAll('.size-btn').forEach(function(b){b.classList.remove('active')});
+  document.querySelector('.size-btn[data-size="60"]').classList.add('active');
+  textColor.value='#ffffff';
+  previewBg.value='#1a1a2e';
+  document.getElementById('previewArea').style.background='#1a1a2e';
+  render();
+});
+
+// 初始预览背景
+document.getElementById('previewArea').style.background=previewBg.value;
+
+	// Initial render — use requestAnimationFrame to ensure DOM is ready
+	// Use a timeout as fallback since fonts.ready may not resolve if no
+	// external fonts are loaded asynchronously
+	var _rendered = false;
+	function _initRender() {
+	  if (_rendered) return;
+	  _rendered = true;
+	  render();
+	}
+	document.fonts.ready.then(_initRender);
+	// Fallback: if fonts.ready doesn't fire within 1s, render anyway
+	setTimeout(_initRender, 1000);
+</script>
+</body>
+</html>

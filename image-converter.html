@@ -1,0 +1,1740 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>电视开机logo制作</title>
+<style>
+:root {
+  --bg-primary: #000000;
+  --bg-surface: rgba(255,255,255,0.04);
+  --bg-surface-hover: rgba(255,255,255,0.06);
+  --bg-input: rgba(255,255,255,0.06);
+  --bg-input-focus: rgba(255,255,255,0.08);
+  --accent: #0071E3;
+  --accent-hover: #0077ED;
+  --accent-subtle: rgba(0,113,227,0.12);
+  --text-primary: rgba(255,255,255,0.92);
+  --text-secondary: rgba(255,255,255,0.55);
+  --text-tertiary: rgba(255,255,255,0.32);
+  --border-subtle: rgba(255,255,255,0.06);
+  --border-default: rgba(255,255,255,0.1);
+  --border-focus: rgba(0,113,227,0.4);
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", sans-serif;
+  --transition: 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--font-sans);background:var(--bg-primary);min-height:100vh;color:var(--text-primary);-webkit-font-smoothing:antialiased;padding:24px 16px}
+.container{max-width:900px;margin:0 auto}
+h1{text-align:center;margin-bottom:24px;font-size:24px;font-weight:600;letter-spacing:-0.3px}
+.card{background:var(--bg-surface);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:24px;margin-bottom:16px;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+.section-title{font-size:12px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:16px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.field{margin-bottom:16px}
+.field:last-of-type{margin-bottom:0}
+label{display:block;font-size:12px;font-weight:500;color:var(--text-secondary);margin-bottom:8px;letter-spacing:0.2px}
+select{width:100%;padding:12px 14px;background:var(--bg-input);border:1px solid var(--border-subtle);border-radius:var(--radius-md);color:var(--text-primary);font-size:14px;font-family:var(--font-sans);outline:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='rgba(255,255,255,0.32)'%3E%3Cpath d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:36px;transition:all var(--transition)}
+select:focus{border-color:var(--border-focus);background-color:var(--bg-input-focus);box-shadow:0 0 0 3px var(--accent-subtle)}
+input[type="number"]{width:100%;padding:12px 14px;background:var(--bg-input);border:1px solid var(--border-subtle);border-radius:var(--radius-md);color:var(--text-primary);font-size:14px;font-family:var(--font-sans);outline:none;transition:all var(--transition)}
+input[type="number"]:focus{border-color:var(--border-focus);background:var(--bg-input-focus);box-shadow:0 0 0 3px var(--accent-subtle)}
+input[type="range"]{width:100%;height:4px;-webkit-appearance:none;appearance:none;background:var(--bg-input);border-radius:2px;outline:none;margin-top:4px}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;background:var(--accent);border-radius:50%;cursor:pointer;box-shadow:0 0 0 4px var(--accent-subtle);transition:all var(--transition)}
+.range-label{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:12px;color:var(--text-secondary)}
+.range-label .val{font-size:12px;color:var(--accent);font-weight:500}
+input[type="color"]{width:100%;height:40px;padding:4px;background:var(--bg-input);border:1px solid var(--border-subtle);border-radius:var(--radius-md);cursor:pointer}
+
+.mode-tabs{display:flex;gap:0;background:var(--bg-input);border-radius:var(--radius-md);padding:3px;margin-bottom:14px}
+.mode-tab,.bg-tab{flex:1;padding:9px 6px;text-align:center;border:none;background:transparent;color:var(--text-secondary);font-size:12px;font-family:var(--font-sans);cursor:pointer;border-radius:var(--radius-sm);transition:all var(--transition);white-space:nowrap}
+.mode-tab.active,.bg-tab.active{background:var(--accent);color:#fff;font-weight:500}
+
+input[type="text"]{width:100%;padding:12px 14px;background:var(--bg-input);border:1px solid var(--border-subtle);border-radius:var(--radius-md);color:var(--text-primary);font-size:14px;font-family:var(--font-mono),monospace;outline:none;transition:all var(--transition);letter-spacing:1px}
+input[type="text"]:focus{border-color:var(--border-focus);background:var(--bg-input-focus);box-shadow:0 0 0 3px var(--accent-subtle)}
+
+.upload-wrap{display:block}
+.upload-wrap input[type="file"]{display:none}
+.upload-area{padding:32px 16px;background:var(--bg-surface);border:2px dashed var(--border-default);border-radius:var(--radius-md);text-align:center;cursor:pointer;transition:all var(--transition)}
+.upload-area:hover{border-color:var(--accent);background:var(--bg-surface-hover)}
+.upload-area.active{border-color:#30D158;background:rgba(48,209,88,0.06)}
+.upload-icon{font-size:36px;margin-bottom:8px;opacity:0.6}
+.upload-text{font-size:14px;color:var(--text-secondary)}
+.upload-sub{font-size:11px;color:var(--text-tertiary);margin-top:4px}
+
+.file-meta{margin-top:10px;font-size:11px;color:var(--text-tertiary);display:none;gap:12px;flex-wrap:wrap}
+.file-meta.show{display:flex}
+
+.preview-card{background:var(--bg-surface);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:24px;margin-bottom:16px}
+.preview-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.preview-title{font-size:12px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.5px}
+
+.preview-box{background:var(--bg-input);border-radius:var(--radius-md);min-height:200px;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}
+.preview-box canvas{display:block;max-width:100%;height:auto}
+.preview-empty{color:var(--text-tertiary);font-size:13px;text-align:center;padding:40px}
+.preview-empty .icon{font-size:40px;margin-bottom:8px;opacity:0.5}
+
+.preview-size-tag{position:absolute;bottom:8px;right:10px;padding:3px 8px;background:rgba(0,0,0,0.7);border-radius:var(--radius-sm);font-size:10px;color:var(--text-secondary);font-family:var(--font-mono),monospace}
+
+.info-bar{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--bg-surface);border-radius:var(--radius-md);margin-top:12px;font-size:12px}
+.info-bar span:first-child{color:var(--text-secondary)}
+.info-bar span:last-child{color:var(--accent);font-weight:500}
+
+.btn{width:100%;padding:14px;border:none;border-radius:var(--radius-xl);font-size:15px;font-weight:500;font-family:var(--font-sans);cursor:pointer;transition:all var(--transition);letter-spacing:0.2px}
+.btn-primary{background:var(--accent);color:#fff;margin-top:14px}
+.btn-primary:hover{background:var(--accent-hover)}
+.btn-primary:active{transform:scale(0.98);opacity:0.9}
+
+.origin-preview{display:none}
+.origin-preview.show{display:block}
+
+/* SVG color editor */
+.svg-colors{display:none;margin-top:14px;padding-top:14px;border-top:1px solid var(--border-subtle)}
+.svg-colors.show{display:block}
+
+/* ---- Multi-stop gradient editor ---- */
+.grad-bar-wrap{position:relative;margin-bottom:4px}
+.grad-bar{position:relative;height:32px;background:var(--bg-input);border-radius:var(--radius-md);cursor:pointer;overflow:visible;margin-bottom:8px;border:1px solid var(--border-subtle);transition:border-color var(--transition)}
+.grad-bar:hover{border-color:var(--border-default)}
+.grad-bar-bg{position:absolute;inset:3px;border-radius:5px}
+.grad-stops{position:absolute;inset:0;pointer-events:none}
+.grad-stop{position:absolute;top:-4px;width:18px;height:40px;transform:translateX(-50%);pointer-events:auto;cursor:grab;z-index:2}
+.grad-stop:active{cursor:grabbing}
+.grad-stop .knob{width:18px;height:18px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 2px rgba(0,0,0,0.25),0 1px 4px rgba(0,0,0,0.3);position:absolute;top:4px;left:0;transition:transform var(--transition)}
+.grad-stop.selected .knob{transform:scale(1.2);border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-subtle),0 1px 4px rgba(0,0,0,0.3)}
+.grad-stop.selected{z-index:3}
+.grad-stop .stick{position:absolute;top:22px;left:50%;transform:translateX(-50%);width:2px;height:14px;background:rgba(255,255,255,0.4);border-radius:1px}
+.grad-pos-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--text-tertiary);padding:0 9px}
+.grad-pos-labels span{position:absolute;transform:translateX(-50%);font-family:SF Mono,monospace;font-size:9px;color:var(--text-secondary);transition:color var(--transition);pointer-events:none}
+.grad-pos-labels span.active{color:var(--accent);font-weight:500}
+.stop-editor{padding:12px;background:var(--bg-input);border-radius:var(--radius-md);margin-top:8px}
+.stop-editor-label{font-size:11px;font-weight:600;color:var(--text-secondary);margin-bottom:8px;letter-spacing:0.3px}
+.stop-action-btn{flex:1;padding:7px 12px;border:1px solid var(--border-default);border-radius:var(--radius-sm);background:transparent;color:var(--text-secondary);font-size:11px;font-family:var(--font-sans);cursor:pointer;transition:all var(--transition)}
+.stop-action-btn:hover{background:var(--bg-surface-hover);color:var(--text-primary)}
+.stop-action-btn.danger:hover{background:rgba(255,69,58,0.1);border-color:rgba(255,69,58,0.3);color:#FF453A}
+/* SVG gradient editor extras */
+.grad-select-wrap{margin-bottom:10px}
+.grad-select-wrap select{font-size:13px}
+#svgStopOpacity{height:4px;margin-top:6px}
+#svgStopOpacity::-webkit-slider-thumb{width:18px;height:18px}
+.color-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;padding:8px 10px;background:var(--bg-input);border-radius:var(--radius-sm)}
+.color-row:last-child{margin-bottom:0}
+.color-swatch{width:24px;height:24px;border-radius:4px;border:1px solid var(--border-default);flex-shrink:0}
+.color-from{font-size:11px;color:var(--text-tertiary);font-family:SF Mono, monospace;min-width:52px}
+.color-arrow{color:var(--text-tertiary);font-size:12px;flex-shrink:0}
+.color-row input[type="color"]{width:32px;height:32px;padding:2px;background:transparent;border:1px solid var(--border-subtle);border-radius:var(--radius-sm);cursor:pointer;flex-shrink:0}
+.color-row input[type="text"]{flex:1;padding:8px 10px;background:var(--bg-input);border:1px solid var(--border-subtle);border-radius:var(--radius-sm);color:var(--text-primary);font-size:12px;font-family:SF Mono,monospace;outline:none;letter-spacing:0.5px;height:32px;box-sizing:border-box}
+.color-row input[type="text"]:focus{border-color:var(--border-focus);box-shadow:0 0 0 2px var(--accent-subtle)}
+.svg-color-apply{margin-top:10px;padding:8px 16px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-md);font-size:13px;font-family:var(--font-sans);cursor:pointer;transition:all var(--transition);width:100%}
+.svg-color-apply:hover{background:var(--accent-hover)}
+.svg-color-reset{margin-top:6px;padding:6px 16px;background:transparent;color:var(--text-secondary);border:1px solid var(--border-default);border-radius:var(--radius-md);font-size:12px;font-family:var(--font-sans);cursor:pointer;transition:all var(--transition);width:100%}
+.svg-color-reset:hover{background:var(--bg-surface-hover)}
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>📺 电视开机logo制作</h1>
+
+  <!-- 上传 -->
+  <div class="card">
+    <div class="section-title">上传文件</div>
+    <label class="upload-wrap">
+      <div class="upload-area" id="uploadArea">
+        <div class="upload-icon">📤</div>
+        <div class="upload-text" id="uploadText">点击选择文件</div>
+        <div class="upload-sub">支持 JPG / PNG / WebP / BMP / SVG / PDF / AI / CDR</div>
+      </div>
+      <input type="file" id="fileInput" accept="image/*,.svg,application/pdf,application/postscript,.ai,.cdr">
+    </label>
+    <div class="file-meta" id="fileMeta">
+      <span id="metaSize"></span>
+      <span id="metaType"></span>
+      <span id="metaKB"></span>
+    </div>
+    <!-- PDF 页面导航 (PDF 文件时显示) -->
+    <div id="pdfNav" style="display:none;margin-top:14px;align-items:center;gap:12px">
+      <button class="btn btn-secondary" id="pdfPrev" style="width:auto;margin-top:0;padding:6px 16px;font-size:12px">◀ 上一页</button>
+      <span style="font-size:12px;color:var(--text-secondary)" id="pdfPageInfo">第 1 / 1 页</span>
+      <button class="btn btn-secondary" id="pdfNext" style="width:auto;margin-top:0;padding:6px 16px;font-size:12px">下一页 ▶</button>
+    </div>
+
+    <!-- SVG 颜色替换 (SVG 文件时显示) -->
+    <div class="svg-colors" id="svgColorPanel">
+      <div class="section-title">🎨 SVG 颜色替换</div>
+      <div id="svgColorList"></div>
+      <button class="svg-color-apply" id="svgApplyBtn">应用颜色替换</button>
+      <button class="svg-color-reset" id="svgResetBtn">重置为原始颜色</button>
+    </div>
+
+    <!-- SVG 渐变编辑 (SVG 文件有渐变时显示) -->
+    <div class="svg-colors" id="svgGradientPanel">
+      <div class="section-title">🌈 SVG 渐变编辑</div>
+      <!-- 渐变选择器 -->
+      <div class="grad-select-wrap" id="gradSelectWrap">
+        <select id="svgGradSelect"></select>
+      </div>
+      <!-- 当前渐变方向 -->
+      <div class="field" style="margin-top:10px" id="svgGradTypeField">
+        <label>渐变类型</label>
+        <select id="svgGradType">
+          <option value="linearGradient">线性渐变</option>
+          <option value="radialGradient">径向渐变</option>
+        </select>
+      </div>
+      <!-- 渐变条 + 停止点 -->
+      <div class="field" style="margin-top:10px">
+        <label>停止点 <span style="font-weight:400;color:var(--text-tertiary)">(拖动调整 · 点击条移动 · 双击删除)</span></label>
+        <div class="grad-bar-wrap" id="svgGradBarWrap">
+          <div class="grad-bar" id="svgGradBar">
+            <div class="grad-bar-bg" id="svgGradBarBg"></div>
+            <div class="grad-stops" id="svgGradStopsEl"></div>
+          </div>
+          <div class="grad-pos-labels" id="svgGradLabels"></div>
+        </div>
+      </div>
+      <!-- 当前选中停止点编辑 -->
+      <div id="svgStopEditor" class="stop-editor" style="display:none">
+        <div class="stop-editor-label">停止点 <span id="svgStopIdx">0</span></div>
+        <div class="row">
+          <div class="field">
+            <label>颜色</label>
+            <div style="display:flex;gap:6px;align-items:center">
+              <input type="color" id="svgStopColor" value="#000000" style="flex:1">
+              <input type="text" id="svgStopHex" value="#000000" maxlength="7" style="flex:1">
+            </div>
+          </div>
+          <div class="field">
+            <label>位置 (%)</label>
+            <input type="number" id="svgStopPos" value="0" min="0" max="100" step="1">
+          </div>
+        </div>
+        <div class="field" style="margin-top:8px">
+          <label>透明度 <span style="font-weight:400;color:var(--text-tertiary)" id="svgStopOpacityLabel">1.00</span></label>
+          <input type="range" id="svgStopOpacity" min="0" max="100" value="100">
+        </div>
+        <div style="display:flex;gap:8px;margin-top:10px">
+          <button class="stop-action-btn danger" id="svgDelStopBtn">🗑 删除</button>
+          <button class="stop-action-btn" id="svgAddStopBtn">＋ 添加停止点</button>
+        </div>
+      </div>
+      <button class="svg-color-apply" id="svgGradApplyBtn">应用渐变修改</button>
+      <button class="svg-color-reset" id="svgGradResetBtn">重置为原始渐变</button>
+    </div>
+  </div>
+
+  <!-- 扩展设置 -->
+  <div class="card">
+    <div class="section-title">扩展方式</div>
+    <div class="mode-tabs">
+      <button class="mode-tab active" data-mode="keep">📐 保持原尺寸</button>
+      <button class="mode-tab" data-mode="expand">🖥️ 扩展至目标画布</button>
+    </div>
+
+    <div id="expandPanel" style="display:none">
+      <div class="row">
+        <div class="field">
+          <label>目标宽度 (px)</label>
+          <input type="number" id="targetW" value="1920" min="1" max="8000">
+        </div>
+        <div class="field">
+          <label>目标高度 (px)</label>
+          <input type="number" id="targetH" value="1080" min="1" max="8000">
+        </div>
+      </div>
+      <div class="field">
+        <div class="range-label"><span>缩放比例</span><span class="val" id="scaleVal">100%</span></div>
+        <input type="range" id="imgScale" min="10" max="300" value="100">
+      </div>
+
+      <div class="section-title" style="padding-top:16px;border-top:1px solid var(--border-subtle);margin-top:8px">背景填充</div>
+
+      <!-- 填充模式切换 -->
+      <div class="mode-tabs" style="margin-top:0">
+        <button class="bg-tab active" data-bg="solid">🎨 纯色</button>
+        <button class="bg-tab" data-bg="gradient">🌈 渐变</button>
+      </div>
+
+      <!-- 纯色面板 -->
+      <div id="solidPanel">
+        <div class="row">
+          <div class="field">
+            <label>颜色</label>
+            <input type="color" id="bgColor" value="#000000">
+          </div>
+          <div class="field">
+            <label>色值 (HEX)</label>
+            <input type="text" id="bgHex" value="#000000" maxlength="7" placeholder="#000000">
+          </div>
+        </div>
+      </div>
+
+      <!-- 多点渐变面板 -->
+      <div id="gradientPanel" style="display:none">
+        <!-- 渐变预览条 + 停止点 -->
+        <div class="field">
+          <label>颜色停止点 <span style="font-weight:400;color:var(--text-tertiary)">(点击条添加 · 拖动调整 · 双击删除)</span></label>
+          <div class="grad-bar-wrap" id="gradBarWrap">
+            <div class="grad-bar" id="gradBar">
+              <div class="grad-bar-bg" id="gradBarBg"></div>
+              <div class="grad-stops" id="gradStops"></div>
+            </div>
+            <div class="grad-pos-labels" id="gradLabels"></div>
+          </div>
+        </div>
+        <!-- 当前选中停止点编辑 -->
+        <div id="stopEditor" class="stop-editor" style="display:none">
+          <div class="stop-editor-label">当前: 停止点 <span id="stopIdx">0</span></div>
+          <div class="row">
+            <div class="field">
+              <label>颜色</label>
+              <div style="display:flex;gap:8px;align-items:center">
+                <input type="color" id="stopColor" value="#000000" style="flex:1">
+                <input type="text" id="stopHex" value="#000000" maxlength="7" placeholder="#000000" style="flex:1">
+              </div>
+            </div>
+            <div class="field">
+              <label>位置 (%)</label>
+              <input type="number" id="stopPos" value="0" min="0" max="100" step="1">
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button class="stop-action-btn" id="delStopBtn">🗑 删除此停止点</button>
+            <button class="stop-action-btn" id="addStopBtn">＋ 添加停止点</button>
+          </div>
+        </div>
+        <div class="field" style="margin-top:12px">
+          <label>渐变方向</label>
+          <select id="gradDir">
+            <option value="horizontal">水平 (左→右)</option>
+            <option value="vertical" selected>垂直 (上→下)</option>
+            <option value="diagonal">对角线 (左上→右下)</option>
+            <option value="diagonal2">对角线 (右上→左下)</option>
+            <option value="radial">径向 (中心向外)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 格式 -->
+  <div class="card">
+    <div class="section-title">输出格式</div>
+    <div class="row">
+      <div class="field">
+        <label>目标格式</label>
+        <select id="outFormat">
+          <option value="image/png">PNG · 无损</option>
+          <option value="image/jpeg" selected>JPEG · 有损压缩</option>
+          <option value="image/webp">WebP · 新一代格式</option>
+          <option value="image/bmp">BMP · 无压缩位图</option>
+          <option value="image/raw">RAW · 原始像素数据</option>
+          <option value="hisilicon-img">📺 海思 V670 .img · 开机Logo</option>
+        </select>
+      </div>
+      <div class="field" id="qualityGroup">
+        <div class="range-label"><span>画质</span><span class="val" id="qVal">85%</span></div>
+        <input type="range" id="quality" min="10" max="100" value="85">
+      </div>
+    </div>
+  </div>
+
+  <!-- 预览 & 下载 -->
+  <div class="preview-card">
+    <div class="preview-header">
+      <span class="preview-title">预览</span>
+      <span style="font-size:11px;color:var(--text-tertiary)" id="previewSizeLabel"></span>
+    </div>
+    <div class="preview-box" id="previewBox">
+      <div class="preview-empty" id="previewEmpty">
+        <div class="icon">🖼️</div>
+        <div>上传图片后显示预览</div>
+      </div>
+      <canvas id="previewCanvas" style="display:none"></canvas>
+    </div>
+    <div class="info-bar" id="infoBar" style="display:none">
+      <span id="infoText"></span>
+      <span id="infoSize"></span>
+    </div>
+    <button class="btn btn-primary" id="downloadBtn">⬇️ 下载转换结果</button>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>
+(function(){
+var $=function(id){return document.getElementById(id);};
+
+var fileInput=$('fileInput');
+var uploadArea=$('uploadArea'),uploadText=$('uploadText');
+var fileMeta=$('fileMeta'),metaSize=$('metaSize'),metaType=$('metaType'),metaKB=$('metaKB');
+var previewCanvas=$('previewCanvas'),ctx=previewCanvas.getContext('2d');
+var previewEmpty=$('previewEmpty'),previewSizeLabel=$('previewSizeLabel');
+var outFormat=$('outFormat'),quality=$('quality'),qVal=$('qVal');
+var targetW=$('targetW'),targetH=$('targetH');
+var imgScale=$('imgScale'),scaleVal=$('scaleVal');
+var expandPanel=$('expandPanel');
+var infoBar=$('infoBar'),infoText=$('infoText'),infoSize=$('infoSize');
+var downloadBtn=$('downloadBtn');
+
+// Background state
+var bgMode='solid';
+var bgColor=$('bgColor'),bgHex=$('bgHex');
+var gradDir=$('gradDir');
+var solidPanel=$('solidPanel'),gradientPanel=$('gradientPanel');
+
+// Multi-stop gradient state
+var gradStops = [
+  {color: '#000000', pos: 0},
+  {color: '#1A1A2E', pos: 100}
+];
+var selectedStop = 0;
+
+// Gradient bar DOM refs (will be set after DOM ready)
+var gradBar, gradStopsEl, gradBarBg, gradLabels, stopEditor;
+var stopColor, stopHex, stopPos, stopIdxLabel;
+
+var originalImg=null;
+var currentMode='keep';
+
+// SVG color replacement state
+var svgRawText=null;       // 原始 SVG 文本
+var svgColors=[];           // 检测到的颜色列表 [{hex, prop, count}]
+var svgColorMap={};         // 颜色映射 {原始hex: 新hex}
+var isSVG=false;            // 当前文件是否为 SVG
+
+// SVG gradient editing state
+var svgGradients=[];        // 检测到的渐变 [{id, type, stops: [{color,pos,opacity}]}]
+var svgGradSelected=0;      // 当前选中的渐变索引
+var svgGradStops=[];        // 当前编辑的停止点列表（引用 svgGradients[svgGradSelected].stops）
+var svgGradStopIdx=0;       // 当前选中的停止点索引
+var svgGradOrigText='';     // 原始渐变文本快照(用于重置)
+
+// PDF state
+var pdfDoc=null, pdfPage=1, pdfTotal=0;
+if(typeof pdfjsLib!=='undefined'){
+  pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+}
+
+// Helper: detect file type by name + mime
+function detectFileType(file){
+  var name=file.name.toLowerCase();
+  if(file.type==='application/pdf' || name.endsWith('.pdf')) return 'pdf';
+  if(name.endsWith('.ai')) return 'ai';
+  if(name.endsWith('.cdr')) return 'cdr';
+  if(name.endsWith('.svg') || file.type==='image/svg+xml') return 'image'; // SVG 走图片渲染
+  return 'image';
+}
+
+// Mode switch
+document.querySelectorAll('.mode-tab').forEach(function(b){
+  b.addEventListener('click',function(){
+    document.querySelectorAll('.mode-tab').forEach(function(x){x.classList.remove('active');});
+    this.classList.add('active');
+    currentMode=this.dataset.mode;
+    expandPanel.style.display=(currentMode==='expand')?'':'none';
+    render();
+  });
+});
+
+// Upload handler
+fileInput.addEventListener('change',function(){
+  if(!this.files[0])return;
+  var file=this.files[0];
+  var ft=detectFileType(file);
+
+  // CDR — not renderable in browser
+  if(ft==='cdr'){
+    alert('CDR 文件无法在浏览器中渲染。请先在 CorelDRAW 中导出为 PNG/JPG 后再上传。');
+    this.value='';
+    return;
+  }
+
+  // PDF / AI — render via pdf.js
+  if(ft==='pdf' || ft==='ai'){
+    loadPDF(file);
+    return;
+  }
+
+  // Standard image
+  if(!file.type.startsWith('image/')){
+    alert('请选择图片文件');
+    return;
+  }
+  loadImageFile(file);
+});
+
+// Load standard image (supports raster + SVG)
+function loadImageFile(file){
+  var isSvgFile = file.type==='image/svg+xml' || file.name.toLowerCase().endsWith('.svg');
+
+  // For SVG: also read raw text for color editing
+  if(isSvgFile){
+    isSVG = true;
+    var reader = new FileReader();
+    reader.onload = function(e){
+      svgRawText = e.target.result;
+      parseSVGColors(svgRawText);
+      parseSVGGradients();      // Continue with image loading
+      loadAsImage(file);
+    };
+    reader.readAsText(file);
+    return;
+  }
+
+  // Non-SVG: just load as image
+  svgRawText = null; svgColors = []; svgColorMap = {}; svgGradients = []; isSVG = false;
+  $('svgColorPanel').classList.remove('show');
+  $('svgGradientPanel').classList.remove('show');
+  loadAsImage(file);
+}
+
+function loadAsImage(file){
+  var url=URL.createObjectURL(file);
+  var img=new Image();
+  img.onload=function(){
+    URL.revokeObjectURL(url);
+    pdfDoc=null; pdfPage=1; pdfTotal=0;
+    $('pdfNav').style.display='none';
+    originalImg=img;
+    var typeLabel=file.type;
+    if(!typeLabel || typeLabel===''){
+      var ext=file.name.split('.').pop().toUpperCase();
+      typeLabel=ext==='SVG'?'image/svg+xml':'image/'+ext.toLowerCase();
+    }
+    updateUploadUI(file, img.width+'×'+img.height, typeLabel);
+  };
+  img.onerror=function(){
+    URL.revokeObjectURL(url);
+    alert('无法加载此文件，格式可能不受支持');
+  };
+  img.src=url;
+}
+
+// --- SVG Color Parsing & Replacement ---
+
+// Named color → hex mapping (common SVG colors)
+var NAMED_COLORS = {
+  black: '#000000', white: '#FFFFFF', red: '#FF0000', green: '#008000',
+  blue: '#0000FF', yellow: '#FFFF00', orange: '#FFA500', purple: '#800080',
+  gray: '#808080', grey: '#808080', silver: '#C0C0C0', maroon: '#800000',
+  navy: '#000080', teal: '#008080', olive: '#808000', lime: '#00FF00',
+  aqua: '#00FFFF', fuchsia: '#FF00FF', cyan: '#00FFFF', magenta: '#FF00FF',
+  darkred: '#8B0000', darkgreen: '#006400', darkblue: '#00008B',
+  lightgray: '#D3D3D3', lightgrey: '#D3D3D3', darkgray: '#A9A9A9', darkgrey: '#A9A9A9',
+  transparent: null, none: null, inherit: null, currentColor: null
+};
+
+// Parse SVG for ALL color values used anywhere (hex, rgb, named colors)
+function parseSVGColors(svgText){
+  svgColors = [];
+  svgColorMap = {};
+  var seen = {};
+
+  // ---- Step 1: Scan hex colors & rgb() ----
+  var re = /#([0-9a-fA-F]{3,6})\b|rgb\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*\)/g;
+  var m;
+  while((m = re.exec(svgText)) !== null){
+    var hex;
+    if(m[1]){
+      if(m[1].length === 3){
+        hex = '#' + m[1][0]+m[1][0] + m[1][1]+m[1][1] + m[1][2]+m[1][2];
+      } else {
+        hex = '#' + m[1];
+      }
+    } else {
+      hex = '#' + [parseInt(m[2]),parseInt(m[3]),parseInt(m[4])].map(function(v){
+        return ('0'+Math.min(255,Math.max(0,v)).toString(16)).slice(-2);
+      }).join('');
+    }
+    hex = hex.toUpperCase();
+    if(!seen[hex]){
+      seen[hex] = {hex: hex, count: 0, named: ''};
+      svgColors.push(seen[hex]);
+    }
+    seen[hex].count++;
+  }
+
+  // ---- Step 2: Scan named colors (fill/stroke/stop-color="name") ----
+  var colorNames = Object.keys(NAMED_COLORS);
+  for(var i=0; i<colorNames.length; i++){
+    var name = colorNames[i];
+    var nameHex = NAMED_COLORS[name];
+    if(nameHex === null) continue; // skip transparent/none/inherit/currentColor
+    // Look for name in color attribute values: fill="name" stroke="name" etc.
+    var nameRe = new RegExp(
+      '(fill|stroke|stop-color|color|flood-color|lighting-color)\\s*=\\s*["\\\']' + name + '["\\\']',
+      'gi'
+    );
+    var count = (svgText.match(nameRe) || []).length;
+    // Also check inline style: fill:name; stroke:name;
+    var styleRe = new RegExp('(fill|stroke|stop-color|color)\\s*:\\s*' + name + '\\b', 'gi');
+    count += (svgText.match(styleRe) || []).length;
+    // Also check CSS blocks for .cls { fill: name }
+    var cssRe = new RegExp('fill\\s*:\\s*' + name + '\\s*[;}]', 'gi');
+    count += (svgText.match(cssRe) || []).length;
+    if(count > 0){
+      if(!seen[nameHex]){
+        seen[nameHex] = {hex: nameHex, count: 0, named: name};
+        svgColors.push(seen[nameHex]);
+      }
+      seen[nameHex].count += count;
+    }
+  }
+
+  buildSVGColorUI();
+}
+
+// Sort by brightness (darkest first) for better UI
+function buildSVGColorUI(){
+  var panel = $('svgColorPanel');
+  var list = $('svgColorList');
+  var hasColors = svgColors.length > 0;
+  panel.classList.toggle('show', hasColors && isSVG);
+
+  if(!hasColors){ list.innerHTML = ''; return; }
+
+  // Sort by perceived brightness (dark → light)
+  svgColors.sort(function(a,b){
+    return hexBrightness(a.hex) - hexBrightness(b.hex);
+  });
+
+  var html = '';
+  for(var i=0; i<svgColors.length; i++){
+    var c = svgColors[i];
+    var currentHex = svgColorMap[c.hex] || c.hex;
+    var namedLabel = c.named ? ' <span style="font-size:10px;color:var(--accent);font-weight:500">('+c.named+')</span>' : '';
+    html += '<div class="color-row">' +
+      '<div class="color-swatch" style="background:'+currentHex+'"></div>' +
+      '<span class="color-from">'+c.hex+namedLabel+'</span>' +
+      '<span class="color-arrow">→</span>' +
+      '<input type="color" value="'+currentHex+'" data-orig="'+c.hex+'" class="svg-picker">' +
+      '<input type="text" value="'+currentHex+'" maxlength="7" data-orig="'+c.hex+'" class="svg-hex" placeholder="#000000">' +
+      '<span style="font-size:10px;color:var(--text-tertiary);white-space:nowrap">'+c.count+'处</span>' +
+      '</div>';
+  }
+  list.innerHTML = html;
+
+  // Bind events
+  var pickers = list.querySelectorAll('.svg-picker');
+  var hexInputs = list.querySelectorAll('.svg-hex');
+  pickers.forEach(function(p){
+    p.addEventListener('input', function(){
+      var orig = this.dataset.orig;
+      var newHex = this.value.toUpperCase();
+      svgColorMap[orig] = newHex;
+      var row = this.parentElement;
+      row.querySelector('.color-swatch').style.background = newHex;
+      row.querySelector('.svg-hex').value = newHex;
+    });
+  });
+  hexInputs.forEach(function(inp){
+    inp.addEventListener('input', function(){
+      var val = this.value.trim();
+      if(/^#[0-9a-fA-F]{6}$/.test(val)){
+        var orig = this.dataset.orig;
+        var upper = val.toUpperCase();
+        svgColorMap[orig] = upper;
+        var row = this.parentElement;
+        row.querySelector('.color-swatch').style.background = upper;
+        row.querySelector('.svg-picker').value = upper;
+      }
+    });
+  });
+}
+
+function hexBrightness(hex){
+  var r = parseInt(hex.slice(1,3),16);
+  var g = parseInt(hex.slice(3,5),16);
+  var b = parseInt(hex.slice(5,7),16);
+  return 0.299*r + 0.587*g + 0.114*b;
+}
+
+// Apply color replacements — pure text replacement (DOMParser + XMLSerializer breaks SVG)
+function applySVGColors(){
+  if(!svgRawText || !isSVG) return;
+  var modified = svgRawText;
+
+  Object.keys(svgColorMap).forEach(function(orig){
+    var rep = svgColorMap[orig];
+    if(orig === rep || !rep) return;
+
+    // Case-insensitive global replace on the raw SVG text
+    var re = new RegExp(esc(orig), 'gi');
+    modified = modified.replace(re, rep);
+
+    // Also handle #RGB shorthand (e.g. #F00 ↔ #FF0000)
+    if(orig[1]===orig[2] && orig[3]===orig[4] && orig[5]===orig[6]){
+      var short = '#' + orig[1] + orig[3] + orig[5];
+      modified = modified.replace(new RegExp(esc(short), 'gi'), rep);
+    }
+
+    // Handle named color → hex replacement (e.g. fill="black" → fill="#XXXXXX")
+    // Look up the named color that maps to this orig hex
+    var namedForThis = '';
+    for(var i=0; i<svgColors.length; i++){
+      if(svgColors[i].hex === orig && svgColors[i].named){
+        namedForThis = svgColors[i].named;
+        break;
+      }
+    }
+    if(namedForThis){
+      // Replace name in attributes: fill="black", stroke="black", etc.
+      var namedAttrs = ['fill','stroke','stop-color','color','flood-color','lighting-color'];
+      for(var j=0; j<namedAttrs.length; j++){
+        var attrRe = new RegExp('('+namedAttrs[j]+'\\s*=\\s*["\\\'])'+namedForThis+'(["\\\'])', 'gi');
+        modified = modified.replace(attrRe, '$1'+rep+'$2');
+      }
+      // Replace name in inline styles: fill:black; stroke:black;
+      var styleRe = new RegExp('(fill|stroke|stop-color|color)\\s*:\\s*'+namedForThis+'\\b', 'gi');
+      modified = modified.replace(styleRe, '$1:'+rep);
+    }
+  });
+
+  loadModifiedSVG(modified);
+}
+
+function esc(s){ return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+
+function loadModifiedSVG(svgText){
+  var blob = new Blob([svgText], {type: 'image/svg+xml'});
+  var url = URL.createObjectURL(blob);
+  var img = new Image();
+  img.onload = function(){
+    URL.revokeObjectURL(url);
+    originalImg = img;
+    render();
+  };
+  img.onerror = function(){
+    URL.revokeObjectURL(url);
+    alert('替换颜色后的 SVG 无法渲染，请检查颜色值');
+  };
+  img.src = url;
+}
+
+function resetSVGColors(){
+  svgColorMap = {};
+  if(!svgRawText) return;
+  parseSVGColors(svgRawText);
+  parseSVGGradients();
+  var blob = new Blob([svgRawText], {type: 'image/svg+xml'});
+  var url = URL.createObjectURL(blob);
+  var img = new Image();
+  img.onload = function(){
+    URL.revokeObjectURL(url);
+    originalImg = img;
+    render();
+  };
+  img.src = url;
+}
+
+// SVG apply/reset button events
+$('svgApplyBtn').addEventListener('click', applySVGColors);
+$('svgResetBtn').addEventListener('click', resetSVGColors);
+
+// ==============================
+// 🎨 SVG GRADIENT EDITOR
+// ==============================
+
+// Parse SVG for <linearGradient> and <radialGradient> definitions
+function parseSVGGradients(){
+  svgGradients = [];
+  svgGradSelected = 0;
+
+  // Match full gradient blocks: <linearGradient...>...<stop...><stop...></linearGradient>
+  var reGrad = /<(linearGradient|radialGradient)([^>]*)>([\s\S]*?)<\/\1>/gi;
+  var m;
+  while((m = reGrad.exec(svgRawText)) !== null){
+    var type = m[1];
+    var attrs = m[2];
+    var body = m[3];
+    var fullMatch = m[0];
+
+    // Extract ID
+    var idMatch = attrs.match(/\bid\s*=\s*["']([^"']*)["']/i);
+    var id = idMatch ? idMatch[1] : ('grad_' + svgGradients.length);
+
+    // Parse stops
+    var stops = [];
+    var stopRe = /<stop\b([^>]*)\/?>/gi;
+    var sm;
+    while((sm = stopRe.exec(body)) !== null){
+      var sAttrs = sm[1];
+      var offset = 0;
+      var om = sAttrs.match(/\boffset\s*=\s*["']?([^"'\s]+)["']?/i);
+      if(om){
+        var v = om[1];
+        if(v.indexOf('%') !== -1) offset = parseFloat(v);
+        else offset = parseFloat(v) * 100;
+      }
+      offset = Math.min(100, Math.max(0, offset));
+
+      var color = '#000000';
+      var cm = sAttrs.match(/\bstop-color\s*=\s*["']?([^"'\s]+)["']?/i);
+      if(cm) color = cm[1].toUpperCase();
+
+      var opacity = 1;
+      var opm = sAttrs.match(/\bstop-opacity\s*=\s*["']?([^"'\s]+)["']?/i);
+      if(opm) opacity = Math.min(1, Math.max(0, parseFloat(opm)));
+
+      // Normalize hex
+      color = normalizeHexColor(color);
+
+      stops.push({color: color, pos: Math.round(offset), opacity: opacity});
+    }
+
+    stops.sort(function(a,b){ return a.pos - b.pos; });
+
+    if(stops.length >= 1){
+      svgGradients.push({
+        id: id,
+        type: type,
+        stops: stops,
+        fullMatch: fullMatch,
+        attrs: attrs,
+        body: body
+      });
+    }
+  }
+
+  // Build UI if gradients found
+  var panel = $('svgGradientPanel');
+  var hasGrads = svgGradients.length > 0;
+  panel.classList.toggle('show', hasGrads && isSVG);
+
+  if(hasGrads){
+    svgGradSelected = 0;
+    svgGradStops = svgGradients[0].stops;
+    svgGradStopIdx = 0;
+    svgGradOrigText = svgRawText; // snapshot for reset
+    buildGradientSelect();
+    selectSVGGradient(0);
+  }
+}
+
+function normalizeHexColor(val){
+  val = val.trim();
+  if(/^#[0-9a-fA-F]{6}$/.test(val)) return val.toUpperCase();
+  var m = val.match(/^#([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])$/);
+  if(m) return ('#'+m[1]+m[1]+m[2]+m[2]+m[3]+m[3]).toUpperCase();
+  m = val.match(/^rgb\s*\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*\)$/i);
+  if(m) return '#' + [parseInt(m[1]),parseInt(m[2]),parseInt(m[3])].map(function(v){
+    return ('0'+Math.min(255,Math.max(0,v)).toString(16)).slice(-2);
+  }).join('').toUpperCase();
+  return val.toUpperCase();
+}
+
+// Build dropdown to select which gradient to edit
+function buildGradientSelect(){
+  var sel = $('svgGradSelect');
+  var opts = '';
+  for(var i=0; i<svgGradients.length; i++){
+    var g = svgGradients[i];
+    opts += '<option value="'+i+'">#'+g.id+' ('+(g.type==='linearGradient'?'线性':'径向')+', '+g.stops.length+' 停止点)</option>';
+  }
+  sel.innerHTML = opts;
+  sel.value = '0';
+
+  sel.onchange = function(){
+    selectSVGGradient(parseInt(this.value));
+  };
+}
+
+function selectSVGGradient(idx){
+  svgGradSelected = idx;
+  svgGradStops = svgGradients[idx].stops;
+  svgGradStopIdx = Math.min(svgGradStopIdx, svgGradStops.length - 1);
+  $('svgGradType').value = svgGradients[idx].type;
+  rebuildSVGGradientBar();
+  updateSVGStopEditor();
+}
+
+// Rebuild the gradient bar UI for the current SVG gradient
+function rebuildSVGGradientBar(){
+  var stops = svgGradStops;
+  var barBg = $('svgGradBarBg');
+  var stopsEl = $('svgGradStopsEl');
+  var labelsEl = $('svgGradLabels');
+
+  // Build gradient preview (accounting for opacity)
+  var segments = [];
+  for(var i=0; i<stops.length; i++){
+    var s = stops[i];
+    var hex = s.color;
+    var r = parseInt(hex.slice(1,3),16);
+    var g = parseInt(hex.slice(3,5),16);
+    var b = parseInt(hex.slice(5,7),16);
+    var a = s.opacity;
+    segments.push('rgba('+r+','+g+','+b+','+a+') ' + s.pos + '%');
+  }
+  barBg.style.background = 'linear-gradient(to right, ' + segments.join(', ') + ')';
+
+  // Build knob HTML
+  var knobsHtml = '';
+  var labelsHtml = '<div style="position:relative;height:14px">';
+  for(var i=0; i<stops.length; i++){
+    var s = stops[i];
+    var hex = s.color;
+    var r = parseInt(hex.slice(1,3),16);
+    var g = parseInt(hex.slice(3,5),16);
+    var b = parseInt(hex.slice(5,7),16);
+    var bg = 'rgba('+r+','+g+','+b+','+s.opacity+')';
+
+    knobsHtml += '<div class="grad-stop'+(i===svgGradStopIdx?' selected':'')+
+      '" data-idx="'+i+'" style="left:'+s.pos+'%">'+
+      '<div class="knob" style="background:'+bg+'"></div>'+
+      '<div class="stick"></div></div>';
+
+    labelsHtml += '<span style="left:'+s.pos+'%;position:absolute;transform:translateX(-50%)"'+
+      +(i===svgGradStopIdx?' class="active"':'')+
+      '>'+s.pos+'%</span>';
+  }
+  labelsHtml += '</div>';
+  stopsEl.innerHTML = knobsHtml;
+  labelsEl.innerHTML = labelsHtml;
+
+  // Bind drag
+  var knobs = stopsEl.querySelectorAll('.grad-stop');
+  for(var i=0; i<knobs.length; i++){
+    (function(knob, idx){
+      knob.addEventListener('mousedown', function(e){
+        e.preventDefault(); e.stopPropagation();
+        svgGradStopIdx = idx;
+        updateSVGStopEditor();
+        highlightSVGKnobSelection();
+
+        var bar = $('svgGradBar');
+        var barRect = bar.getBoundingClientRect();
+        function onMove(ev){
+          var pct = Math.round(((ev.clientX - barRect.left) / barRect.width) * 100);
+          pct = Math.min(100, Math.max(0, pct));
+          stops[idx].pos = pct;
+          knob.style.left = pct + '%';
+          var labels = labelsEl.querySelectorAll('span');
+          if(labels[idx]){ labels[idx].textContent = pct+'%'; labels[idx].style.left = pct+'%'; }
+          // Update bar background
+          var segs = [];
+          for(var j=0; j<stops.length; j++){
+            var sj = stops[j];
+            var rr = parseInt(sj.color.slice(1,3),16);
+            var gg = parseInt(sj.color.slice(3,5),16);
+            var bb = parseInt(sj.color.slice(5,7),16);
+            segs.push('rgba('+rr+','+gg+','+bb+','+sj.opacity+') '+sj.pos+'%');
+          }
+          barBg.style.background = 'linear-gradient(to right, '+segs.join(', ')+')';
+          liveSVGGradientPreview();
+        }
+        function onUp(){
+          document.removeEventListener('mousemove', onMove);
+          document.removeEventListener('mouseup', onUp);
+          stops.sort(function(a,b){ return a.pos - b.pos; });
+          for(var j=0; j<stops.length; j++){
+            if(stops[j] === stops[idx]) svgGradStopIdx = j;
+          }
+          rebuildSVGGradientBar();
+          updateSVGStopEditor();
+        }
+        document.addEventListener('mousemove', onMove);
+        document.addEventListener('mouseup', onUp);
+      });
+      knob.addEventListener('dblclick', function(e){
+        e.preventDefault(); e.stopPropagation();
+        if(stops.length <= 1){ alert('渐变至少需要 1 个停止点'); return; }
+        stops.splice(idx, 1);
+        if(svgGradStopIdx >= stops.length) svgGradStopIdx = stops.length - 1;
+        rebuildSVGGradientBar();
+        updateSVGStopEditor();
+        liveSVGGradientPreview();
+      });
+    })(knobs[i], i);
+  }
+}
+
+function highlightSVGKnobSelection(){
+  var knobs = $('svgGradStopsEl').querySelectorAll('.grad-stop');
+  for(var i=0; i<knobs.length; i++) knobs[i].classList.toggle('selected', i===svgGradStopIdx);
+  var labels = $('svgGradLabels').querySelectorAll('span');
+  for(var i=0; i<labels.length; i++) labels[i].classList.toggle('active', i===svgGradStopIdx);
+}
+
+function updateSVGStopEditor(){
+  var editor = $('svgStopEditor');
+  var stop = svgGradStops[svgGradStopIdx];
+  if(!stop){ editor.style.display = 'none'; return; }
+  editor.style.display = '';
+  $('svgStopIdx').textContent = svgGradStopIdx;
+  $('svgStopColor').value = stop.color;
+  $('svgStopHex').value = stop.color;
+  $('svgStopPos').value = stop.pos;
+  $('svgStopOpacity').value = Math.round(stop.opacity * 100);
+  $('svgStopOpacityLabel').textContent = stop.opacity.toFixed(2);
+  highlightSVGKnobSelection();
+}
+
+// Live preview: apply changes to SVG and re-render without reloading
+function liveSVGGradientPreview(){
+  var modified = applySVGGradientChanges(svgRawText);
+  if(modified === svgRawText) return;
+  var blob = new Blob([modified], {type: 'image/svg+xml'});
+  var url = URL.createObjectURL(blob);
+  var img = new Image();
+  img.onload = function(){
+    URL.revokeObjectURL(url);
+    originalImg = img;
+    render();
+  };
+  img.src = url;
+}
+
+// Build modified SVG text with gradient changes
+function applySVGGradientChanges(source){
+  var modified = source;
+  for(var i=0; i<svgGradients.length; i++){
+    var g = svgGradients[i];
+    // Build new <stop> elements
+    var newStops = '';
+    for(var j=0; j<g.stops.length; j++){
+      var s = g.stops[j];
+      newStops += '<stop offset="'+s.pos+'%" stop-color="'+s.color+'" stop-opacity="'+s.opacity+'"/>';
+    }
+    // Replace the body between <linearGradient...> and </linearGradient>
+    // Use a more targeted approach: find the gradient by ID and replace its stops
+    var gradRe = new RegExp(
+      '(<(linearGradient|radialGradient)\\b[^>]*\\bid\\s*=\\s*["\\\']' + esc(g.id) + '["\\\'][^>]*>)[\\s\\S]*?(</\\2>)',
+      'gi'
+    );
+    modified = modified.replace(gradRe, '$1' + newStops + '$3');
+  }
+  return modified;
+}
+
+// Apply button: finalize all gradient changes
+function applySVGGradients(){
+  if(!svgRawText || svgGradients.length === 0) return;
+  var modified = applySVGGradientChanges(svgRawText);
+  svgRawText = modified;
+  // Re-parse to keep state in sync
+  parseSVGGradients();
+  loadModifiedSVG(modified);
+}
+
+// Reset all gradients to original
+function resetSVGGradients(){
+  if(!svgGradOrigText) return;
+  svgRawText = svgGradOrigText;
+  parseSVGGradients();
+  loadModifiedSVG(svgRawText);
+}
+
+// Wire up gradient editor events (called once on page load)
+function initSVGGradientEditor(){
+  // Gradient type toggle
+  $('svgGradType').addEventListener('change', function(){
+    svgGradients[svgGradSelected].type = this.value;
+    // Update the SVG source too
+    var oldType = (this.value === 'linearGradient') ? 'radialGradient' : 'linearGradient';
+    var g = svgGradients[svgGradSelected];
+    svgRawText = svgRawText.replace(
+      new RegExp('<' + oldType + '\\b([^>]*\\bid\\s*=\\s*["\\\']' + esc(g.id) + '["\\\'])', 'gi'),
+      '<' + this.value + '$1'
+    );
+    svgRawText = svgRawText.replace(
+      new RegExp('</' + oldType + '>', 'gi'),
+      '</' + this.value + '>'
+    );
+    liveSVGGradientPreview();
+  });
+
+  // Stop color picker ↔ hex sync
+  $('svgStopColor').addEventListener('input', function(){
+    $('svgStopHex').value = this.value;
+    var stop = svgGradStops[svgGradStopIdx];
+    if(stop){ stop.color = this.value; rebuildSVGGradientBar(); liveSVGGradientPreview(); }
+  });
+  $('svgStopHex').addEventListener('input', function(){
+    var v = this.value.trim();
+    if(/^#[0-9a-fA-F]{6}$/.test(v)){
+      $('svgStopColor').value = v;
+      var stop = svgGradStops[svgGradStopIdx];
+      if(stop){ stop.color = v; rebuildSVGGradientBar(); liveSVGGradientPreview(); }
+    }
+  });
+
+  // Stop position
+  $('svgStopPos').addEventListener('input', function(){
+    var v = parseInt(this.value);
+    if(!isNaN(v) && v >= 0 && v <= 100){
+      var stop = svgGradStops[svgGradStopIdx];
+      if(stop){
+        stop.pos = v;
+        svgGradStops.sort(function(a,b){ return a.pos - b.pos; });
+        for(var i=0; i<svgGradStops.length; i++){
+          if(svgGradStops[i].pos === v){ svgGradStopIdx = i; break; }
+        }
+        rebuildSVGGradientBar();
+        updateSVGStopEditor();
+        liveSVGGradientPreview();
+      }
+    }
+  });
+
+  // Stop opacity slider
+  $('svgStopOpacity').addEventListener('input', function(){
+    var op = parseInt(this.value) / 100;
+    $('svgStopOpacityLabel').textContent = op.toFixed(2);
+    var stop = svgGradStops[svgGradStopIdx];
+    if(stop){ stop.opacity = op; rebuildSVGGradientBar(); liveSVGGradientPreview(); }
+  });
+
+  // Add stop
+  $('svgAddStopBtn').addEventListener('click', function(){
+    var stops = svgGradStops;
+    if(stops.length >= 10){ alert('最多 10 个停止点'); return; }
+    var cur = stops[svgGradStopIdx];
+    var nextPos = svgGradStopIdx + 1 < stops.length ? stops[svgGradStopIdx + 1].pos : 100;
+    var newPos = Math.round((cur.pos + nextPos) / 2);
+    newPos = Math.min(100, Math.max(0, newPos));
+    stops.push({color: cur.color, pos: newPos, opacity: cur.opacity});
+    stops.sort(function(a,b){ return a.pos - b.pos; });
+    for(var i=0; i<stops.length; i++){
+      if(stops[i].pos === newPos){ svgGradStopIdx = i; break; }
+    }
+    rebuildSVGGradientBar();
+    updateSVGStopEditor();
+    liveSVGGradientPreview();
+  });
+
+  // Delete stop
+  $('svgDelStopBtn').addEventListener('click', function(){
+    var stops = svgGradStops;
+    if(stops.length <= 1){ alert('渐变至少需要 1 个停止点'); return; }
+    stops.splice(svgGradStopIdx, 1);
+    if(svgGradStopIdx >= stops.length) svgGradStopIdx = stops.length - 1;
+    rebuildSVGGradientBar();
+    updateSVGStopEditor();
+    liveSVGGradientPreview();
+  });
+
+  // Click on gradient bar to move selected stop
+  $('svgGradBar').addEventListener('mousedown', function(e){
+    if(e.target.closest('.grad-stop')) return;
+    var rect = this.getBoundingClientRect();
+    var pct = Math.round(((e.clientX - rect.left) / rect.width) * 100);
+    pct = Math.min(100, Math.max(0, pct));
+    var stop = svgGradStops[svgGradStopIdx];
+    if(stop){
+      stop.pos = pct;
+      svgGradStops.sort(function(a,b){ return a.pos - b.pos; });
+      for(var i=0; i<svgGradStops.length; i++){
+        if(svgGradStops[i].pos === pct){ svgGradStopIdx = i; break; }
+      }
+      rebuildSVGGradientBar();
+      updateSVGStopEditor();
+      liveSVGGradientPreview();
+    }
+  });
+
+  // Apply / Reset buttons
+  $('svgGradApplyBtn').addEventListener('click', applySVGGradients);
+  $('svgGradResetBtn').addEventListener('click', resetSVGGradients);
+}
+
+// Call init on page load
+document.addEventListener('DOMContentLoaded', function(){ initSVGGradientEditor(); });
+if(document.readyState !== 'loading') initSVGGradientEditor();
+
+// Load PDF/AI via pdf.js
+function loadPDF(file){
+  if(typeof pdfjsLib==='undefined'){
+    alert('PDF 渲染库加载失败，请刷新页面重试');
+    return;
+  }
+
+  var reader=new FileReader();
+  reader.onload=function(e){
+    var data=new Uint8Array(e.target.result);
+    pdfjsLib.getDocument({data:data}).promise.then(function(doc){
+      pdfDoc=doc;
+      pdfTotal=doc.numPages;
+      pdfPage=1;
+      showPDFPage(1);
+    }).catch(function(err){
+      alert('无法解析此文件: '+err.message);
+      console.error(err);
+    });
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+// Render a specific PDF page
+function showPDFPage(pageNum){
+  if(!pdfDoc || pageNum<1 || pageNum>pdfTotal) return;
+  pdfPage=pageNum;
+  pdfDoc.getPage(pageNum).then(function(page){
+    var viewport=page.getViewport({scale:1});
+    var scale=1;
+    // Cap at reasonable size
+    if(viewport.width>4096 || viewport.height>4096){
+      scale=4096/Math.max(viewport.width,viewport.height);
+      viewport=page.getViewport({scale:scale});
+    }
+
+    var offCanvas=document.createElement('canvas');
+    offCanvas.width=viewport.width;
+    offCanvas.height=viewport.height;
+    var offCtx=offCanvas.getContext('2d');
+
+    page.render({canvasContext:offCtx,viewport:viewport}).promise.then(function(){
+      // Create Image from rendered PDF page
+      var img=new Image();
+      img.onload=function(){
+        originalImg=img;
+        updateUploadUI(
+          pdfDoc._transport._params.contentDispositionFilename || 'document.pdf',
+          viewport.width+'×'+viewport.height,
+          'application/pdf (第'+pdfPage+'/'+pdfTotal+'页)'
+        );
+        updatePDFNav();
+      };
+      img.src=offCanvas.toDataURL('image/png');
+    });
+  });
+}
+
+// Update PDF navigation UI
+function updatePDFNav(){
+  if(!pdfDoc || pdfTotal<=1){
+    $('pdfNav').style.display='none';
+    return;
+  }
+  $('pdfNav').style.display='flex';
+  $('pdfPageInfo').textContent='第 '+pdfPage+' / '+pdfTotal+' 页';
+}
+
+// PDF page nav
+$('pdfPrev').addEventListener('click',function(){
+  if(pdfPage>1) showPDFPage(pdfPage-1);
+});
+$('pdfNext').addEventListener('click',function(){
+  if(pdfPage<pdfTotal) showPDFPage(pdfPage+1);
+});
+
+// Common upload UI update
+function updateUploadUI(fileOrName, dims, type){
+  uploadArea.classList.add('active');
+  var name=typeof fileOrName==='string'?fileOrName:fileOrName.name;
+  uploadText.textContent=name;
+  metaSize.textContent='图片: '+dims;
+  metaType.textContent=type;
+  if(typeof fileOrName!=='string'){
+    metaKB.textContent=(fileOrName.size/1024).toFixed(1)+' KB';
+  }else{
+    metaKB.textContent='';
+  }
+  fileMeta.classList.add('show');
+  infoBar.style.display='flex';
+  downloadBtn.style.display='';
+  render();
+}
+
+// Format change
+	outFormat.addEventListener('change',function(){
+	  var v=this.value;
+	  $('qualityGroup').style.display=(v==='image/png'||v==='image/bmp'||v==='image/raw'||v==='hisilicon-img')?'none':'';
+	  render();
+	});
+
+// Quality
+quality.addEventListener('input',function(){
+  qVal.textContent=this.value+'%';
+  render();
+});
+
+targetW.addEventListener('input',function(){if(currentMode==='expand')render();});
+targetH.addEventListener('input',function(){if(currentMode==='expand')render();});
+
+// Background fill mode toggle
+document.querySelectorAll('.bg-tab').forEach(function(b){
+  b.addEventListener('click',function(){
+    document.querySelectorAll('.bg-tab').forEach(function(x){x.classList.remove('active');});
+    this.classList.add('active');
+    bgMode=this.dataset.bg;
+    solidPanel.style.display=(bgMode==='solid')?'':'none';
+    gradientPanel.style.display=(bgMode==='gradient')?'':'none';
+    if(currentMode==='expand')render();
+  });
+});
+
+// Color picker ↔ hex input sync (solid)
+function syncHex(picker, hexInput) {
+  hexInput.value = picker.value;
+}
+bgColor.addEventListener('input',function(){
+  syncHex(this, bgHex);
+  if(currentMode==='expand' && bgMode==='solid')render();
+});
+bgHex.addEventListener('input',function(){
+  var v=this.value.trim();
+  if(/^#[0-9a-fA-F]{6}$/.test(v)){bgColor.value=v;if(currentMode==='expand' && bgMode==='solid')render();}
+});
+
+// ---- Multi-stop gradient editor ----
+function initGradientEditor() {
+  gradBar = $('gradBar');
+  gradStopsEl = $('gradStops');
+  gradBarBg = $('gradBarBg');
+  gradLabels = $('gradLabels');
+  stopEditor = $('stopEditor');
+  stopColor = $('stopColor');
+  stopHex = $('stopHex');
+  stopPos = $('stopPos');
+  stopIdxLabel = $('stopIdx');
+  // Del stop button gets danger style
+  var delBtn = $('delStopBtn');
+  if(delBtn) delBtn.className = 'stop-action-btn danger';
+
+  rebuildGradientBar();
+  selectStop(0);
+
+  // Stop color picker ↔ hex sync
+  stopColor.addEventListener('input', function(){
+    stopHex.value = this.value;
+    updateSelectedStop();
+  });
+  stopHex.addEventListener('input', function(){
+    var v = this.value.trim();
+    if(/^#[0-9a-fA-F]{6}$/.test(v)){
+      stopColor.value = v;
+      updateSelectedStop();
+    }
+  });
+  stopPos.addEventListener('input', function(){
+    var v = parseInt(this.value);
+    if(!isNaN(v) && v >= 0 && v <= 100){
+      gradStops[selectedStop].pos = v;
+      gradStops.sort(function(a,b){ return a.pos - b.pos; });
+      // Update selectedStop to point to the moved element
+      for(var i = 0; i < gradStops.length; i++){
+        if(gradStops[i].pos === v) { selectedStop = i; break; }
+      }
+      rebuildGradientBar();
+    }
+  });
+
+  // Add stop button
+  $('addStopBtn').addEventListener('click', function(){
+    if(gradStops.length >= 10) { alert('最多支持 10 个停止点'); return; }
+    var newPos = (gradStops[selectedStop].pos + (gradStops[Math.min(selectedStop+1, gradStops.length-1)].pos)) / 2;
+    newPos = Math.min(100, Math.max(0, Math.round(newPos)));
+    gradStops.push({color: gradStops[selectedStop].color, pos: newPos});
+    gradStops.sort(function(a,b){ return a.pos - b.pos; });
+    // Find the new stop
+    for(var i = 0; i < gradStops.length; i++){
+      if(gradStops[i].pos === newPos) { selectedStop = i; break; }
+    }
+    rebuildGradientBar();
+    updateStopEditor();
+    maybeRender();
+  });
+
+  // Delete stop button
+  delBtn.addEventListener('click', function(){
+    if(gradStops.length <= 2) { alert('至少需要 2 个停止点'); return; }
+    gradStops.splice(selectedStop, 1);
+    if(selectedStop >= gradStops.length) selectedStop = gradStops.length - 1;
+    rebuildGradientBar();
+    maybeRender();
+  });
+
+  // Click on gradient bar → move selected stop
+  gradBar.addEventListener('mousedown', function(e){
+    if(e.target.closest('.grad-stop')) return; // don't interfere with drag
+    var rect = gradBar.getBoundingClientRect();
+    var pct = Math.round(((e.clientX - rect.left) / rect.width) * 100);
+    pct = Math.min(100, Math.max(0, pct));
+    gradStops[selectedStop].pos = pct;
+    gradStops.sort(function(a,b){ return a.pos - b.pos; });
+    for(var i = 0; i < gradStops.length; i++){
+      if(gradStops[i].pos === pct) { selectedStop = i; break; }
+    }
+    rebuildGradientBar();
+    maybeRender();
+  });
+  // Also via click on gradBarBg for wider click target
+  if(gradBarBg){
+    gradBarBg.addEventListener('mousedown', function(e){
+      e.stopPropagation();
+      var rect = gradBar.getBoundingClientRect();
+      var pct = Math.round(((e.clientX - rect.left) / rect.width) * 100);
+      pct = Math.min(100, Math.max(0, pct));
+      gradStops[selectedStop].pos = pct;
+      gradStops.sort(function(a,b){ return a.pos - b.pos; });
+      for(var i = 0; i < gradStops.length; i++){
+        if(gradStops[i].pos === pct) { selectedStop = i; break; }
+      }
+      rebuildGradientBar();
+      maybeRender();
+    });
+  }
+
+  // Gradient direction change
+  gradDir.addEventListener('change', function(){
+    maybeRender();
+  });
+}
+
+function updateSelectedStop(){
+  var stop = gradStops[selectedStop];
+  stop.color = stopColor.value;
+  stopHex.value = stop.color;
+  rebuildGradientBar();
+  maybeRender();
+}
+
+function selectStop(idx){
+  selectedStop = idx;
+  updateStopEditor();
+  // Highlight the knob
+  highlightSelectedKnob();
+}
+
+function updateStopEditor(){
+  if(!stopEditor) return;
+  var stop = gradStops[selectedStop];
+  stopEditor.style.display = '';
+  stopColor.value = stop.color;
+  stopHex.value = stop.color;
+  stopPos.value = stop.pos;
+  stopIdxLabel.textContent = selectedStop;
+}
+
+function highlightSelectedKnob(){
+  var knobs = gradStopsEl.querySelectorAll('.grad-stop');
+  for(var i = 0; i < knobs.length; i++){
+    knobs[i].classList.toggle('selected', i === selectedStop);
+  }
+  // Also highlight position labels
+  var labels = gradLabels.querySelectorAll('span');
+  for(var i = 0; i < labels.length; i++){
+    labels[i].classList.toggle('active', i === selectedStop);
+  }
+}
+
+function rebuildGradientBar(){
+  // Build background gradient preview
+  var bgGrad = gradStops.map(function(s){ return s.color + ' ' + s.pos + '%'; }).join(', ');
+  gradBarBg.style.background = 'linear-gradient(to right, ' + bgGrad + ')';
+
+  // Build stop knobs
+  var html = '';
+  var labelHtml = '<div style="position:relative;height:14px">';
+  for(var i = 0; i < gradStops.length; i++){
+    var s = gradStops[i];
+    html += '<div class="grad-stop'+(i===selectedStop?' selected':'')+
+      '" data-idx="'+i+'" style="left:'+s.pos+'%">'+
+      '<div class="knob" style="background:'+s.color+'"></div>'+
+      '<div class="stick"></div></div>';
+    labelHtml += '<span style="left:'+s.pos+'%;position:absolute;transform:translateX(-50%)"'+
+      +(i===selectedStop?' class="active"':'')+
+      '>'+s.pos+'%</span>';
+  }
+  labelHtml += '</div>';
+  gradStopsEl.innerHTML = html;
+  gradLabels.innerHTML = labelHtml;
+
+  // Bind drag on each knob
+  var knobs = gradStopsEl.querySelectorAll('.grad-stop');
+  for(var i = 0; i < knobs.length; i++){
+    (function(knob, idx){
+      knob.addEventListener('mousedown', function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        selectStop(idx);
+        var barRect = gradBar.getBoundingClientRect();
+        function onMove(ev){
+          var pct = Math.round(((ev.clientX - barRect.left) / barRect.width) * 100);
+          pct = Math.min(100, Math.max(0, pct));
+          gradStops[idx].pos = pct;
+          // Don't sort during drag — just update display
+          knob.style.left = pct + '%';
+          // Update label
+          var labels = gradLabels.querySelectorAll('span');
+          if(labels[idx]) labels[idx].textContent = pct+'%';
+          if(labels[idx]) labels[idx].style.left = pct+'%';
+          // Update bar background
+          var bgGrad = gradStops.map(function(s){ return s.color + ' ' + s.pos + '%'; }).join(', ');
+          gradBarBg.style.background = 'linear-gradient(to right, ' + bgGrad + ')';
+          // Live render
+          maybeRender();
+        }
+        function onUp(){
+          document.removeEventListener('mousemove', onMove);
+          document.removeEventListener('mouseup', onUp);
+          // Sort and finalize after drag
+          gradStops.sort(function(a,b){ return a.pos - b.pos; });
+          for(var j = 0; j < gradStops.length; j++){
+            if(gradStops[j].pos === gradStops[idx].pos) selectedStop = j;
+          }
+          rebuildGradientBar();
+          updateStopEditor();
+        }
+        document.addEventListener('mousemove', onMove);
+        document.addEventListener('mouseup', onUp);
+      });
+      // Double-click to delete
+      knob.addEventListener('dblclick', function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        if(gradStops.length <= 2) { alert('至少需要 2 个停止点'); return; }
+        selectStop(idx);
+        gradStops.splice(idx, 1);
+        if(selectedStop >= gradStops.length) selectedStop = gradStops.length - 1;
+        rebuildGradientBar();
+        maybeRender();
+      });
+    })(knobs[i], i);
+  }
+}
+
+// Helper: get fill style (solid or gradient)
+function getFillStyle(ctx, w, h) {
+  if(bgMode==='solid'){
+    return bgColor.value;
+  }
+  // Multi-stop gradient
+  var dir = gradDir.value;
+  var grad;
+  if(dir==='radial'){
+    grad = ctx.createRadialGradient(w/2, h/2, 0, w/2, h/2, Math.max(w, h)*0.75);
+  } else {
+    var x0=0, y0=0, x1=w, y1=h;
+    if(dir==='horizontal'){ y1=0; }
+    else if(dir==='vertical'){ x1=0; }
+    else if(dir==='diagonal2'){ x0=w; x1=0; }
+    grad = ctx.createLinearGradient(x0, y0, x1, y1);
+  }
+  for(var i=0; i<gradStops.length; i++){
+    grad.addColorStop(gradStops[i].pos / 100, gradStops[i].color);
+  }
+  return grad;
+}
+
+function maybeRender(){
+  if(currentMode==='expand' && bgMode==='gradient') render();
+}
+
+// Init gradient editor after DOM ready
+document.addEventListener('DOMContentLoaded', function(){
+  initGradientEditor();
+});
+// Also call immediately in case DOM is already loaded (script at bottom)
+if(document.readyState !== 'loading') initGradientEditor();
+
+imgScale.addEventListener('input',function(){
+  scaleVal.textContent=this.value+'%';
+  if(currentMode==='expand')render();
+});
+
+function render(){
+  if(!originalImg)return;
+
+  var ow=originalImg.width,oh=originalImg.height;
+  var tw=ow,th=oh;
+
+  if(currentMode==='expand'){
+    tw=parseInt(targetW.value)||1920;
+    th=parseInt(targetH.value)||1080;
+  }
+
+  previewCanvas.width=tw;
+  previewCanvas.height=th;
+  ctx.clearRect(0,0,tw,th);
+
+  // Fill background
+  ctx.fillStyle=getFillStyle(ctx,tw,th);
+  ctx.fillRect(0,0,tw,th);
+
+  // Center original image within target canvas
+  // User-controlled scale (10% - 300%), centered
+  var scale=(parseInt(imgScale.value)||100)/100;
+  var w=ow*scale,h=oh*scale;
+  var x=(tw-w)/2,y=(th-h)/2;
+  ctx.drawImage(originalImg,x,y,w,h);
+
+  previewCanvas.style.display='block';
+  previewEmpty.style.display='none';
+  previewSizeLabel.textContent=tw+'×'+th+'px';
+
+	  var fmt=outFormat.value.split('/')[1]?outFormat.value.split('/')[1].toUpperCase():'HISILICON';
+	  if(fmt==='JPEG')fmt='JPG';
+	  var qText;
+	  if(outFormat.value==='image/png')qText='PNG 无损';
+	  else if(outFormat.value==='image/bmp')qText='BMP 无压缩';
+	  else if(outFormat.value==='image/raw')qText='RAW 原始数据';
+	  else if(outFormat.value==='hisilicon-img')qText='5槽位 · 开机Logo';
+	  else qText='q'+quality.value;
+	  infoText.textContent=fmt+' · '+qText;
+  infoSize.textContent=tw+'×'+th+'px';
+}
+
+	// Download
+	downloadBtn.addEventListener('click',function(){
+	  if(!originalImg){alert('请先上传文件');return;}
+	  var fmt=outFormat.value;
+
+	  // BMP / RAW — manual pixel data construction
+	  if(fmt==='image/bmp'){
+	    downloadBMP(); return;
+	  }
+	  if(fmt==='image/raw'){
+	    downloadRAW(); return;
+	  }
+	  // Hisilicon V670 .img — JPEG re-encode → multi-slot pack
+	  if(fmt==='hisilicon-img'){
+	    downloadHisiliconImg(); return;
+	  }
+
+	  var q=fmt==='image/png'?1:parseInt(quality.value)/100;
+	  var ext=fmt==='image/png'?'png':fmt==='image/jpeg'?'jpg':'webp';
+
+	  previewCanvas.toBlob(function(blob){
+	    triggerDownload(blob, 'output.'+ext);
+	  },fmt,q);
+	});
+
+// BMP file format builder (24-bit, uncompressed)
+function buildBMP(w, h, imageData) {
+  var rowSize = Math.floor((w * 3 + 3) / 4) * 4; // 4-byte aligned
+  var pixelDataSize = rowSize * h;
+  var fileSize = 14 + 40 + pixelDataSize;
+  var buf = new ArrayBuffer(fileSize);
+  var dv = new DataView(buf);
+  var p = 0;
+
+  // BITMAPFILEHEADER (14 bytes)
+  dv.setUint16(p, 0x4D42, true); p += 2; // BM
+  dv.setUint32(p, fileSize, true); p += 4;
+  dv.setUint16(p, 0, true); p += 2; // reserved1
+  dv.setUint16(p, 0, true); p += 2; // reserved2
+  dv.setUint32(p, 54, true); p += 4;  // offset to pixel data
+
+  // BITMAPINFOHEADER (40 bytes)
+  dv.setUint32(p, 40, true); p += 4;
+  dv.setInt32(p, w, true); p += 4;
+  dv.setInt32(p, -h, true); p += 4; // negative = top-down (normal orientation)
+  dv.setUint16(p, 1, true); p += 2;  // planes
+  dv.setUint16(p, 24, true); p += 2; // bpp
+  dv.setUint32(p, 0, true); p += 4;  // BI_RGB (no compression)
+  dv.setUint32(p, pixelDataSize, true); p += 4;
+  dv.setUint32(p, 2834, true); p += 4; // horizontal DPI (~72)
+  dv.setUint32(p, 2834, true); p += 4; // vertical DPI (~72)
+  dv.setUint32(p, 0, true); p += 4;    // colors in palette
+  dv.setUint32(p, 0, true); p += 4;    // important colors
+
+  // Pixel data: BGR rows, bottom-to-top already handled by negative height
+  var data = imageData.data;
+  var rowOffset = 54;
+  for (var y = 0; y < h; y++) {
+    var srcRow = y * w * 4;
+    var dstOff = rowOffset + y * rowSize;
+    for (var x = 0; x < w; x++) {
+      var sp = srcRow + x * 4;
+      var dp = dstOff + x * 3;
+      dv.setUint8(dp, data[sp + 2]);     // B
+      dv.setUint8(dp + 1, data[sp + 1]); // G
+      dv.setUint8(dp + 2, data[sp]);     // R
+    }
+    // Padding bytes are already zero (ArrayBuffer initialized)
+  }
+  return new Blob([buf], {type: 'image/bmp'});
+}
+
+// RAW pixel data: simple header + RGBA raw pixels
+function buildRAW(w, h, imageData) {
+  var headerSize = 16;
+  var dataSize = w * h * 4;
+  var buf = new ArrayBuffer(headerSize + dataSize);
+  var dv = new DataView(buf);
+  dv.setUint32(0, 0x52415721, false); // magic "RAW!"
+  dv.setUint32(4, w, false);
+  dv.setUint32(8, h, false);
+  dv.setUint32(12, 4, false); // 4 channels (RGBA)
+  var raw = new Uint8Array(buf, headerSize);
+  raw.set(imageData.data);
+  return new Blob([buf], {type: 'application/octet-stream'});
+}
+
+function downloadBMP() {
+  var w = previewCanvas.width, h = previewCanvas.height;
+  var imageData = ctx.getImageData(0, 0, w, h);
+  var blob = buildBMP(w, h, imageData);
+  triggerDownload(blob, 'output.bmp');
+}
+
+function downloadRAW() {
+	  var w = previewCanvas.width, h = previewCanvas.height;
+	  var imageData = ctx.getImageData(0, 0, w, h);
+	  var blob = buildRAW(w, h, imageData);
+	  triggerDownload(blob, 'output.raw');
+	}
+
+	// ── 海思 V670 .img 开机 Logo ─────────────────────────────────
+	var HISI_IMAGE_COUNT = 5;
+	var HISI_FILE_HDR = 0x20, HISI_ENTRY_BYTES = 0x20;
+	var HISI_ENTRY_TABLE_END = HISI_FILE_HDR + HISI_IMAGE_COUNT * HISI_ENTRY_BYTES;
+	var HISI_TAIL_PAD = 0x2000;
+
+	function buildHisiliconLogoImg(jpegBytes) {
+	  var totalBytes = HISI_ENTRY_TABLE_END + jpegBytes.length * HISI_IMAGE_COUNT + HISI_TAIL_PAD;
+	  var buf = new ArrayBuffer(totalBytes);
+	  var dv = new DataView(buf);
+
+	  dv.setUint32(0x00, 0, true);
+	  dv.setUint32(0x04, 1, true);
+	  dv.setUint32(0x08, totalBytes, true);
+	  dv.setUint32(0x0C, HISI_FILE_HDR, true);
+	  dv.setUint32(0x10, HISI_IMAGE_COUNT * HISI_ENTRY_BYTES, true);
+	  dv.setUint32(0x14, HISI_IMAGE_COUNT, true);
+	  dv.setUint32(0x18, HISI_FILE_HDR, true);
+	  dv.setUint32(0x1C, 0x1000, true);
+
+	  var u8 = new Uint8Array(buf);
+	  var offset = HISI_ENTRY_TABLE_END;
+	  for (var i = 0; i < HISI_IMAGE_COUNT; i++) {
+	    var eo = HISI_FILE_HDR + i * HISI_ENTRY_BYTES;
+	    dv.setUint32(eo, jpegBytes.length, true);
+	    dv.setUint32(eo + 4, offset, true);
+	    dv.setUint32(eo + 8, i, true);
+	    u8.set(jpegBytes, offset);
+	    offset += jpegBytes.length;
+	  }
+
+	  return new Blob([buf], {type: 'application/octet-stream'});
+	}
+
+	function downloadHisiliconImg() {
+	  // Re-encode preview canvas to JPEG, then build multi-slot .img
+	  previewCanvas.toBlob(function(jpegBlob) {
+	    var reader = new FileReader();
+	    reader.onload = function() {
+	      var jpegBytes = new Uint8Array(reader.result);
+	      var imgBlob = buildHisiliconLogoImg(jpegBytes);
+	      triggerDownload(imgBlob, 'bootlogo.img');
+	    };
+	    reader.readAsArrayBuffer(jpegBlob);
+	  }, 'image/jpeg', 0.92);
+	}
+
+function triggerDownload(blob, filename) {
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+})();
+</script>
+</body>
+</html>
