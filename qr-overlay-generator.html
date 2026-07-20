@@ -113,7 +113,7 @@ h1{text-align:center;margin-bottom:24px;font-size:24px;font-weight:600;color:var
 <label>上传底图</label>
 <label class="upload-wrap" for="bgFile">
 <div class="upload-area" id="bgArea"><div class="upload-icon">🖼️</div><div class="upload-text" id="bgText">点击选择底图</div></div>
-<input type="file" id="bgFile" accept="image/*,.pdf">
+<input type="file" id="bgFile">
 </label>
 <div style="font-size:11px;color:var(--text-tertiary);margin-top:6px">支持 JPG / PNG / WebP / SVG / PDF</div>
 </div>
@@ -212,17 +212,27 @@ var bgFile = $('bgFile'), bgArea = $('bgArea'), bgText = $('bgText');
 bgFile.onchange = function() {
   if (!this.files[0]) return;
   var file = this.files[0];
-  // PDF detection (name check is more reliable than MIME type across browsers)
-  if (file.type === 'application/pdf' || /\.pdf$/i.test(file.name)) {
+  var isImage = /\.(jpe?g|png|webp|svg|bmp|gif)$/i.test(file.name);
+  var isPDF = /\.pdf$/i.test(file.name);
+
+  // Validate file type
+  if (!isImage && !isPDF) {
+    alert('不支持的文件格式。请上传 JPG / PNG / WebP / SVG / BMP / PDF 文件。');
+    this.value = '';
+    return;
+  }
+
+  // PDF handling
+  if (isPDF) {
     loadPDF(file);
     return;
   }
-  // Regular image
+  // Image handling
   var r = new FileReader();
   r.onload = function(e) {
     var img = new Image();
     img.onload = function() { bgImg = img; bgLoaded = true; bgText.textContent = file.name; bgArea.classList.add('active'); render(); };
-    img.onerror = function() { alert('图片加载失败，请确认文件格式为 JPG/PNG/WebP/SVG'); };
+    img.onerror = function() { alert('图片加载失败，请确认文件未损坏'); };
     img.src = e.target.result;
   };
   r.readAsDataURL(file);
