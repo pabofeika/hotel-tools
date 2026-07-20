@@ -113,7 +113,7 @@ h1{text-align:center;margin-bottom:24px;font-size:24px;font-weight:600;color:var
 <label>上传底图</label>
 <label class="upload-wrap" for="bgFile">
 <div class="upload-area" id="bgArea"><div class="upload-icon">🖼️</div><div class="upload-text" id="bgText">点击选择底图</div></div>
-<input type="file" id="bgFile" accept="image/*,application/pdf,.pdf">
+<input type="file" id="bgFile" accept="image/*,.pdf">
 </label>
 <div style="font-size:11px;color:var(--text-tertiary);margin-top:6px">支持 JPG / PNG / WebP / SVG / PDF</div>
 </div>
@@ -212,15 +212,17 @@ var bgFile = $('bgFile'), bgArea = $('bgArea'), bgText = $('bgText');
 bgFile.onchange = function() {
   if (!this.files[0]) return;
   var file = this.files[0];
-  // PDF detection
+  // PDF detection (name check is more reliable than MIME type across browsers)
   if (file.type === 'application/pdf' || /\.pdf$/i.test(file.name)) {
     loadPDF(file);
     return;
   }
+  // Regular image
   var r = new FileReader();
   r.onload = function(e) {
     var img = new Image();
     img.onload = function() { bgImg = img; bgLoaded = true; bgText.textContent = file.name; bgArea.classList.add('active'); render(); };
+    img.onerror = function() { alert('图片加载失败，请确认文件格式为 JPG/PNG/WebP/SVG'); };
     img.src = e.target.result;
   };
   r.readAsDataURL(file);
@@ -322,9 +324,11 @@ function rdRect(ctx, x, y, w, h, r) {
 // ====== PDF 渲染 ======
 function loadPDF(file) {
   if (typeof pdfjsLib === 'undefined') {
-    alert('PDF 渲染库加载失败，请刷新页面重试');
+    alert('PDF 渲染库正在加载，请稍后再试（需联网加载 pdf.js CDN）');
     return;
   }
+  bgText.textContent = '正在解析 PDF: ' + file.name + ' ...';
+  bgArea.classList.add('active');
   var reader = new FileReader();
   reader.onload = function(e) {
     var data = new Uint8Array(e.target.result);
@@ -360,7 +364,8 @@ function showPDFPage(pageNum) {
       img.onload = function() {
         bgImg = img;
         bgLoaded = true;
-        bgText.textContent = pdfDoc._transport._params.contentDispositionFilename || 'document.pdf';
+        var pdfName = (pdfDoc._transport._params && pdfDoc._transport._params.contentDispositionFilename) || 'document.pdf';
+        bgText.textContent = 'PDF: ' + pdfName + ' (第' + pdfPage + '页)';
         bgArea.classList.add('active');
         updatePDFNav();
         render();
