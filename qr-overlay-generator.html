@@ -113,16 +113,8 @@ h1{text-align:center;margin-bottom:24px;font-size:24px;font-weight:600;color:var
 <label>上传底图</label>
 <label class="upload-wrap" for="bgFile">
 <div class="upload-area" id="bgArea"><div class="upload-icon">🖼️</div><div class="upload-text" id="bgText">点击选择底图</div></div>
-<input type="file" id="bgFile">
+<input type="file" id="bgFile" accept="image/*">
 </label>
-<div style="font-size:11px;color:var(--text-tertiary);margin-top:6px">支持 JPG / PNG / WebP / SVG / PDF</div>
-</div>
-
-<!-- PDF 页面导航 (PDF 文件时显示) -->
-<div id="pdfNav" style="display:none;align-items:center;gap:12px;margin-bottom:14px">
-  <button class="btn btn-secondary" id="pdfPrev" style="width:auto;padding:6px 16px;font-size:12px;margin-top:0">◀ 上一页</button>
-  <span style="font-size:12px;color:var(--text-secondary)" id="pdfPageInfo">第 1 / 1 页</span>
-  <button class="btn btn-secondary" id="pdfNext" style="width:auto;padding:6px 16px;font-size:12px;margin-top:0">下一页 ▶</button>
 </div>
 
 <!-- QR 来源切换 -->
@@ -136,7 +128,7 @@ h1{text-align:center;margin-bottom:24px;font-size:24px;font-weight:600;color:var
 <div class="field">
 <label class="upload-wrap" for="qrFileInput">
 <div class="upload-area" id="qrFileArea"><div class="upload-icon">📱</div><div class="upload-text" id="qrFileText">点击上传二维码图片</div></div>
-<input type="file" id="qrFileInput" accept="image/*">
+<input type="file" id="qrFileInput">
 </label>
 </div>
 </div>
@@ -191,8 +183,6 @@ var $ = function(id) { return document.getElementById(id); };
 
 // 状态
 var bgImg = null, bgLoaded = false;
-// PDF state
-var pdfDoc = null, pdfPage = 1, pdfTotal = 0;
 if (typeof pdfjsLib !== 'undefined') {
   pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 }
@@ -212,27 +202,10 @@ var bgFile = $('bgFile'), bgArea = $('bgArea'), bgText = $('bgText');
 bgFile.onchange = function() {
   if (!this.files[0]) return;
   var file = this.files[0];
-  var isImage = /\.(jpe?g|png|webp|svg|bmp|gif)$/i.test(file.name);
-  var isPDF = /\.pdf$/i.test(file.name);
-
-  // Validate file type
-  if (!isImage && !isPDF) {
-    alert('不支持的文件格式。请上传 JPG / PNG / WebP / SVG / BMP / PDF 文件。');
-    this.value = '';
-    return;
-  }
-
-  // PDF handling
-  if (isPDF) {
-    loadPDF(file);
-    return;
-  }
-  // Image handling
   var r = new FileReader();
   r.onload = function(e) {
     var img = new Image();
     img.onload = function() { bgImg = img; bgLoaded = true; bgText.textContent = file.name; bgArea.classList.add('active'); render(); };
-    img.onerror = function() { alert('图片加载失败，请确认文件未损坏'); };
     img.src = e.target.result;
   };
   r.readAsDataURL(file);
@@ -254,6 +227,44 @@ var qrFileInput = $('qrFileInput'), qrFileArea = $('qrFileArea'), qrFileText = $
 qrFileInput.onchange = function() {
   if (!this.files[0]) return;
   var file = this.files[0];
+
+  // PDF — render page to Image then use as QR
+  if (/\.pdf$/i.test(file.name)) {
+    if (typeof pdfjsLib === 'undefined') {
+      alert('PDF 渲染库正在加载，请稍后重试（需联网）');
+      return;
+    }
+    qrFileText.textContent = '解析 PDF: ' + file.name + ' ...';
+    qrFileArea.classList.add('active');
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      pdfjsLib.getDocument({data: new Uint8Array(e.target.result)}).promise.then(function(doc) {
+        return doc.getPage(1);
+      }).then(function(page) {
+        var vp = page.getViewport({scale: 1});
+        if (vp.width > 4096 || vp.height > 4096) {
+          vp = page.getViewport({scale: 4096 / Math.max(vp.width, vp.height)});
+        }
+        var c = document.createElement('canvas');
+        c.width = vp.width; c.height = vp.height;
+        return page.render({canvasContext: c.getContext('2d'), viewport: vp}).promise.then(function() { return c; });
+      }).then(function(canvas) {
+        var img = new Image();
+        img.onload = function() {
+          qrImg = img; qrLoaded = true;
+          qrFileText.textContent = 'PDF: ' + file.name;
+          render();
+        };
+        img.src = canvas.toDataURL('image/png');
+      }).catch(function(err) {
+        alert('PDF 解析失败: ' + err.message);
+      });
+    };
+    reader.readAsArrayBuffer(file);
+    return;
+  }
+
+  // Regular image
   var r = new FileReader();
   r.onload = function(e) {
     var img = new Image();
@@ -331,76 +342,7 @@ function rdRect(ctx, x, y, w, h, r) {
   ctx.arcTo(x, y, x+w, y, r); ctx.closePath();
 }
 
-// ====== PDF 渲染 ======
-function loadPDF(file) {
-  if (typeof pdfjsLib === 'undefined') {
-    alert('PDF 渲染库正在加载，请稍后再试（需联网加载 pdf.js CDN）');
-    return;
-  }
-  bgText.textContent = '正在解析 PDF: ' + file.name + ' ...';
-  bgArea.classList.add('active');
-  var reader = new FileReader();
-  reader.onload = function(e) {
-    var data = new Uint8Array(e.target.result);
-    pdfjsLib.getDocument({data: data}).promise.then(function(doc) {
-      pdfDoc = doc;
-      pdfTotal = doc.numPages;
-      pdfPage = 1;
-      showPDFPage(1);
-    }).catch(function(err) {
-      alert('无法解析此 PDF 文件: ' + err.message);
-      console.error(err);
-    });
-  };
-  reader.readAsArrayBuffer(file);
-}
-
-function showPDFPage(pageNum) {
-  if (!pdfDoc || pageNum < 1 || pageNum > pdfTotal) return;
-  pdfPage = pageNum;
-  pdfDoc.getPage(pageNum).then(function(page) {
-    var viewport = page.getViewport({scale: 1});
-    var scale = 1;
-    if (viewport.width > 4096 || viewport.height > 4096) {
-      scale = 4096 / Math.max(viewport.width, viewport.height);
-      viewport = page.getViewport({scale: scale});
-    }
-    var offCanvas = document.createElement('canvas');
-    offCanvas.width = viewport.width;
-    offCanvas.height = viewport.height;
-    var offCtx = offCanvas.getContext('2d');
-    page.render({canvasContext: offCtx, viewport: viewport}).promise.then(function() {
-      var img = new Image();
-      img.onload = function() {
-        bgImg = img;
-        bgLoaded = true;
-        var pdfName = (pdfDoc._transport._params && pdfDoc._transport._params.contentDispositionFilename) || 'document.pdf';
-        bgText.textContent = 'PDF: ' + pdfName + ' (第' + pdfPage + '页)';
-        bgArea.classList.add('active');
-        updatePDFNav();
-        render();
-      };
-      img.src = offCanvas.toDataURL('image/png');
-    });
-  });
-}
-
-function updatePDFNav() {
-  if (!pdfDoc || pdfTotal <= 1) {
-    $('pdfNav').style.display = 'none';
-    return;
-  }
-  $('pdfNav').style.display = 'flex';
-  $('pdfPageInfo').textContent = '第 ' + pdfPage + ' / ' + pdfTotal + ' 页';
-}
-
-// PDF page navigation
-$('pdfPrev').addEventListener('click', function() {
-  if (pdfPage > 1) showPDFPage(pdfPage - 1);
-});
-$('pdfNext').addEventListener('click', function() {
-  if (pdfPage < pdfTotal) showPDFPage(pdfPage + 1);
-});
+// ====== PDF 渲染（共享） ======
 
 // ====== 事件 ======
 ['qrX','qrY','qrSize','qrR','qrPad','qrPadClr'].forEach(function(id) {
