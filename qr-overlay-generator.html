@@ -199,9 +199,23 @@ var qrSource = 'file';
 
 // ====== 底图 ======
 var bgFile = $('bgFile'), bgArea = $('bgArea'), bgText = $('bgText');
+
+// Safari 兼容: label for 不可靠，显式 click 触发 + 拖拽
+bgArea.addEventListener('click', function() { bgFile.click(); });
+bgArea.addEventListener('dragover', function(e) { e.preventDefault(); bgArea.classList.add('active'); });
+bgArea.addEventListener('dragleave', function() { bgArea.classList.remove('active'); });
+bgArea.addEventListener('drop', function(e) {
+  e.preventDefault(); bgArea.classList.remove('active');
+  var f = e.dataTransfer.files[0];
+  if (f) handleBgImage(f);
+});
+
 bgFile.onchange = function() {
   if (!this.files[0]) return;
-  var file = this.files[0];
+  handleBgImage(this.files[0]);
+};
+
+function handleBgImage(file) {
   var r = new FileReader();
   r.onload = function(e) {
     var img = new Image();
@@ -209,7 +223,7 @@ bgFile.onchange = function() {
     img.src = e.target.result;
   };
   r.readAsDataURL(file);
-};
+}
 
 // ====== QR 来源切换 ======
 document.querySelectorAll('.qr-tab').forEach(function(t) {
@@ -224,10 +238,23 @@ document.querySelectorAll('.qr-tab').forEach(function(t) {
 
 // ====== 方式1: 上传二维码文件 ======
 var qrFileInput = $('qrFileInput'), qrFileArea = $('qrFileArea'), qrFileText = $('qrFileText');
+
+// Safari 兼容: 显式 click + 拖拽
+qrFileArea.addEventListener('click', function() { qrFileInput.click(); });
+qrFileArea.addEventListener('dragover', function(e) { e.preventDefault(); qrFileArea.classList.add('active'); });
+qrFileArea.addEventListener('dragleave', function() { qrFileArea.classList.remove('active'); });
+qrFileArea.addEventListener('drop', function(e) {
+  e.preventDefault(); qrFileArea.classList.remove('active');
+  var f = e.dataTransfer.files[0];
+  if (f) handleQRFile(f);
+});
+
 qrFileInput.onchange = function() {
   if (!this.files[0]) return;
-  var file = this.files[0];
+  handleQRFile(this.files[0]);
+};
 
+function handleQRFile(file) {
   // PDF — render page to Image then use as QR
   if (/\.pdf$/i.test(file.name)) {
     if (typeof pdfjsLib === 'undefined') {
@@ -272,7 +299,7 @@ qrFileInput.onchange = function() {
     img.src = e.target.result;
   };
   r.readAsDataURL(file);
-};
+}
 
 // ====== 方式2: URL 生成二维码 ======
 $('genQrBtn').onclick = function() {
