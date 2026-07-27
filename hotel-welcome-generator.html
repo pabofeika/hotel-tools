@@ -325,14 +325,15 @@ document.querySelectorAll('#wifiCard .size-btn').forEach(function(btn){
 // Mode tabs
 var defaultWelcomeBg = bgUrl.value; // save the base64 default
 var defaultWifiBg = './wifi-bg.png';
+var _switchingMode = false;
 document.querySelectorAll('.qr-tab').forEach(function(t){
   t.addEventListener('click',function(){
     document.querySelectorAll('.qr-tab').forEach(function(b){b.classList.remove('active')});
     this.classList.add('active');
+    _switchingMode = true;
     currentMode=this.dataset.mode;
     if(currentMode==='wifi'){
       document.body.classList.add('wifi-mode');
-      // WiFi 默认位置：居中偏上，字号稍大
       posX.value=50; posY.value=42; maxWidth.value=85;
       document.getElementById('posXVal').textContent='50%';
       document.getElementById('posYVal').textContent='42%';
@@ -340,7 +341,6 @@ document.querySelectorAll('.qr-tab').forEach(function(t){
       fontSize.value=32; lineHeight.value=44;
       textColor.value='#ffffff';
       bgUrl.value=defaultWifiBg;
-      loadImage(defaultWifiBg);
     }else{
       document.body.classList.remove('wifi-mode');
       posX.value=50; posY.value=30; maxWidth.value=90;
@@ -349,8 +349,9 @@ document.querySelectorAll('.qr-tab').forEach(function(t){
       document.getElementById('mwVal').textContent='90%';
       fontSize.value=26; lineHeight.value=40;
       bgUrl.value=defaultWelcomeBg;
-      loadImage(defaultWelcomeBg);
     }
+    _switchingMode = false;
+    loadImage(bgUrl.value.trim());
   });
 });
 
@@ -387,8 +388,8 @@ bgFile.addEventListener('change',e=>{
   r.readAsDataURL(f);
 });
 
-bgUrl.addEventListener('change',()=>{if(bgUrl.value.trim())loadImage(bgUrl.value.trim());});
-bgUrl.addEventListener('input',()=>{if(bgUrl.value.trim() && bgUrl.value!==defaultWifiBg && bgUrl.value!==defaultWelcomeBg)loadImage(bgUrl.value.trim());});
+bgUrl.addEventListener('change',()=>{if(!_switchingMode&&bgUrl.value.trim())loadImage(bgUrl.value.trim());});
+bgUrl.addEventListener('input',()=>{if(!_switchingMode&&bgUrl.value.trim())loadImage(bgUrl.value.trim());});
 
 function render(){
   if(!bgLoaded||!bgImg)return;
