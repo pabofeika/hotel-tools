@@ -164,7 +164,16 @@ body.wifi-mode .mode-welcome-only{display:none}
 
   <!-- WiFi 设置（WiFi模式显示） -->
   <div class="card mode-wifi-only" id="wifiCard">
-    <div class="section-title">WiFi 设置</div>
+    <div class="section-title">欢迎文案（WiFi模式）</div>
+    <div class="form-group">
+      <label>酒店名称（变量）</label>
+      <input type="text" id="wifiHotelName" value="聚和园酒店" placeholder="酒店名称">
+    </div>
+    <div class="form-group">
+      <label>欢迎文案（{酒店}=名称，回车换行）</label>
+      <textarea id="wifiWelcomeText" rows="3" placeholder="第一行文字&#10;第二行文字">欢迎您莅临{酒店}，我们已备好悉心的服务，愿您在此度过一段舒心惬意的美好时光。</textarea>
+    </div>
+    <div class="section-title" style="margin-top:16px">WiFi 账号</div>
     <div class="form-group">
       <label>WiFi 名称 (SSID)</label>
       <input type="text" id="wifiSSID" value="Hotel-Free-WiFi" placeholder="WiFi名称">
@@ -306,6 +315,7 @@ const tags=document.querySelectorAll('.tag');
 // WiFi mode
 let currentMode='welcome';
 const wifiSSID=document.getElementById('wifiSSID'),wifiPassword=document.getElementById('wifiPassword');
+const wifiHotelName=document.getElementById('wifiHotelName'),wifiWelcomeText=document.getElementById('wifiWelcomeText');
 const ssidPosX=document.getElementById('ssidPosX'),ssidPosY=document.getElementById('ssidPosY');
 const pwdPosX=document.getElementById('pwdPosX'),pwdPosY=document.getElementById('pwdPosY');
 const wifiFontSize=document.getElementById('wifiFontSize');
@@ -413,13 +423,31 @@ function render(){
   ctx.shadowOffsetY=3;
 
   if(currentMode==='wifi'){
-    // ── WiFi 模式：SSID 靠左(WiFi图标处) + 密码靠右(锁图标处) ──
+    // ── WiFi 模式：先渲染欢迎文案，再渲染 SSID + 密码 ──
+    const mw=((parseInt(maxWidth.value)||90)/100)*canvas.width;
+    const weight=wifiBold?'bold ':'normal ';
+
+    // 1. 欢迎文案（使用主字号，居中偏上）
+    const wName=wifiHotelName.value||'酒店';
+    const wText=wifiWelcomeText.value.replace(/\{酒店\}/g,wName);
+    if(wText.trim()){
+      ctx.font=`normal ${fs}px "Source Han Sans","Noto Sans SC","PingFang SC","Microsoft YaHei","Hiragino Sans GB",sans-serif`;
+      const wLines=wrapText(wText,mw);
+      const wpx=(parseInt(posX.value)||50)/100;
+      const wpy=(parseInt(posY.value)||50)/100;
+      const wcx=canvas.width*wpx, wcy=canvas.height*wpy;
+      const wTop=wcy-wLines.length*lh/2+lh/2;
+      wLines.forEach(function(l,i){
+        let x=wcx; if(align==='left')x=wcx-mw/2; else if(align==='right')x=wcx+mw/2;
+        ctx.fillText(l,x,wTop+i*lh);
+      });
+    }
+
+    // 2. SSID + 密码（使用 WiFi 专属字号）
     const ssid=wifiSSID.value.trim()||'WiFi';
     const pwd=wifiPassword.value.trim()||'';
     const wfs=parseInt(wifiFontSize.value)||32;
     const wlh=Math.round(wfs*1.35);
-    const mw=((parseInt(maxWidth.value)||90)/100)*canvas.width;
-    const weight=wifiBold?'bold ':'normal ';
 
     ctx.font=weight+wfs+'px "Source Han Sans","Noto Sans SC","PingFang SC","Microsoft YaHei","Hiragino Sans GB",sans-serif';
 
@@ -489,7 +517,7 @@ function wrapText(text,maxW){
   return lines;
 }
 
-[hotelName,welcomeText,fontSize,lineHeight,textColor,shadowColor,wifiSSID,wifiPassword,wifiFontSize].forEach(el=>el.addEventListener('input',render));
+[hotelName,welcomeText,fontSize,lineHeight,textColor,shadowColor,wifiSSID,wifiPassword,wifiFontSize,wifiHotelName,wifiWelcomeText].forEach(el=>el.addEventListener('input',render));
 [posX,posY,maxWidth,ssidPosX,ssidPosY,pwdPosX,pwdPosY].forEach(el=>{
   el.addEventListener('input',()=>{
     if(el.id==='posX')document.getElementById('posXVal').textContent=el.value+'%';
