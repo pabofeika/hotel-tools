@@ -339,7 +339,6 @@ document.querySelectorAll('.qr-tab').forEach(function(t){
       document.getElementById('mwVal').textContent='85%';
       fontSize.value=32; lineHeight.value=44;
       textColor.value='#ffffff';
-      bgUrl.value=defaultWifiBg;
       loadImage(defaultWifiBg);
     }else{
       document.body.classList.remove('wifi-mode');
@@ -348,9 +347,9 @@ document.querySelectorAll('.qr-tab').forEach(function(t){
       document.getElementById('posYVal').textContent='30%';
       document.getElementById('mwVal').textContent='90%';
       fontSize.value=26; lineHeight.value=40;
-      bgUrl.value=defaultWelcomeBg;
       loadImage(defaultWelcomeBg);
     }
+    render();
   });
 });
 
