@@ -173,6 +173,16 @@ body.wifi-mode .mode-welcome-only{display:none}
       <label>欢迎文案（{酒店}=名称，回车换行）</label>
       <textarea id="wifiWelcomeText" rows="3" placeholder="第一行文字&#10;第二行文字">欢迎您莅临{酒店}，我们已备好悉心的服务，愿您在此度过一段舒心惬意的美好时光。</textarea>
     </div>
+    <div class="row">
+      <div class="form-group">
+        <label>文案字号 (px)</label>
+        <input type="number" id="wifiTextFontSize" value="26" min="12" max="72">
+      </div>
+      <div class="form-group">
+        <label>文案行高 (px)</label>
+        <input type="number" id="wifiTextLineHeight" value="40" min="16" max="100">
+      </div>
+    </div>
     <div class="section-title" style="margin-top:16px">WiFi 账号</div>
     <div class="form-group">
       <label>WiFi 名称 (SSID)</label>
@@ -319,6 +329,7 @@ const wifiHotelName=document.getElementById('wifiHotelName'),wifiWelcomeText=doc
 const ssidPosX=document.getElementById('ssidPosX'),ssidPosY=document.getElementById('ssidPosY');
 const pwdPosX=document.getElementById('pwdPosX'),pwdPosY=document.getElementById('pwdPosY');
 const wifiFontSize=document.getElementById('wifiFontSize');
+const wifiTextFontSize=document.getElementById('wifiTextFontSize'),wifiTextLineHeight=document.getElementById('wifiTextLineHeight');
 let wifiBold=false;
 const wifiTags=document.querySelectorAll('#wifiTagsGroup .tag');
 
@@ -348,7 +359,6 @@ document.querySelectorAll('.qr-tab').forEach(function(t){
       document.getElementById('posXVal').textContent='50%';
       document.getElementById('posYVal').textContent='34%';
       document.getElementById('mwVal').textContent='90%';
-      fontSize.value=32; lineHeight.value=44;
       textColor.value='#ffffff';
       textAlign.value='left';
       bgUrl.value=defaultWifiBg;
@@ -427,19 +437,21 @@ function render(){
     const mw=((parseInt(maxWidth.value)||90)/100)*canvas.width;
     const weight=wifiBold?'bold ':'normal ';
 
-    // 1. 欢迎文案（使用主字号，居中偏上）
+    // 1. 欢迎文案（使用 WiFi 模式独立字号）
     const wName=wifiHotelName.value||'酒店';
     const wText=wifiWelcomeText.value.replace(/\{酒店\}/g,wName);
     if(wText.trim()){
-      ctx.font=`normal ${fs}px "Source Han Sans","Noto Sans SC","PingFang SC","Microsoft YaHei","Hiragino Sans GB",sans-serif`;
+      const wtfs=parseInt(wifiTextFontSize.value)||26;
+      const wtlh=parseInt(wifiTextLineHeight.value)||40;
+      ctx.font=`normal ${wtfs}px "Source Han Sans","Noto Sans SC","PingFang SC","Microsoft YaHei","Hiragino Sans GB",sans-serif`;
       const wLines=wrapText(wText,mw);
       const wpx=(parseInt(posX.value)||50)/100;
       const wpy=(parseInt(posY.value)||50)/100;
       const wcx=canvas.width*wpx, wcy=canvas.height*wpy;
-      const wTop=wcy-wLines.length*lh/2+lh/2;
+      const wTop=wcy-wLines.length*wtlh/2+wtlh/2;
       wLines.forEach(function(l,i){
         let x=wcx; if(align==='left')x=wcx-mw/2; else if(align==='right')x=wcx+mw/2;
-        ctx.fillText(l,x,wTop+i*lh);
+        ctx.fillText(l,x,wTop+i*wtlh);
       });
     }
 
@@ -515,7 +527,7 @@ function wrapText(text,maxW){
   return lines;
 }
 
-[hotelName,welcomeText,fontSize,lineHeight,textColor,shadowColor,wifiSSID,wifiPassword,wifiFontSize,wifiHotelName,wifiWelcomeText].forEach(el=>el.addEventListener('input',render));
+[hotelName,welcomeText,fontSize,lineHeight,textColor,shadowColor,wifiSSID,wifiPassword,wifiFontSize,wifiHotelName,wifiWelcomeText,wifiTextFontSize,wifiTextLineHeight].forEach(el=>el.addEventListener('input',render));
 [posX,posY,maxWidth,ssidPosX,ssidPosY,pwdPosX,pwdPosY].forEach(el=>{
   el.addEventListener('input',()=>{
     if(el.id==='posX')document.getElementById('posXVal').textContent=el.value+'%';
