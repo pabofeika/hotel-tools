@@ -279,10 +279,22 @@ document.querySelectorAll('.qr-tab').forEach(function(t){
     currentMode=this.dataset.mode;
     if(currentMode==='wifi'){
       document.body.classList.add('wifi-mode');
+      // WiFi 默认位置：居中偏上，字号稍大
+      posX.value=50; posY.value=42; maxWidth.value=85;
+      document.getElementById('posXVal').textContent='50%';
+      document.getElementById('posYVal').textContent='42%';
+      document.getElementById('mwVal').textContent='85%';
+      fontSize.value=32; lineHeight.value=44;
+      textColor.value='#ffffff';
       bgUrl.value=defaultWifiBg;
       loadImage(defaultWifiBg);
     }else{
       document.body.classList.remove('wifi-mode');
+      posX.value=50; posY.value=30; maxWidth.value=90;
+      document.getElementById('posXVal').textContent='50%';
+      document.getElementById('posYVal').textContent='30%';
+      document.getElementById('mwVal').textContent='90%';
+      fontSize.value=26; lineHeight.value=40;
       bgUrl.value=defaultWelcomeBg;
       loadImage(defaultWelcomeBg);
     }
