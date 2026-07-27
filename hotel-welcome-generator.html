@@ -173,6 +173,30 @@ body.wifi-mode .mode-welcome-only{display:none}
       <label>WiFi 密码</label>
       <input type="text" id="wifiPassword" value="88888888" placeholder="WiFi密码">
     </div>
+    <!-- SSID 位置 -->
+    <div class="section-title" style="margin-top:12px">📍 WiFi名称 位置</div>
+    <div class="row">
+      <div class="form-group">
+        <div class="range-label"><span>水平</span><span class="val" id="ssidXVal">22%</span></div>
+        <input type="range" id="ssidPosX" min="5" max="95" value="22">
+      </div>
+      <div class="form-group">
+        <div class="range-label"><span>垂直</span><span class="val" id="ssidYVal">78%</span></div>
+        <input type="range" id="ssidPosY" min="5" max="95" value="78">
+      </div>
+    </div>
+    <!-- 密码 位置 -->
+    <div class="section-title" style="margin-top:12px">🔒 密码 位置</div>
+    <div class="row">
+      <div class="form-group">
+        <div class="range-label"><span>水平</span><span class="val" id="pwdXVal">76%</span></div>
+        <input type="range" id="pwdPosX" min="5" max="95" value="76">
+      </div>
+      <div class="form-group">
+        <div class="range-label"><span>垂直</span><span class="val" id="pwdYVal">78%</span></div>
+        <input type="range" id="pwdPosY" min="5" max="95" value="78">
+      </div>
+    </div>
     <div class="form-group" id="wifiTagsGroup">
       <label>快速切换</label>
       <div class="tags">
@@ -267,6 +291,8 @@ const tags=document.querySelectorAll('.tag');
 // WiFi mode
 let currentMode='welcome';
 const wifiSSID=document.getElementById('wifiSSID'),wifiPassword=document.getElementById('wifiPassword');
+const ssidPosX=document.getElementById('ssidPosX'),ssidPosY=document.getElementById('ssidPosY');
+const pwdPosX=document.getElementById('pwdPosX'),pwdPosY=document.getElementById('pwdPosY');
 const wifiTags=document.querySelectorAll('#wifiTagsGroup .tag');
 
 // Mode tabs
@@ -358,29 +384,33 @@ function render(){
   ctx.shadowOffsetY=2;
 
   if(currentMode==='wifi'){
-    // ── WiFi 模式：渲染 SSID + 密码两行 ──
+    // ── WiFi 模式：SSID 靠左(WiFi图标处) + 密码靠右(锁图标处) ──
     const ssid=wifiSSID.value.trim()||'WiFi';
     const pwd=wifiPassword.value.trim()||'';
-    const px=(parseInt(posX.value)||50)/100;
-    const py=(parseInt(posY.value)||50)/100;
     const mw=((parseInt(maxWidth.value)||90)/100)*canvas.width;
-    const cx=canvas.width*px,cy=canvas.height*py;
 
-    // SSID — 渲染在中心偏上
+    // SSID — 独立位置（默认左下，WiFi图标附近）
+    const sx=(parseInt(ssidPosX.value)||22)/100;
+    const sy=(parseInt(ssidPosY.value)||78)/100;
+    const ssidCX=canvas.width*sx, ssidCY=canvas.height*sy;
     const ssidLines=wrapText(ssid,mw);
-    const ssidY=cy-lh*(ssidLines.length+(pwd?0.5:0))+lh/2;
+    const ssidTop=ssidCY-ssidLines.length*lh/2+lh/2;
+    ctx.textAlign=align;
     ssidLines.forEach(function(l,i){
-      let x=cx; if(align==='left')x=cx-mw/2; else if(align==='right')x=cx+mw/2;
-      ctx.fillText(l,x,ssidY+i*lh);
+      let x=ssidCX; if(align==='left')x=ssidCX-mw/2; else if(align==='right')x=ssidCX+mw/2;
+      ctx.fillText(l,x,ssidTop+i*lh);
     });
 
-    // Password — 渲染在 SSID 下方
+    // Password — 独立位置（默认右下，锁图标附近）
     if(pwd){
+      const pxP=(parseInt(pwdPosX.value)||76)/100;
+      const pyP=(parseInt(pwdPosY.value)||78)/100;
+      const pwdCX=canvas.width*pxP, pwdCY=canvas.height*pyP;
       const pwdLines=wrapText(pwd,mw);
-      const pwdY=ssidY+ssidLines.length*lh;
+      const pwdTop=pwdCY-pwdLines.length*lh/2+lh/2;
       pwdLines.forEach(function(l,i){
-        let x=cx; if(align==='left')x=cx-mw/2; else if(align==='right')x=cx+mw/2;
-        ctx.fillText(l,x,pwdY+i*lh);
+        let x=pwdCX; if(align==='left')x=pwdCX-mw/2; else if(align==='right')x=pwdCX+mw/2;
+        ctx.fillText(l,x,pwdTop+i*lh);
       });
     }
 
@@ -426,11 +456,15 @@ function wrapText(text,maxW){
 }
 
 [hotelName,welcomeText,fontSize,lineHeight,textColor,shadowColor,wifiSSID,wifiPassword].forEach(el=>el.addEventListener('input',render));
-[posX,posY,maxWidth].forEach(el=>{
+[posX,posY,maxWidth,ssidPosX,ssidPosY,pwdPosX,pwdPosY].forEach(el=>{
   el.addEventListener('input',()=>{
     if(el.id==='posX')document.getElementById('posXVal').textContent=el.value+'%';
     if(el.id==='posY')document.getElementById('posYVal').textContent=el.value+'%';
     if(el.id==='maxWidth')document.getElementById('mwVal').textContent=el.value+'%';
+    if(el.id==='ssidPosX')document.getElementById('ssidXVal').textContent=el.value+'%';
+    if(el.id==='ssidPosY')document.getElementById('ssidYVal').textContent=el.value+'%';
+    if(el.id==='pwdPosX')document.getElementById('pwdXVal').textContent=el.value+'%';
+    if(el.id==='pwdPosY')document.getElementById('pwdYVal').textContent=el.value+'%';
     render();
   });
 });
