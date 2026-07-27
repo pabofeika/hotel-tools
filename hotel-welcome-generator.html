@@ -182,7 +182,7 @@ body.wifi-mode .mode-welcome-only{display:none}
       </div>
       <div class="form-group">
         <div class="range-label"><span>垂直</span><span class="val" id="ssidYVal">89%</span></div>
-        <input type="range" id="ssidPosY" min="0" max="100" value="89">
+        <input type="range" id="ssidPosY" min="0" max="120" value="89">
       </div>
     </div>
     <!-- 密码 位置 -->
@@ -193,8 +193,8 @@ body.wifi-mode .mode-welcome-only{display:none}
         <input type="range" id="pwdPosX" min="0" max="100" value="58">
       </div>
       <div class="form-group">
-        <div class="range-label"><span>垂直</span><span class="val" id="pwdYVal">83%</span></div>
-        <input type="range" id="pwdPosY" min="0" max="100" value="83">
+        <div class="range-label"><span>垂直</span><span class="val" id="pwdYVal">97%</span></div>
+        <input type="range" id="pwdPosY" min="0" max="120" value="97">
       </div>
     </div>
     <!-- WiFi 字号 + 粗体 -->
@@ -436,7 +436,7 @@ function render(){
     // Password — 独立位置（默认右下，锁图标附近）
     if(pwd){
       const pxP=(parseInt(pwdPosX.value)||58)/100;
-      const pyP=(parseInt(pwdPosY.value)||83)/100;
+      const pyP=(parseInt(pwdPosY.value)||97)/100;
       const pwdCX=canvas.width*pxP, pwdCY=canvas.height*pyP;
       const pwdLines=wrapText(pwd,mw);
       const pwdTop=pwdCY-pwdLines.length*wlh/2+wlh/2;
