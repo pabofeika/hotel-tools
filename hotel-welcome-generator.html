@@ -186,8 +186,8 @@ body.wifi-mode .mode-welcome-only{display:none}
     <div class="section-title" style="margin-top:12px">📍 WiFi名称 位置</div>
     <div class="row">
       <div class="form-group">
-	        <div class="range-label"><span>水平</span><span class="val" id="ssidXVal">61%</span></div>
-	        <input type="range" id="ssidPosX" min="0" max="150" value="61">
+	        <div class="range-label"><span>水平</span><span class="val" id="ssidXVal">34%</span></div>
+	        <input type="range" id="ssidPosX" min="0" max="150" value="34">
 	      </div>
 	      <div class="form-group">
 	        <div class="range-label"><span>垂直</span><span class="val" id="ssidYVal">89%</span></div>
@@ -198,8 +198,8 @@ body.wifi-mode .mode-welcome-only{display:none}
     <div class="section-title" style="margin-top:12px">🔒 密码 位置</div>
     <div class="row">
       <div class="form-group">
-	        <div class="range-label"><span>水平</span><span class="val" id="pwdXVal">108%</span></div>
-	        <input type="range" id="pwdPosX" min="0" max="150" value="108">
+	        <div class="range-label"><span>水平</span><span class="val" id="pwdXVal">74%</span></div>
+	        <input type="range" id="pwdPosX" min="0" max="150" value="74">
 	      </div>
 	      <div class="form-group">
 	        <div class="range-label"><span>垂直</span><span class="val" id="pwdYVal">89%</span></div>
@@ -452,7 +452,7 @@ function render(){
     ctx.font=weight+wfs+'px "Source Han Sans","Noto Sans SC","PingFang SC","Microsoft YaHei","Hiragino Sans GB",sans-serif';
 
     // SSID — 独立位置（不受对齐方式影响，始终居中于指定位置）
-    const sx=(parseInt(ssidPosX.value)||61)/100;
+    const sx=(parseInt(ssidPosX.value)||34)/100;
     const sy=(parseInt(ssidPosY.value)||89)/100;
     const ssidCX=canvas.width*sx, ssidCY=canvas.height*sy;
     const ssidLines=wrapText(ssid,mw);
@@ -464,7 +464,7 @@ function render(){
 
     // Password — 独立位置（不受对齐方式影响）
     if(pwd){
-      const pxP=(parseInt(pwdPosX.value)||108)/100;
+      const pxP=(parseInt(pwdPosX.value)||74)/100;
       const pyP=(parseInt(pwdPosY.value)||89)/100;
       const pwdCX=canvas.width*pxP, pwdCY=canvas.height*pyP;
       const pwdLines=wrapText(pwd,mw);
