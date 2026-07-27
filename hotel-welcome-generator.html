@@ -178,11 +178,11 @@ body.wifi-mode .mode-welcome-only{display:none}
     <div class="row">
       <div class="form-group">
         <div class="range-label"><span>水平</span><span class="val" id="ssidXVal">58%</span></div>
-        <input type="range" id="ssidPosX" min="5" max="95" value="58">
+        <input type="range" id="ssidPosX" min="0" max="100" value="58">
       </div>
       <div class="form-group">
         <div class="range-label"><span>垂直</span><span class="val" id="ssidYVal">89%</span></div>
-        <input type="range" id="ssidPosY" min="5" max="95" value="89">
+        <input type="range" id="ssidPosY" min="0" max="100" value="89">
       </div>
     </div>
     <!-- 密码 位置 -->
@@ -190,11 +190,26 @@ body.wifi-mode .mode-welcome-only{display:none}
     <div class="row">
       <div class="form-group">
         <div class="range-label"><span>水平</span><span class="val" id="pwdXVal">58%</span></div>
-        <input type="range" id="pwdPosX" min="5" max="95" value="58">
+        <input type="range" id="pwdPosX" min="0" max="100" value="58">
       </div>
       <div class="form-group">
         <div class="range-label"><span>垂直</span><span class="val" id="pwdYVal">83%</span></div>
-        <input type="range" id="pwdPosY" min="5" max="95" value="83">
+        <input type="range" id="pwdPosY" min="0" max="100" value="83">
+      </div>
+    </div>
+    <!-- WiFi 字号 + 粗体 -->
+    <div class="section-title" style="margin-top:12px">🔤 WiFi 文字样式</div>
+    <div class="row">
+      <div class="form-group">
+        <label>WiFi 字号 (px)</label>
+        <input type="number" id="wifiFontSize" value="32" min="12" max="120">
+      </div>
+      <div class="form-group">
+        <label>字重</label>
+        <div class="size-toggle" style="margin-top:0">
+          <button class="size-btn active" data-bold="0">常规</button>
+          <button class="size-btn" data-bold="1"><b>粗体</b></button>
+        </div>
       </div>
     </div>
     <div class="form-group" id="wifiTagsGroup">
@@ -293,7 +308,19 @@ let currentMode='welcome';
 const wifiSSID=document.getElementById('wifiSSID'),wifiPassword=document.getElementById('wifiPassword');
 const ssidPosX=document.getElementById('ssidPosX'),ssidPosY=document.getElementById('ssidPosY');
 const pwdPosX=document.getElementById('pwdPosX'),pwdPosY=document.getElementById('pwdPosY');
+const wifiFontSize=document.getElementById('wifiFontSize');
+let wifiBold=false;
 const wifiTags=document.querySelectorAll('#wifiTagsGroup .tag');
+
+// Bold toggle
+document.querySelectorAll('#wifiCard .size-btn').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    document.querySelectorAll('#wifiCard .size-btn').forEach(function(b){b.classList.remove('active')});
+    this.classList.add('active');
+    wifiBold=this.dataset.bold==='1';
+    render();
+  });
+});
 
 // Mode tabs
 var defaultWelcomeBg = bgUrl.value; // save the base64 default
@@ -387,18 +414,23 @@ function render(){
     // ── WiFi 模式：SSID 靠左(WiFi图标处) + 密码靠右(锁图标处) ──
     const ssid=wifiSSID.value.trim()||'WiFi';
     const pwd=wifiPassword.value.trim()||'';
+    const wfs=parseInt(wifiFontSize.value)||32;
+    const wlh=Math.round(wfs*1.35);
     const mw=((parseInt(maxWidth.value)||90)/100)*canvas.width;
+    const weight=wifiBold?'bold ':'normal ';
+
+    ctx.font=weight+wfs+'px "Source Han Sans","Noto Sans SC","PingFang SC","Microsoft YaHei","Hiragino Sans GB",sans-serif';
 
     // SSID — 独立位置（默认左下，WiFi图标附近）
     const sx=(parseInt(ssidPosX.value)||58)/100;
     const sy=(parseInt(ssidPosY.value)||89)/100;
     const ssidCX=canvas.width*sx, ssidCY=canvas.height*sy;
     const ssidLines=wrapText(ssid,mw);
-    const ssidTop=ssidCY-ssidLines.length*lh/2+lh/2;
+    const ssidTop=ssidCY-ssidLines.length*wlh/2+wlh/2;
     ctx.textAlign=align;
     ssidLines.forEach(function(l,i){
       let x=ssidCX; if(align==='left')x=ssidCX-mw/2; else if(align==='right')x=ssidCX+mw/2;
-      ctx.fillText(l,x,ssidTop+i*lh);
+      ctx.fillText(l,x,ssidTop+i*wlh);
     });
 
     // Password — 独立位置（默认右下，锁图标附近）
@@ -407,10 +439,10 @@ function render(){
       const pyP=(parseInt(pwdPosY.value)||83)/100;
       const pwdCX=canvas.width*pxP, pwdCY=canvas.height*pyP;
       const pwdLines=wrapText(pwd,mw);
-      const pwdTop=pwdCY-pwdLines.length*lh/2+lh/2;
+      const pwdTop=pwdCY-pwdLines.length*wlh/2+wlh/2;
       pwdLines.forEach(function(l,i){
         let x=pwdCX; if(align==='left')x=pwdCX-mw/2; else if(align==='right')x=pwdCX+mw/2;
-        ctx.fillText(l,x,pwdTop+i*lh);
+        ctx.fillText(l,x,pwdTop+i*wlh);
       });
     }
 
@@ -455,7 +487,7 @@ function wrapText(text,maxW){
   return lines;
 }
 
-[hotelName,welcomeText,fontSize,lineHeight,textColor,shadowColor,wifiSSID,wifiPassword].forEach(el=>el.addEventListener('input',render));
+[hotelName,welcomeText,fontSize,lineHeight,textColor,shadowColor,wifiSSID,wifiPassword,wifiFontSize].forEach(el=>el.addEventListener('input',render));
 [posX,posY,maxWidth,ssidPosX,ssidPosY,pwdPosX,pwdPosY].forEach(el=>{
   el.addEventListener('input',()=>{
     if(el.id==='posX')document.getElementById('posXVal').textContent=el.value+'%';
