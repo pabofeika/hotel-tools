@@ -186,24 +186,24 @@ body.wifi-mode .mode-welcome-only{display:none}
     <div class="section-title" style="margin-top:12px">📍 WiFi名称 位置</div>
     <div class="row">
       <div class="form-group">
-	        <div class="range-label"><span>水平</span><span class="val" id="ssidXVal">50%</span></div>
-	        <input type="range" id="ssidPosX" min="0" max="150" value="50">
+	        <div class="range-label"><span>水平</span><span class="val" id="ssidXVal">61%</span></div>
+	        <input type="range" id="ssidPosX" min="0" max="150" value="61">
 	      </div>
 	      <div class="form-group">
-	        <div class="range-label"><span>垂直</span><span class="val" id="ssidYVal">28%</span></div>
-	        <input type="range" id="ssidPosY" min="0" max="100" value="28">
+	        <div class="range-label"><span>垂直</span><span class="val" id="ssidYVal">89%</span></div>
+	        <input type="range" id="ssidPosY" min="0" max="100" value="89">
       </div>
     </div>
     <!-- 🔒 密码 位置 -->
     <div class="section-title" style="margin-top:12px">🔒 密码 位置</div>
     <div class="row">
       <div class="form-group">
-	        <div class="range-label"><span>水平</span><span class="val" id="pwdXVal">50%</span></div>
-	        <input type="range" id="pwdPosX" min="0" max="150" value="50">
+	        <div class="range-label"><span>水平</span><span class="val" id="pwdXVal">108%</span></div>
+	        <input type="range" id="pwdPosX" min="0" max="150" value="108">
 	      </div>
 	      <div class="form-group">
-	        <div class="range-label"><span>垂直</span><span class="val" id="pwdYVal">36%</span></div>
-	        <input type="range" id="pwdPosY" min="0" max="100" value="36">
+	        <div class="range-label"><span>垂直</span><span class="val" id="pwdYVal">89%</span></div>
+	        <input type="range" id="pwdPosY" min="0" max="100" value="89">
       </div>
     </div>
     <!-- WiFi 字号 + 粗体 -->
@@ -344,10 +344,10 @@ document.querySelectorAll('.qr-tab').forEach(function(t){
     currentMode=this.dataset.mode;
     if(currentMode==='wifi'){
       document.body.classList.add('wifi-mode');
-      posX.value=50; posY.value=42; maxWidth.value=85;
+      posX.value=50; posY.value=34; maxWidth.value=90;
       document.getElementById('posXVal').textContent='50%';
-      document.getElementById('posYVal').textContent='42%';
-      document.getElementById('mwVal').textContent='85%';
+      document.getElementById('posYVal').textContent='34%';
+      document.getElementById('mwVal').textContent='90%';
       fontSize.value=32; lineHeight.value=44;
       textColor.value='#ffffff';
       textAlign.value='center';
@@ -452,8 +452,8 @@ function render(){
     ctx.font=weight+wfs+'px "Source Han Sans","Noto Sans SC","PingFang SC","Microsoft YaHei","Hiragino Sans GB",sans-serif';
 
     // SSID — 独立位置（默认左下，WiFi图标附近）
-    const sx=(parseInt(ssidPosX.value)||50)/100;
-    const sy=(parseInt(ssidPosY.value)||28)/100;
+    const sx=(parseInt(ssidPosX.value)||61)/100;
+    const sy=(parseInt(ssidPosY.value)||89)/100;
     const ssidCX=canvas.width*sx, ssidCY=canvas.height*sy;
     const ssidLines=wrapText(ssid,mw);
     const ssidTop=ssidCY-ssidLines.length*wlh/2+wlh/2;
@@ -465,8 +465,8 @@ function render(){
 
     // Password — 独立位置（默认右下，锁图标附近）
     if(pwd){
-      const pxP=(parseInt(pwdPosX.value)||50)/100;
-      const pyP=(parseInt(pwdPosY.value)||36)/100;
+      const pxP=(parseInt(pwdPosX.value)||108)/100;
+      const pyP=(parseInt(pwdPosY.value)||89)/100;
       const pwdCX=canvas.width*pxP, pwdCY=canvas.height*pyP;
       const pwdLines=wrapText(pwd,mw);
       const pwdTop=pwdCY-pwdLines.length*wlh/2+wlh/2;
