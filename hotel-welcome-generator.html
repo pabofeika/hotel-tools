@@ -350,7 +350,7 @@ document.querySelectorAll('.qr-tab').forEach(function(t){
       document.getElementById('mwVal').textContent='90%';
       fontSize.value=32; lineHeight.value=44;
       textColor.value='#ffffff';
-      textAlign.value='center';
+      textAlign.value='left';
       bgUrl.value=defaultWifiBg;
     }else{
       document.body.classList.remove('wifi-mode');
@@ -451,19 +451,18 @@ function render(){
 
     ctx.font=weight+wfs+'px "Source Han Sans","Noto Sans SC","PingFang SC","Microsoft YaHei","Hiragino Sans GB",sans-serif';
 
-    // SSID — 独立位置（默认左下，WiFi图标附近）
+    // SSID — 独立位置（不受对齐方式影响，始终居中于指定位置）
     const sx=(parseInt(ssidPosX.value)||61)/100;
     const sy=(parseInt(ssidPosY.value)||89)/100;
     const ssidCX=canvas.width*sx, ssidCY=canvas.height*sy;
     const ssidLines=wrapText(ssid,mw);
     const ssidTop=ssidCY-ssidLines.length*wlh/2+wlh/2;
-    ctx.textAlign=align;
+    ctx.textAlign='center';
     ssidLines.forEach(function(l,i){
-      let x=ssidCX; if(align==='left')x=ssidCX-mw/2; else if(align==='right')x=ssidCX+mw/2;
-      ctx.fillText(l,x,ssidTop+i*wlh);
+      ctx.fillText(l,ssidCX,ssidTop+i*wlh);
     });
 
-    // Password — 独立位置（默认右下，锁图标附近）
+    // Password — 独立位置（不受对齐方式影响）
     if(pwd){
       const pxP=(parseInt(pwdPosX.value)||108)/100;
       const pyP=(parseInt(pwdPosY.value)||89)/100;
@@ -471,8 +470,7 @@ function render(){
       const pwdLines=wrapText(pwd,mw);
       const pwdTop=pwdCY-pwdLines.length*wlh/2+wlh/2;
       pwdLines.forEach(function(l,i){
-        let x=pwdCX; if(align==='left')x=pwdCX-mw/2; else if(align==='right')x=pwdCX+mw/2;
-        ctx.fillText(l,x,pwdTop+i*wlh);
+        ctx.fillText(l,pwdCX,pwdTop+i*wlh);
       });
     }
 
