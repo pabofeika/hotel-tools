@@ -98,11 +98,20 @@ h1{text-align:center;margin-bottom:24px;font-size:24px;font-weight:600;color:var
 .grid-2 input[type="number"],.grid-2 input[type="color"]{width:100%;padding:10px 12px;background:var(--bg-input);border:1px solid var(--border-subtle);border-radius:var(--radius-md);color:var(--text-primary);font-size:14px;outline:none}
 .grid-2 input[type="color"]{height:42px;padding:4px;cursor:pointer}
 @media(max-width:860px){.layout{grid-template-columns:1fr}}
+.mode-wifi-only{display:none}
+body.wifi-mode .mode-wifi-only{display:block}
+body.wifi-mode .mode-welcome-only{display:none}
 </style>
 </head>
 <body>
 <div class="tool-container">
   <h1>酒店欢迎图片生成器</h1>
+
+  <!-- 模式切换 -->
+  <div class="qr-source-tabs" style="margin-bottom:16px">
+    <button class="qr-tab active" data-mode="welcome">📝 欢迎文本</button>
+    <button class="qr-tab" data-mode="wifi">📶 WiFi密码</button>
+  </div>
 
   <!-- 预览卡片 -->
   <div class="card">
@@ -130,7 +139,7 @@ h1{text-align:center;margin-bottom:24px;font-size:24px;font-weight:600;color:var
   </div>
 
   <!-- 文案设置 -->
-  <div class="card">
+  <div class="card mode-welcome-only">
     <div class="section-title">文案设置</div>
     <div class="form-group">
       <label>酒店名称（变量）</label>
@@ -149,6 +158,27 @@ h1{text-align:center;margin-bottom:24px;font-size:24px;font-weight:600;color:var
         <span class="tag" data-hotel="万豪酒店">万豪</span>
         <span class="tag" data-hotel="洲际酒店">洲际</span>
         <span class="tag" data-hotel="凯悦酒店">凯悦</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- WiFi 设置（WiFi模式显示） -->
+  <div class="card mode-wifi-only" id="wifiCard">
+    <div class="section-title">WiFi 设置</div>
+    <div class="form-group">
+      <label>WiFi 名称 (SSID)</label>
+      <input type="text" id="wifiSSID" value="Hotel-Free-WiFi" placeholder="WiFi名称">
+    </div>
+    <div class="form-group">
+      <label>WiFi 密码</label>
+      <input type="text" id="wifiPassword" value="88888888" placeholder="WiFi密码">
+    </div>
+    <div class="form-group" id="wifiTagsGroup">
+      <label>快速切换</label>
+      <div class="tags">
+        <span class="tag" data-ssid="Hotel-Free-WiFi" data-pwd="88888888">默认</span>
+        <span class="tag" data-ssid="JUHY-Hotel" data-pwd="juhy2024">聚和园</span>
+        <span class="tag" data-ssid="Shangri-La-Guest" data-pwd="shangrila">香格里拉</span>
       </div>
     </div>
   </div>
@@ -234,6 +264,32 @@ const maxWidth=document.getElementById('maxWidth'),textAlign=document.getElement
 const downloadBtn=document.getElementById('downloadBtn'),resetBtn=document.getElementById('resetBtn');
 const tags=document.querySelectorAll('.tag');
 
+// WiFi mode
+let currentMode='welcome';
+const wifiSSID=document.getElementById('wifiSSID'),wifiPassword=document.getElementById('wifiPassword');
+const wifiTags=document.querySelectorAll('#wifiTagsGroup .tag');
+
+// Mode tabs
+document.querySelectorAll('.qr-tab').forEach(function(t){
+  t.addEventListener('click',function(){
+    document.querySelectorAll('.qr-tab').forEach(function(b){b.classList.remove('active')});
+    this.classList.add('active');
+    currentMode=this.dataset.mode;
+    if(currentMode==='wifi'){document.body.classList.add('wifi-mode')}
+    else{document.body.classList.remove('wifi-mode')}
+    render();
+  });
+});
+
+// WiFi quick tags
+wifiTags.forEach(function(t){
+  t.addEventListener('click',function(){
+    wifiSSID.value=this.dataset.ssid;
+    wifiPassword.value=this.dataset.pwd;
+    render();
+  });
+});
+
 let bgImg=null,bgLoaded=false;
 
 // 默认加载 PMS 背景
@@ -268,14 +324,8 @@ function render(){
   ctx.clearRect(0,0,canvas.width,canvas.height);
   ctx.drawImage(bgImg,0,0,canvas.width,canvas.height);
 
-  const name=hotelName.value||'酒店';
-  let text=welcomeText.value.replace(/\{酒店\}/g,name);
-  if(!text.trim())return;
-
   const fs=parseInt(fontSize.value)||26,lh=parseInt(lineHeight.value)||40;
   const color=textColor.value,sColor=shadowColor.value;
-  const px=(parseInt(posX.value)||50)/100,py=(parseInt(posY.value)||30)/100;
-  const mw=((parseInt(maxWidth.value)||90)/100)*canvas.width;
   const align=textAlign.value;
 
   ctx.font=`normal ${fs}px "Source Han Sans","Noto Sans SC","PingFang SC","Microsoft YaHei","Hiragino Sans GB",sans-serif`;
@@ -287,20 +337,48 @@ function render(){
   ctx.shadowOffsetX=0;
   ctx.shadowOffsetY=2;
 
-  const lines=[];
-  // 先按回车换行拆分，再对每段按宽度自动换行
-  const paragraphs=text.split('\n');
-  paragraphs.forEach(function(para){
-    if(para===''){lines.push('');return}
-    let cur='';
-    for(let c of para){
-      const t=cur+c;
-      if(ctx.measureText(t).width>mw&&cur){lines.push(cur);cur=c}else cur=t;
-    }
-    if(cur)lines.push(cur);
-  });
+  if(currentMode==='wifi'){
+    // ── WiFi 模式：渲染 SSID + 密码两行 ──
+    const ssid=wifiSSID.value.trim()||'WiFi';
+    const pwd=wifiPassword.value.trim()||'';
+    const px=(parseInt(posX.value)||50)/100;
+    const py=(parseInt(posY.value)||50)/100;
+    const mw=((parseInt(maxWidth.value)||90)/100)*canvas.width;
+    const cx=canvas.width*px,cy=canvas.height*py;
 
-  const th=lines.length*lh,cx=canvas.width*px,cy=canvas.height*py;
+    // SSID — 渲染在中心偏上
+    const ssidLines=wrapText(ssid,mw);
+    const ssidY=cy-lh*(ssidLines.length+(pwd?0.5:0))+lh/2;
+    ssidLines.forEach(function(l,i){
+      let x=cx; if(align==='left')x=cx-mw/2; else if(align==='right')x=cx+mw/2;
+      ctx.fillText(l,x,ssidY+i*lh);
+    });
+
+    // Password — 渲染在 SSID 下方
+    if(pwd){
+      const pwdLines=wrapText(pwd,mw);
+      const pwdY=ssidY+ssidLines.length*lh;
+      pwdLines.forEach(function(l,i){
+        let x=cx; if(align==='left')x=cx-mw/2; else if(align==='right')x=cx+mw/2;
+        ctx.fillText(l,x,pwdY+i*lh);
+      });
+    }
+
+    ctx.shadowColor='transparent';ctx.shadowBlur=0;ctx.shadowOffsetX=0;ctx.shadowOffsetY=0;
+    return;
+  }
+
+  // ── 欢迎文本模式 ──
+  const name=hotelName.value||'酒店';
+  let text=welcomeText.value.replace(/\{酒店\}/g,name);
+  if(!text.trim()){ctx.shadowColor='transparent';ctx.shadowBlur=0;return}
+
+  const pxW=(parseInt(posX.value)||50)/100,pyW=(parseInt(posY.value)||30)/100;
+  const mw=((parseInt(maxWidth.value)||90)/100)*canvas.width;
+
+  const lines=wrapText(text,mw);
+
+  const th=lines.length*lh,cx=canvas.width*pxW,cy=canvas.height*pyW;
   let sy=cy-th/2+lh/2;
   lines.forEach((l,i)=>{
     let x=cx;
@@ -311,7 +389,23 @@ function render(){
   ctx.shadowColor='transparent';ctx.shadowBlur=0;ctx.shadowOffsetX=0;ctx.shadowOffsetY=0;
 }
 
-[hotelName,welcomeText,fontSize,lineHeight,textColor,shadowColor].forEach(el=>el.addEventListener('input',render));
+// 通用文字换行：先按 \n 拆分，再按宽度自动换行
+function wrapText(text,maxW){
+  const lines=[];
+  const paragraphs=text.split('\n');
+  paragraphs.forEach(function(para){
+    if(para===''){lines.push('');return}
+    let cur='';
+    for(let c of para){
+      const t=cur+c;
+      if(ctx.measureText(t).width>maxW&&cur){lines.push(cur);cur=c}else cur=t;
+    }
+    if(cur)lines.push(cur);
+  });
+  return lines;
+}
+
+[hotelName,welcomeText,fontSize,lineHeight,textColor,shadowColor,wifiSSID,wifiPassword].forEach(el=>el.addEventListener('input',render));
 [posX,posY,maxWidth].forEach(el=>{
   el.addEventListener('input',()=>{
     if(el.id==='posX')document.getElementById('posXVal').textContent=el.value+'%';
@@ -327,7 +421,8 @@ tags.forEach(t=>t.addEventListener('click',()=>{hotelName.value=t.dataset.hotel;
 downloadBtn.addEventListener('click',()=>{
   if(!bgLoaded){alert('请先加载底图');return}
   const a=document.createElement('a');
-  a.download=`酒店欢迎_${hotelName.value}_${Date.now()}.png`;
+  const fname=currentMode==='wifi'?`WiFi_${wifiSSID.value}_${Date.now()}.png`:`酒店欢迎_${hotelName.value}_${Date.now()}.png`;
+  a.download=fname;
   a.href=canvas.toDataURL('image/png',1);
   a.click();
 });
