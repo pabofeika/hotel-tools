@@ -270,14 +270,22 @@ const wifiSSID=document.getElementById('wifiSSID'),wifiPassword=document.getElem
 const wifiTags=document.querySelectorAll('#wifiTagsGroup .tag');
 
 // Mode tabs
+var defaultWelcomeBg = bgUrl.value; // save the base64 default
+var defaultWifiBg = './wifi-bg.png';
 document.querySelectorAll('.qr-tab').forEach(function(t){
   t.addEventListener('click',function(){
     document.querySelectorAll('.qr-tab').forEach(function(b){b.classList.remove('active')});
     this.classList.add('active');
     currentMode=this.dataset.mode;
-    if(currentMode==='wifi'){document.body.classList.add('wifi-mode')}
-    else{document.body.classList.remove('wifi-mode')}
-    render();
+    if(currentMode==='wifi'){
+      document.body.classList.add('wifi-mode');
+      bgUrl.value=defaultWifiBg;
+      loadImage(defaultWifiBg);
+    }else{
+      document.body.classList.remove('wifi-mode');
+      bgUrl.value=defaultWelcomeBg;
+      loadImage(defaultWelcomeBg);
+    }
   });
 });
 
