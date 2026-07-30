@@ -68,8 +68,14 @@ input[type="range"]::-webkit-slider-thumb:hover{transform:scale(1.1)}
 .tip{padding:14px 16px;background:rgba(255,149,0,0.08);border-radius:var(--radius-md);font-size:12px;color:rgba(255,149,0,0.7);line-height:1.6;margin-top:12px}
 .guide-box{padding:12px 14px;background:var(--accent-subtle);border-radius:var(--radius-md);border-left:3px solid var(--accent);margin-bottom:16px}
 .guide-box p{font-size:12px;color:var(--text-secondary);line-height:1.6}
-.layout{display:grid;grid-template-columns:360px 1fr;gap:20px;align-items:start}
-.left-panel,.right-panel{overflow:hidden}
+.layout{display:grid;grid-template-columns:380px 1fr;gap:16px;align-items:start}
+.left-panel .card{padding:16px;margin-bottom:10px}
+.left-panel .card .section-title{margin-bottom:10px}
+.left-panel .form-group{margin-bottom:10px}
+.left-panel{overflow-y:auto;max-height:calc(100vh - 120px);padding-right:8px}
+.left-panel::-webkit-scrollbar{width:4px}
+.left-panel::-webkit-scrollbar-thumb{background:var(--border-default);border-radius:2px}
+.right-panel{position:sticky;top:80px}
 .upload-area-wrap,.upload-wrap{position:relative;display:block}
 .upload-area{position:relative;padding:20px 16px;background:var(--bg-surface);border:2px dashed var(--border-default);border-radius:var(--radius-md);text-align:center;cursor:pointer;transition:all var(--transition)}
 .upload-area:hover{border-color:var(--accent);background:var(--bg-surface-hover)}
@@ -97,7 +103,7 @@ h1{text-align:center;margin-bottom:24px;font-size:24px;font-weight:600;color:var
 .ld.active{display:flex}
 .grid-2 input[type="number"],.grid-2 input[type="color"]{width:100%;padding:10px 12px;background:var(--bg-input);border:1px solid var(--border-subtle);border-radius:var(--radius-md);color:var(--text-primary);font-size:14px;outline:none}
 .grid-2 input[type="color"]{height:42px;padding:4px;cursor:pointer}
-@media(max-width:860px){.layout{grid-template-columns:1fr}}
+@media(max-width:860px){.layout{grid-template-columns:1fr}.right-panel{position:static}}
 .mode-wifi-only{display:none}
 body.wifi-mode .mode-wifi-only{display:block}
 body.wifi-mode .mode-welcome-only{display:none}
@@ -113,17 +119,25 @@ body.wifi-mode .mode-welcome-only{display:none}
     <button class="qr-tab" data-mode="wifi">📶 WiFi密码</button>
   </div>
 
-  <!-- 预览卡片 -->
-  <div class="card">
-    <div class="section-title">实时预览</div>
-    <div class="canvas-wrap">
-      <div class="placeholder" id="placeholder">
-        <div class="icon">🖼️</div>
-        <div>上传底图后显示预览</div>
+  <div class="layout">
+    <!-- ═══ 右侧预览 ═══ -->
+    <div class="right-panel">
+      <div class="card" style="margin-bottom:12px">
+        <div class="section-title">实时预览</div>
+        <div class="canvas-wrap">
+          <div class="placeholder" id="placeholder">
+            <div class="icon">🖼️</div>
+            <div>上传底图后显示预览</div>
+          </div>
+          <canvas id="previewCanvas" style="display:none"></canvas>
+        </div>
       </div>
-      <canvas id="previewCanvas" style="display:none"></canvas>
+      <button class="btn btn-primary" id="downloadBtn">⬇️ 下载图片</button>
+      <button class="btn btn-secondary" id="resetBtn">↺ 重置默认</button>
     </div>
-  </div>
+
+    <!-- ═══ 左侧控制 ═══ -->
+    <div class="left-panel">
 
   <!-- 底图 -->
   <div class="card">
@@ -293,22 +307,17 @@ body.wifi-mode .mode-welcome-only{display:none}
     </div>
   </div>
 
-  <!-- 操作按钮 -->
-  <button class="btn btn-primary" id="downloadBtn">⬇️ 下载图片</button>
-  <button class="btn btn-secondary" id="resetBtn">↺ 重置默认</button>
-
   <div class="tip">
-    💡 <b>web-view 环境提示：</b><br>
-    · 如上传按钮不工作，请使用「输入图片 URL」方式加载底图<br>
-    · 可先将底图放在服务器上，用 http://192.168.31.60:3000/hotel-bg.png 加载
+    💡 <b>提示：</b>底图可从相册上传或输入URL加载。样式/位置调节实时生效。
   </div>
 
-  <div class="guide" style="margin-top:12px;padding:12px;background:rgba(102,126,234,.08);border-radius:8px;border-left:3px solid #667eea">
-    <p><b style="color:#667eea">小程序集成方式</b><br>
-    在 WXML 中使用：<br>
-    <code style="font-size:11px;color:rgba(255,255,255,.6)">&lt;web-view src="http://192.168.31.60:3000/hotel-welcome"&gt;&lt;/web-view&gt;</code></p>
+  <div class="guide-box">
+    <p><b>小程序集成：</b>使用 web-view 加载此页面即可。自定义底图可修改 bgUrl 默认值。</p>
   </div>
-</div>
+
+    </div><!-- /left-panel -->
+  </div><!-- /layout -->
+</div><!-- /tool-container -->
 
 <script>
 const canvas=document.getElementById('previewCanvas'),ctx=canvas.getContext('2d');
