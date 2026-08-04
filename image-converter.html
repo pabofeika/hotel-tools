@@ -1649,18 +1649,21 @@ function buildBMP(w, h, imageData) {
   return new Blob([buf], {type: 'image/bmp'});
 }
 
-// RAW pixel data: simple header + RGBA raw pixels
+// RAW pixel data: standard RGB888 (3 bytes per pixel, no alpha, no header)
+// Compatible with most TV boot logo RAW formats
 function buildRAW(w, h, imageData) {
-  var headerSize = 16;
-  var dataSize = w * h * 4;
-  var buf = new ArrayBuffer(headerSize + dataSize);
-  var dv = new DataView(buf);
-  dv.setUint32(0, 0x52415721, false); // magic "RAW!"
-  dv.setUint32(4, w, false);
-  dv.setUint32(8, h, false);
-  dv.setUint32(12, 4, false); // 4 channels (RGBA)
-  var raw = new Uint8Array(buf, headerSize);
-  raw.set(imageData.data);
+  var pixelCount = w * h;
+  var buf = new ArrayBuffer(pixelCount * 3); // RGB888 = 3 bytes per pixel
+  var view = new Uint8Array(buf);
+  var src = imageData.data;
+  // Convert RGBA → RGB, strip alpha channel
+  for (var i = 0; i < pixelCount; i++) {
+    var si = i * 4;  // source: RGBA
+    var di = i * 3;  // dest: RGB
+    view[di]     = src[si];      // R
+    view[di + 1] = src[si + 1];  // G
+    view[di + 2] = src[si + 2];  // B
+  }
   return new Blob([buf], {type: 'application/octet-stream'});
 }
 
