@@ -62,12 +62,15 @@ input[type="range"]::-webkit-slider-thumb:hover{transform:scale(1.1)}
 .layout{display:grid;grid-template-columns:360px 1fr;gap:20px;align-items:start}
 .left-panel,.right-panel{overflow:hidden}
 .upload-area-wrap,.upload-wrap{position:relative;display:block}
-.upload-area{position:relative;padding:20px 16px;background:var(--bg-surface);border:2px dashed var(--border-default);border-radius:var(--radius-md);text-align:center;cursor:pointer;transition:all var(--transition)}
+.upload-area{position:relative;padding:10px 12px;background:var(--bg-surface);border:2px dashed var(--border-default);border-radius:var(--radius-md);text-align:center;cursor:pointer;transition:all var(--transition)}
 .upload-area:hover{border-color:var(--accent);background:var(--bg-surface-hover)}
 .upload-area.active{border-color:#30D158;background:rgba(48,209,88,0.06)}
 .upload-wrap input[type="file"]{display:none}
-.upload-icon{font-size:30px;margin-bottom:8px;opacity:0.5}
-.upload-text{font-size:13px;color:var(--text-secondary)}
+.upload-icon{font-size:16px;margin-right:6px;opacity:0.6;display:inline-block;vertical-align:middle}
+.upload-text{font-size:12px;color:var(--text-secondary);display:inline-block;vertical-align:middle}
+.upload-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.upload-row .field{margin-bottom:0}
+.upload-area.small{padding:8px 10px}
 .guide-box{padding:12px 14px;background:var(--accent-subtle);border-radius:var(--radius-md);border-left:3px solid var(--accent);margin-bottom:16px}
 .guide-box p{font-size:12px;color:var(--text-secondary);line-height:1.6}
 .info-bar{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--bg-surface);border-radius:var(--radius-md);margin-top:12px;font-size:12px}
@@ -107,38 +110,34 @@ h1{text-align:center;margin-bottom:24px;font-size:24px;font-weight:600;color:var
           <button class="qr-tab active" data-style="1">🎨 样式 1</button>
           <button class="qr-tab" data-style="2">🎨 样式 2</button>
         </div>
-        <div class="guide-box" style="margin-bottom:0">
-          <p>切换样式自动定位到白色二维码占位区，上传图片后可直接在预览区拖动微调。</p>
-        </div>
       </div>
 
-      <!-- 底图上传 -->
+      <!-- 底图 / 叠加图 上传（紧凑并排） -->
       <div class="panel">
-        <div class="section-title">上传底图</div>
-        <div class="field">
-          <label class="upload-wrap" for="bgFile">
-            <div class="upload-area" id="bgArea">
-              <div class="upload-icon">🖼️</div>
-              <div class="upload-text" id="bgText">点击选择底图（可选）</div>
-            </div>
-            <input type="file" id="bgFile" accept="image/*">
-          </label>
+        <div class="section-title">上传图片</div>
+        <div class="upload-row">
+          <div class="field">
+            <label>底图（可选）</label>
+            <label class="upload-wrap" for="bgFile">
+              <div class="upload-area small" id="bgArea">
+                <span class="upload-icon">🖼️</span>
+                <span class="upload-text" id="bgText">选择底图</span>
+              </div>
+              <input type="file" id="bgFile" accept="image/*">
+            </label>
+          </div>
+          <div class="field">
+            <label>二维码 / 图片</label>
+            <label class="upload-wrap" for="upFile">
+              <div class="upload-area small" id="upArea">
+                <span class="upload-icon">📱</span>
+                <span class="upload-text" id="upText">选择叠加图</span>
+              </div>
+              <input type="file" id="upFile" accept="image/*">
+            </label>
+          </div>
         </div>
-      </div>
-
-      <!-- 叠加图片上传 -->
-      <div class="panel">
-        <div class="section-title">上传二维码 / 图片</div>
-        <div class="field">
-          <label class="upload-wrap" for="upFile">
-            <div class="upload-area" id="upArea">
-              <div class="upload-icon">📱</div>
-              <div class="upload-text" id="upText">点击上传叠加图片</div>
-            </div>
-            <input type="file" id="upFile" accept="image/*">
-          </label>
-        </div>
-        <div id="metaRow" class="info-bar" style="display:none;margin-top:0">
+        <div id="metaRow" class="info-bar" style="display:none;margin-top:10px">
           <span id="metaName"></span>
           <span id="metaSize"></span>
         </div>
@@ -163,24 +162,14 @@ h1{text-align:center;margin-bottom:24px;font-size:24px;font-weight:600;color:var
         </div>
       </div>
 
-      <!-- 下载 -->
-      <div class="panel">
-        <div class="section-title">⬇️ 下载</div>
-        <div class="field">
-          <label>下载格式</label>
-          <select id="fmt">
-            <option value="png">PNG · 无损</option>
-            <option value="webp">WebP · 高压缩</option>
-          </select>
-        </div>
-        <button class="btn btn-primary" id="dlBtn">⬇️ 下载合成图片</button>
-        <button class="btn btn-secondary" id="resetBtn">↺ 重置位置</button>
+      <div class="guide-box">
+        <p>💡 上传图片后可直接在右侧预览区拖动 / 缩放叠加图。</p>
       </div>
     </div>
 
     <!-- ═══ 右侧预览 ═══ -->
     <div class="right-panel">
-      <div class="panel">
+      <div class="panel" style="margin-bottom:0">
         <div class="preview-header" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
           <span class="preview-title">实时预览</span>
           <span style="font-size:11px;color:var(--text-tertiary)" id="previewSizeLabel"></span>
@@ -199,6 +188,16 @@ h1{text-align:center;margin-bottom:24px;font-size:24px;font-weight:600;color:var
         <div class="info-bar" id="infoBar" style="display:none">
           <span id="infoText">合成图</span>
           <span id="infoSize"></span>
+        </div>
+
+        <!-- 下载：紧贴预览图下方 -->
+        <div style="display:flex;gap:10px;margin-top:14px;align-items:center">
+          <select id="fmt" style="flex:0 0 150px">
+            <option value="png">PNG · 无损</option>
+            <option value="webp">WebP · 高压缩</option>
+          </select>
+          <button class="btn btn-primary" id="dlBtn" style="flex:1;margin-top:0">⬇️ 下载合成图片</button>
+          <button class="btn btn-secondary" id="resetBtn" style="flex:0 0 100px;margin-top:0;padding:14px 10px">↺ 重置</button>
         </div>
       </div>
     </div>
