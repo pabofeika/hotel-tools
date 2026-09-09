@@ -206,12 +206,32 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;hei
     '2': './style-2.png'
   };
 
+  // 每个样式的默认二维码覆盖位置（白色占位区中心，比例基于图片宽度）
+  // w 以底图像素宽计算
+  var STYLE_PRESETS = {
+    '1': { x: 0.273, y: 0.60, w: 360 },   // 在线开票 1920x1080
+    '2': { x: 0.745, y: 0.497, w: 218 }   // 组 1030  560x300
+  };
+
+  function applyStylePreset(key){
+    var p = STYLE_PRESETS[key];
+    if(!p) return;
+    ov.x = p.x; ov.y = p.y; ov.w = p.w;
+    $('ovX').value = Math.round(p.x*100);
+    $('xV').textContent = Math.round(p.x*100) + '%';
+    $('ovY').value = Math.round(p.y*100);
+    $('yV').textContent = Math.round(p.y*100) + '%';
+    $('ovW').value = p.w;
+    $('wV').textContent = p.w + 'px';
+  }
+
   // ── 样式切换 ──
   document.querySelectorAll('.style-tab').forEach(function(t){
     t.addEventListener('click', function(){
       document.querySelectorAll('.style-tab').forEach(function(b){ b.classList.remove('active'); });
       this.classList.add('active');
       currentStyle = this.dataset.style;
+      applyStylePreset(currentStyle);
       loadBg(STYLE_SRCS[currentStyle]);
     });
   });
@@ -395,10 +415,7 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;hei
 
   // ── 重置 ──
   $('resetBtn').addEventListener('click', function(){
-    ov.x = 0.70; ov.y = 0.85; ov.w = 180;
-    $('ovX').value = 70; $('xV').textContent = '70%';
-    $('ovY').value = 85; $('yV').textContent = '85%';
-    $('ovW').value = 180; $('wV').textContent = '180px';
+    applyStylePreset(currentStyle);
     render(); updateBox();
   });
 
@@ -408,6 +425,7 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;hei
   });
 
   // ── 初始化：加载样式 1 默认图 ──
+  applyStylePreset('1');
   loadBg(STYLE_SRCS['1']);
 })();
 </script>
