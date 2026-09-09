@@ -22,22 +22,22 @@ body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Ne
 <div class="header">
   <h1>🏨 酒店工具集</h1>
   <div class="tabs">
-    <button class="tab active" data-id="welcome">📝 欢迎文本</button>
+    <button class="tab active" data-id="logo">✨ 生成logo</button>
+    <button class="tab" data-id="welcome">📝 欢迎文本</button>
     <button class="tab" data-id="qr">📱 二维码叠加</button>
-    <button class="tab" data-id="card">🔤 卡片文本</button>
-    <button class="tab" data-id="logo">✨ 生成logo</button>
-    <button class="tab" data-id="overlay">🖼️ 宣传图叠加</button>
     <button class="tab" data-id="convert">📺 开机logo制作</button>
+    <button class="tab" data-id="overlay">🖼️ 宣传图叠加</button>
+    <button class="tab" data-id="card">🔤 卡片文本</button>
     <button class="tab" data-id="video">🎬 开机视频</button>
   </div>
 </div>
 <div class="content">
-  <iframe class="active" id="fw" src="./hotel-welcome-generator.html"></iframe>
+  <iframe class="active" id="fl" src="./logo-generator.html"></iframe>
+  <iframe id="fw" src="./hotel-welcome-generator.html"></iframe>
   <iframe id="fq" src="./qr-overlay-generator.html"></iframe>
-  <iframe id="fc" src="./card-text-overlay.html"></iframe>
-  <iframe id="fl" src="./logo-generator.html"></iframe>
-  <iframe id="fov" src="./image-overlay-generator.html"></iframe>
   <iframe id="fcv" src="./image-converter.html"></iframe>
+  <iframe id="fov" src="./image-overlay-generator.html"></iframe>
+  <iframe id="fc" src="./card-text-overlay.html"></iframe>
   <iframe id="fvid" src="./video-converter.html"></iframe>
 </div>
 <script>
