@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>批量二维码合成</title>
+<style>/* === Apple Style Design System === */
+:root {
+  --bg-primary: #000000;
+  --bg-surface: rgba(255,255,255,0.04);
+  --bg-surface-hover: rgba(255,255,255,0.06);
+  --bg-input: rgba(255,255,255,0.06);
+  --bg-input-focus: rgba(255,255,255,0.08);
+  --accent: #0071E3;
+  --accent-hover: #0077ED;
+  --accent-subtle: rgba(0,113,227,0.12);
+  --text-primary: rgba(255,255,255,0.92);
+  --text-secondary: rgba(255,255,255,0.55);
+  --text-tertiary: rgba(255,255,255,0.32);
+  --border-subtle: rgba(255,255,255,0.06);
+  --border-default: rgba(255,255,255,0.1);
+  --border-focus: rgba(0,113,227,0.4);
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", sans-serif;
+  --font-mono: "SF Mono", "Menlo", "Monaco", monospace;
+  --transition: 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--font-sans);background:var(--bg-primary);min-height:100vh;color:var(--text-primary);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;padding:24px 16px}
+.container{max-width:1180px;margin:0 auto}
+.card,.panel{background:var(--bg-surface);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:20px;margin-bottom:14px;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+.section-title,.preview-title{font-size:12px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:14px}
+.section-title b{color:var(--accent);font-weight:600}
+.form-group,.field{margin-bottom:14px}
+.form-group:last-child,.field:last-of-type{margin-bottom:0}
+label,.field label{display:block;font-size:12px;font-weight:500;color:var(--text-secondary);margin-bottom:8px;letter-spacing:0.2px}
+input[type="text"],input[type="number"],select{width:100%;padding:11px 14px;background:var(--bg-input);border:1px solid var(--border-subtle);border-radius:var(--radius-md);color:var(--text-primary);font-size:14px;font-family:var(--font-sans);outline:none;transition:all var(--transition)}
+select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='rgba(255,255,255,0.32)'%3E%3Cpath d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:36px}
+input[type="number"]:focus,select:focus{border-color:var(--border-focus);background:var(--bg-input-focus);box-shadow:0 0 0 3px var(--accent-subtle)}
+.row,.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.row .form-group,.grid-2 .field{margin-bottom:0}
+.btn{width:100%;padding:13px;border:none;border-radius:var(--radius-xl);font-size:14px;font-weight:500;font-family:var(--font-sans);cursor:pointer;transition:all var(--transition);letter-spacing:0.2px}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:var(--accent-hover)}
+.btn-primary:active{transform:scale(0.98);opacity:0.9}
+.btn-secondary{background:transparent;border:1px solid var(--border-default);color:var(--text-secondary);margin-top:8px}
+.btn-secondary:hover{background:var(--bg-surface-hover);color:var(--text-primary)}
+.btn:disabled{opacity:0.4;cursor:not-allowed}
+.mini{padding:6px 12px;border:1px solid var(--border-default);background:transparent;border-radius:var(--radius-sm);color:var(--text-secondary);font-size:11px;font-family:var(--font-sans);cursor:pointer;transition:all var(--transition);white-space:nowrap}
+.mini:hover{background:var(--bg-surface-hover);color:var(--text-primary)}
+.mini.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.link-btn{padding:5px 12px;border:1px solid var(--border-default);background:transparent;border-radius:var(--radius-sm);color:var(--accent);font-size:11px;font-family:var(--font-sans);cursor:pointer;transition:all var(--transition)}
+.link-btn:hover{background:var(--accent-subtle);border-color:var(--accent)}
+
+/* 上传 */
+.upload-wrap{display:block;position:relative}
+.upload-wrap input[type="file"]{display:none}
+.upload-area{padding:12px;background:var(--bg-surface);border:2px dashed var(--border-default);border-radius:var(--radius-md);text-align:center;cursor:pointer;transition:all var(--transition)}
+.upload-area:hover{border-color:var(--accent);background:var(--bg-surface-hover)}
+.upload-area.active{border-color:#30D158;background:rgba(48,209,88,0.06)}
+.upload-area.dragover{border-color:var(--accent);background:var(--accent-subtle)}
+.upload-icon{font-size:16px;margin-right:6px;opacity:0.6;display:inline-block;vertical-align:middle}
+.upload-text{font-size:12px;color:var(--text-secondary);display:inline-block;vertical-align:middle}
+
+/* 布局 */
+.layout{display:grid;grid-template-columns:360px 1fr;gap:16px;align-items:start}
+.left-panel .panel{padding:16px;margin-bottom:10px}
+.left-panel .section-title{margin-bottom:10px}
+.right-panel .panel{margin-bottom:14px}
+.canvas-wrap{background:#0a0a0a;border-radius:var(--radius-md);overflow:hidden;display:flex;align-items:center;justify-content:center;min-height:240px;position:relative}
+#tplCanvas{display:block;max-width:100%;max-height:62vh;height:auto;cursor:pointer}
+.ph{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:240px;color:var(--text-tertiary);font-size:13px;text-align:center;padding:30px;line-height:1.7}
+.ph .icon{font-size:38px;margin-bottom:10px;opacity:0.5}
+
+/* 白框信息条 */
+.boxbar{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:10px;flex-wrap:wrap}
+.box-info{font-size:11px;color:var(--text-secondary);line-height:1.5}
+.box-info b{color:var(--accent);font-weight:600}
+.boxbar-actions{display:flex;gap:6px;flex-wrap:wrap}
+
+/* 结果列表 */
+.results{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px;max-height:52vh;overflow-y:auto;padding-right:4px}
+.results::-webkit-scrollbar{width:4px}
+.results::-webkit-scrollbar-thumb{background:var(--border-default);border-radius:2px}
+.res-card{background:var(--bg-input);border:1px solid var(--border-subtle);border-radius:var(--radius-md);overflow:hidden;transition:all var(--transition)}
+.res-card:hover{border-color:var(--border-default)}
+.res-card .thumb{background:#0a0a0a;display:flex;align-items:center;justify-content:center;min-height:90px;padding:6px}
+.res-card .thumb img{max-width:100%;max-height:150px;display:block;border-radius:4px}
+.res-card .meta{display:flex;align-items:center;justify-content:space-between;gap:6px;padding:8px 10px;border-top:1px solid var(--border-subtle)}
+.res-card .name{font-size:11px;color:var(--text-secondary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1.4}
+.res-card .sub{font-size:10px;color:var(--text-tertiary);margin-top:2px}
+.icon-btn{flex:0 0 auto;width:26px;height:26px;border:1px solid var(--border-default);background:transparent;border-radius:var(--radius-sm);color:var(--accent);font-size:13px;cursor:pointer;transition:all var(--transition)}
+.icon-btn:hover{background:var(--accent-subtle);border-color:var(--accent)}
+.empty{grid-column:1/-1;text-align:center;color:var(--text-tertiary);font-size:12px;padding:28px 10px}
+
+/* 状态/进度 */
+.status{font-size:11px;color:var(--text-tertiary)}
+.progress{height:3px;background:var(--bg-input);border-radius:2px;overflow:hidden;margin-top:10px;display:none}
+.progress.show{display:block}
+.progress i{display:block;height:100%;width:0;background:var(--accent);transition:width 0.2s}
+.guide-box{padding:11px 13px;background:var(--accent-subtle);border-radius:var(--radius-md);border-left:3px solid var(--accent)}
+.guide-box p{font-size:11px;color:var(--text-secondary);line-height:1.6}
+.tip{padding:11px 13px;background:rgba(255,149,0,0.08);border-radius:var(--radius-md);font-size:11px;color:rgba(255,149,0,0.75);line-height:1.6;margin-top:10px}
+
+/* Toast */
+.toast{position:fixed;left:50%;bottom:36px;transform:translateX(-50%) translateY(14px);background:rgba(28,28,30,0.96);border:1px solid var(--border-default);color:var(--text-primary);font-size:13px;padding:11px 20px;border-radius:var(--radius-md);opacity:0;pointer-events:none;transition:all 0.25s;z-index:999;backdrop-filter:blur(20px);max-width:80vw;text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+h1{text-align:center;margin-bottom:6px;font-size:24px;font-weight:600;letter-spacing:-0.3px}
+.subtitle{text-align:center;font-size:12px;color:var(--text-tertiary);margin-bottom:18px}
+@media(max-width:940px){.layout{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>🧩 批量二维码合成</h1>
+  <p class="subtitle">导入底图自动识别白色二维码区域 → 批量填入二维码 → 一键打包下载</p>
+
+  <div class="layout">
+    <!-- ═══ 左侧控制 ═══ -->
+    <div class="left-panel">
+
+      <!-- 底图 -->
+      <div class="panel">
+        <div class="section-title" style="display:flex;justify-content:space-between;align-items:center">
+          <span>底图 <span id="panelInfo" style="color:var(--text-tertiary);font-weight:400;text-transform:none">未导入</span></span>
+          <button class="link-btn" id="tplBtn">导入底图</button>
+        </div>
+        <label class="upload-wrap">
+          <div class="upload-area" id="tplDrop">
+            <span class="upload-icon">🖼️</span>
+            <span class="upload-text" id="tplText">点击或拖入底图（必选）</span>
+          </div>
+          <input type="file" id="tplInput" accept="image/*">
+        </label>
+        <div class="boxbar">
+          <div class="box-info" id="boxInfo">导入底图后自动识别白框</div>
+          <div class="boxbar-actions">
+            <button class="mini" id="selectAll" disabled>全选</button>
+            <button class="mini" id="selectLargest" disabled>只选最大</button>
+            <button class="mini" id="manualBtn" disabled>手动框选</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 输出设置 -->
+      <div class="panel">
+        <div class="section-title">输出设置</div>
+        <div class="grid-2">
+          <div class="field">
+            <label>输出倍数</label>
+            <select id="scale">
+              <option value="auto" selected>自动 · 按码密度</option>
+              <option value="1">1x 原始尺寸</option>
+              <option value="2">2x 高清</option>
+              <option value="3">3x 超清</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>额外留白 (px)</label>
+            <input id="padding" type="number" value="0" min="0" max="80" step="1">
+          </div>
+        </div>
+      </div>
+
+      <!-- 二维码 -->
+      <div class="panel">
+        <div class="section-title">二维码图片</div>
+        <label class="upload-wrap">
+          <div class="upload-area" id="drop">
+            <span class="upload-icon">📱</span>
+            <span class="upload-text">点击或拖入二维码（可多选）</span>
+          </div>
+          <input type="file" id="fileInput" accept="image/*" multiple>
+        </label>
+        <div class="progress" id="progress"><i></i></div>
+        <button class="btn btn-secondary" id="zipBtn" disabled style="margin-top:10px">📦 下载全部 ZIP</button>
+        <button class="btn btn-secondary" id="clearBtn" disabled>🗑 清空结果</button>
+      </div>
+
+      <div class="tip">
+        💡 每个二维码会填入所有被选中的白框。只想填一个时，点掉其它框即可。
+      </div>
+    </div>
+
+    <!-- ═══ 右侧预览 ═══ -->
+    <div class="right-panel">
+      <div class="panel">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+          <span class="preview-title" style="margin-bottom:0">底图预览</span>
+          <span style="font-size:11px;color:var(--text-tertiary)" id="tplBadge">未导入</span>
+        </div>
+        <div class="canvas-wrap" id="tplFrame">
+          <canvas id="tplCanvas" style="display:none"></canvas>
+          <div class="ph" id="tplPlaceholder">
+            <div class="icon">🖼️</div>
+            <div>请先导入底图<br><span style="font-size:11px">导入后会自动识别图中的白色二维码区域</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+          <span class="preview-title" style="margin-bottom:0">生成结果 <span id="count" style="color:var(--accent)">0 张</span></span>
+          <span class="status" id="status">等待导入二维码</span>
+        </div>
+        <div class="results" id="results">
+          <div class="empty">还没有二维码，先从左侧导入几张吧</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  var $ = function(id){ return document.getElementById(id); };
+  var toastTimer = null;
+  function toast(msg){
+    var el = $("toast");
+    el.textContent = msg;
+    el.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ el.classList.remove("show"); }, 2600);
+  }
+
+  /* ───────────────────────────────────────────── 底图状态 */
+  var tplCanvas = $("tplCanvas");
+  var tplCtx = tplCanvas.getContext("2d");
+  var tplFrame = $("tplFrame");
+  var tplImage = null;
+  var tplW = 0, tplH = 0;
+  var boxes = [];
+  var selected = new Set();
+  var manualMode = false;
+  var dragStart = null, dragCurrent = null;
+  var suppressClick = false;
+  var maskCache = new Map();
+  var BOX_WHITE = 238;
+
+  function loadImage(src){
+    return new Promise(function(resolve, reject){
+      var img = new Image();
+      img.onload = function(){ resolve(img); };
+      img.onerror = function(){ reject(new Error("图片加载失败")); };
+      img.src = src;
+    });
+  }
+
+  function setTemplate(src, label){
+    return loadImage(src).then(function(img){
+      tplImage = img;
+      tplW = img.naturalWidth;
+      tplH = img.naturalHeight;
+      maskCache.clear();
+      tplCanvas.width = tplW;
+      tplCanvas.height = tplH;
+      tplCanvas.style.display = "block";
+      $("tplPlaceholder").style.display = "none";
+      tplCtx.clearRect(0, 0, tplW, tplH);
+      tplCtx.drawImage(img, 0, 0);
+
+      boxes = detectBoxes(tplCtx.getImageData(0, 0, tplW, tplH));
+      selected = new Set(boxes.length ? [0] : []);
+      drawTemplate();
+
+      $("panelInfo").textContent = boxes.length ? ("识别到 " + boxes.length + " 个白框") : "未识别到白框";
+      $("tplBadge").textContent = label || ("底图 " + tplW + "×" + tplH);
+      $("selectAll").disabled = !boxes.length;
+      $("selectLargest").disabled = !boxes.length;
+      $("manualBtn").disabled = false;
+      updateBoxInfo();
+      if (!boxes.length) toast("没有自动识别到白框，请点「手动框选」");
+      if (items.length) rerenderAll();
+    });
+  }
+
+  function drawTemplate(tempRect){
+    if (!tplImage) return;
+    tplCtx.clearRect(0, 0, tplW, tplH);
+    tplCtx.drawImage(tplImage, 0, 0);
+    tplCtx.save();
+    boxes.forEach(function(b, i){
+      var on = selected.has(i);
+      tplCtx.setLineDash(on ? [] : [5, 4]);
+      tplCtx.lineWidth = on ? 2 : 1.2;
+      tplCtx.strokeStyle = on ? "rgba(0,113,227,.95)" : "rgba(255,255,255,.35)";
+      tplCtx.strokeRect(b.x + .75, b.y + .75, b.w - 1.5, b.h - 1.5);
+
+      var size = Math.max(15, Math.min(22, Math.round(Math.min(b.w, b.h) * 0.11)));
+      tplCtx.setLineDash([]);
+      tplCtx.fillStyle = on ? "#0071E3" : "rgba(255,255,255,.35)";
+      tplCtx.beginPath();
+      if (tplCtx.roundRect) tplCtx.roundRect(b.x + 5, b.y + 5, size, size, 5);
+      else tplCtx.rect(b.x + 5, b.y + 5, size, size);
+      tplCtx.fill();
+      tplCtx.fillStyle = "#fff";
+      tplCtx.font = "600 " + Math.round(size * 0.62) + 'px -apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif';
+      tplCtx.textAlign = "center";
+      tplCtx.textBaseline = "middle";
+      tplCtx.fillText(String(i + 1), b.x + 5 + size / 2, b.y + 5 + size / 2 + 0.5);
+    });
+    if (tempRect){
+      tplCtx.setLineDash([6, 4]);
+      tplCtx.lineWidth = 1.5;
+      tplCtx.strokeStyle = "#30D158";
+      tplCtx.strokeRect(tempRect.x + .75, tempRect.y + .75, tempRect.w - 1.5, tempRect.h - 1.5);
+    }
+    tplCtx.restore();
+  }
+
+  function updateBoxInfo(){
+    if (!boxes.length){
+      $("boxInfo").textContent = tplImage ? "没有自动识别到白框，请点「手动框选」" : "导入底图后自动识别白框";
+      return;
+    }
+    var tail = manualMode ? " · 在底图上拖拽框选" : " · 点击白框可切换";
+    $("boxInfo").innerHTML = "已选 <b>" + selected.size + "</b> / " + boxes.length + " 个白框" + tail;
+  }
+
+  /* ───────────────────────────────────────────── 白框自动识别 */
+  function detectBoxes(imageData){
+    var w = imageData.width, h = imageData.height, data = imageData.data;
+    var total = w * h;
+    var white = new Uint8Array(total);
+    for (var i = 0, p = 0; i < total; i++, p += 4){
+      if (data[p] >= BOX_WHITE && data[p+1] >= BOX_WHITE && data[p+2] >= BOX_WHITE && data[p+3] >= 200) white[i] = 1;
+    }
+    var seen = new Uint8Array(total);
+    var queue = new Int32Array(total);
+    var found = [];
+
+    for (var start = 0; start < total; start++){
+      if (!white[start] || seen[start]) continue;
+      var head = 0, tail = 0;
+      queue[tail++] = start;
+      seen[start] = 1;
+      var minX = start % w, maxX = minX, minY = (start / w) | 0, maxY = minY, area = 0;
+      while (head < tail){
+        var idx = queue[head++];
+        area++;
+        var x = idx % w, y = (idx / w) | 0;
+        if (x < minX) minX = x; else if (x > maxX) maxX = x;
+        if (y < minY) minY = y; else if (y > maxY) maxY = y;
+        if (x > 0){ var n1 = idx - 1; if (white[n1] && !seen[n1]){ seen[n1] = 1; queue[tail++] = n1; } }
+        if (x < w-1){ var n2 = idx + 1; if (white[n2] && !seen[n2]){ seen[n2] = 1; queue[tail++] = n2; } }
+        if (y > 0){ var n3 = idx - w; if (white[n3] && !seen[n3]){ seen[n3] = 1; queue[tail++] = n3; } }
+        if (y < h-1){ var n4 = idx + w; if (white[n4] && !seen[n4]){ seen[n4] = 1; queue[tail++] = n4; } }
+      }
+      var bw = maxX - minX + 1, bh = maxY - minY + 1;
+      var fill = area / (bw * bh);
+      var ratio = bw / bh;
+      // 面积 / 宽高比 / 矩形填充率 三重过滤，排除文字和细边
+      if (area >= total * 0.003 && area < total * 0.85 &&
+          ratio >= 0.25 && ratio <= 4 && fill >= 0.86 &&
+          bw >= 24 && bh >= 24){
+        found.push({ x: minX, y: minY, w: bw, h: bh, area: area });
+      }
+    }
+    found.sort(function(a, b){ return b.area - a.area; });
+    return found.map(function(o){ return { x: o.x, y: o.y, w: o.w, h: o.h }; });
+  }
+
+  function canvasPoint(e){
+    var r = tplCanvas.getBoundingClientRect();
+    return {
+      x: Math.max(0, Math.min(tplW, (e.clientX - r.left) * tplW / r.width)),
+      y: Math.max(0, Math.min(tplH, (e.clientY - r.top) * tplH / r.height))
+    };
+  }
+
+  function currentDragRect(){
+    if (!dragStart || !dragCurrent) return null;
+    return {
+      x: Math.round(Math.min(dragStart.x, dragCurrent.x)),
+      y: Math.round(Math.min(dragStart.y, dragCurrent.y)),
+      w: Math.round(Math.abs(dragCurrent.x - dragStart.x)),
+      h: Math.round(Math.abs(dragCurrent.y - dragStart.y))
+    };
+  }
+
+  /* ───────────────────────────────────────────── 画布交互 */
+  tplCanvas.addEventListener("pointerdown", function(e){
+    if (!manualMode) return;
+    e.preventDefault();
+    dragStart = canvasPoint(e);
+    dragCurrent = dragStart;
+    if (tplCanvas.setPointerCapture) tplCanvas.setPointerCapture(e.pointerId);
+  });
+  tplCanvas.addEventListener("pointermove", function(e){
+    if (!dragStart) return;
+    dragCurrent = canvasPoint(e);
+    drawTemplate(currentDragRect());
+  });
+  tplCanvas.addEventListener("pointerup", function(){
+    if (!dragStart) return;
+    var r = currentDragRect();
+    dragStart = null;
+    dragCurrent = null;
+    manualMode = false;
+    $("manualBtn").classList.remove("active");
+    $("manualBtn").textContent = "手动框选";
+    if (r && r.w >= 16 && r.h >= 16){
+      boxes.push({ x: r.x, y: r.y, w: r.w, h: r.h, manual: true });
+      selected.add(boxes.length - 1);
+      suppressClick = true;
+      drawTemplate();
+      updateBoxInfo();
+      toast("已添加白框 " + boxes.length);
+      if (items.length) rerenderAll();
+    } else {
+      drawTemplate();
+      updateBoxInfo();
+    }
+  });
+  tplCanvas.addEventListener("click", function(e){
+    if (suppressClick){ suppressClick = false; return; }
+    if (manualMode || !boxes.length) return;
+    var p = canvasPoint(e);
+    var hit = -1, bestArea = Infinity;
+    boxes.forEach(function(b, i){
+      if (p.x >= b.x - 3 && p.x <= b.x + b.w + 3 && p.y >= b.y - 3 && p.y <= b.y + b.h + 3){
+        var a = b.w * b.h;
+        if (a < bestArea){ hit = i; bestArea = a; }
+      }
+    });
+    if (hit < 0) return;
+    if (selected.has(hit)) selected.delete(hit);
+    else selected.add(hit);
+    drawTemplate();
+    updateBoxInfo();
+    if (selected.size) rerenderAll();
+    else $("status").textContent = "请至少选择一个白框";
+  });
+
+  /* ───────────────────────────────────────────── 二维码识别与裁切 */
+  function analyzeQr(img){
+    var maxDim = 1600;
+    var scale = Math.min(1, maxDim / Math.max(img.naturalWidth, img.naturalHeight));
+    var w = Math.max(1, Math.round(img.naturalWidth * scale));
+    var h = Math.max(1, Math.round(img.naturalHeight * scale));
+
+    var c = document.createElement("canvas");
+    c.width = w; c.height = h;
+    var ctx = c.getContext("2d", { willReadFrequently: true });
+    ctx.fillStyle = "#fff";
+    ctx.fillRect(0, 0, w, h);
+    ctx.drawImage(img, 0, 0, w, h);
+    var data = ctx.getImageData(0, 0, w, h).data;
+
+    var ink = new Uint8Array(w * h);
+    for (var i = 0, p = 0; i < w * h; i++, p += 4){
+      var lum = (data[p] * 299 + data[p+1] * 587 + data[p+2] * 114) / 1000;
+      if (lum < 160) ink[i] = 1;
+    }
+
+    // 行投影：找最高墨迹带（二维码本体），忽略底部编号文字
+    var rowFlags = new Uint8Array(h);
+    for (var y = 0; y < h; y++){
+      var base = y * w;
+      for (var x = 0; x < w; x++){ if (ink[base + x]){ rowFlags[y] = 1; break; } }
+    }
+    var rowBands = bands(rowFlags);
+    if (!rowBands.length) throw new Error("图片里没有找到二维码");
+    var y0 = rowBands[0][0], y1 = rowBands[0][1];
+    for (var bi = 0; bi < rowBands.length; bi++){
+      if (rowBands[bi][1] - rowBands[bi][0] > y1 - y0){ y0 = rowBands[bi][0]; y1 = rowBands[bi][1]; }
+    }
+
+    // 列投影：该带内最宽列带
+    var colFlags = new Uint8Array(w);
+    for (var cx2 = 0; cx2 < w; cx2++){
+      for (var cy2 = y0; cy2 <= y1; cy2++){
+        if (ink[cy2 * w + cx2]){ colFlags[cx2] = 1; break; }
+      }
+    }
+    var colBands = bands(colFlags);
+    if (!colBands.length) throw new Error("图片里没有找到二维码");
+    var x0 = colBands[0][0], x1 = colBands[0][1];
+    for (var ci = 0; ci < colBands.length; ci++){
+      if (colBands[ci][1] - colBands[ci][0] > x1 - x0){ x0 = colBands[ci][0]; x1 = colBands[ci][1]; }
+    }
+
+    var side = Math.max(x1 - x0 + 1, y1 - y0 + 1);
+    side = Math.min(side, w, h);
+    var sx = Math.round((x0 + x1 + 1) / 2 - side / 2);
+    var sy = Math.round((y0 + y1 + 1) / 2 - side / 2);
+    sx = Math.max(0, Math.min(sx, w - side));
+    sy = Math.max(0, Math.min(sy, h - side));
+
+    // 左上定位符第一行 = 连续 7 个黑模块 → 估算模块数
+    var run = 0;
+    while (run < side && isDarkAt(data, w, sx + run, sy)) run++;
+    var valid = [];
+    for (var n = 21; n <= 177; n += 4) valid.push(n);
+    var modules = 53;
+    if (run > 0 && run < side / 2){
+      var est = side / (run / 7);
+      modules = valid.reduce(function(best, nn){ return Math.abs(nn - est) < Math.abs(best - est) ? nn : best; }, valid[0]);
+    }
+
+    // 以码为中心裁正方形，保留原图静区，避开下方编号
+    var cropSide = Math.min(side * 1.15, w, h);
+    var bottomLimit = h - 1;
+    for (var ri = 0; ri < rowBands.length; ri++){
+      if (rowBands[ri][0] > y1 && rowBands[ri][0] <= bottomLimit) bottomLimit = rowBands[ri][0] - 1;
+    }
+    var centerY = (y0 + y1 + 1) / 2;
+    if (2 * (bottomLimit - centerY) >= side) cropSide = Math.min(cropSide, 2 * (bottomLimit - centerY));
+    cropSide = Math.max(1, Math.round(cropSide));
+
+    var centerX = (x0 + x1 + 1) / 2;
+    var cropX = Math.round(centerX - cropSide / 2);
+    var cropY = Math.round(centerY - cropSide / 2);
+    cropX = Math.max(0, Math.min(cropX, w - cropSide));
+    cropY = Math.max(0, Math.min(cropY, h - cropSide));
+
+    var qrCanvas = document.createElement("canvas");
+    qrCanvas.width = cropSide;
+    qrCanvas.height = cropSide;
+    qrCanvas.getContext("2d").drawImage(c, cropX, cropY, cropSide, cropSide, 0, 0, cropSide, cropSide);
+    return { image: qrCanvas, modules: modules };
+  }
+
+  function bands(flags){
+    var out = [];
+    var start = -1;
+    for (var i = 0; i < flags.length; i++){
+      if (flags[i] && start < 0) start = i;
+      else if (!flags[i] && start >= 0){ out.push([start, i - 1]); start = -1; }
+    }
+    if (start >= 0) out.push([start, flags.length - 1]);
+    return out;
+  }
+
+  function isDarkAt(data, w, x, y){
+    var p = (y * w + x) * 4;
+    var lum = (data[p] * 299 + data[p+1] * 587 + data[p+2] * 114) / 1000;
+    return lum < 128;
+  }
+
+  /* ───────────────────────────────────────────── 合成 */
+  function getPanelMask(rect, padding, scale, target){
+    var key = [rect.x, rect.y, rect.w, rect.h, padding, scale, target].join(",");
+    var mask = maskCache.get(key);
+    if (mask) return mask;
+
+    var x = rect.x * scale, y = rect.y * scale;
+    var w = rect.w * scale, h = rect.h * scale;
+    var px = x + (w - target) / 2;
+    var py = y + (h - target) / 2;
+    var sx = px / scale, sy = py / scale, ssize = target / scale;
+
+    mask = document.createElement("canvas");
+    mask.width = target;
+    mask.height = target;
+    var mctx = mask.getContext("2d", { willReadFrequently: true });
+    mctx.drawImage(tplImage, sx, sy, ssize, ssize, 0, 0, target, target);
+    var id = mctx.getImageData(0, 0, target, target);
+    var d = id.data;
+    for (var i = 0; i < d.length; i += 4){
+      var on = d[i] >= BOX_WHITE && d[i+1] >= BOX_WHITE && d[i+2] >= BOX_WHITE && d[i+3] >= 200;
+      d[i] = 255; d[i+1] = 255; d[i+2] = 255;
+      d[i+3] = on ? 255 : 0;
+    }
+    mctx.putImageData(id, 0, 0);
+    maskCache.set(key, mask);
+    return mask;
+  }
+
+  function drawQrImage(ctx, qrImage, rect, padding, scale){
+    var x = rect.x * scale, y = rect.y * scale;
+    var w = rect.w * scale, h = rect.h * scale;
+    var target = Math.min(w, h) - padding * 2 * scale;
+    if (target <= 0) throw new Error("留白太大，二维码放不下");
+    var px = x + (w - target) / 2;
+    var py = y + (h - target) / 2;
+
+    var temp = document.createElement("canvas");
+    temp.width = target;
+    temp.height = target;
+    var tctx = temp.getContext("2d");
+    tctx.imageSmoothingEnabled = true;
+    tctx.imageSmoothingQuality = "high";
+    tctx.drawImage(qrImage, 0, 0, target, target);
+    // 自动识别的白框用底图形状做蒙版保留圆角；手动框选直接贴满
+    if (!rect.manual){
+      tctx.globalCompositeOperation = "destination-in";
+      tctx.drawImage(getPanelMask(rect, padding, scale, target), 0, 0);
+    }
+    ctx.drawImage(temp, px, py);
+  }
+
+  function autoScale(modules){
+    if (modules > 129) return 3;
+    if (modules > 77) return 2;
+    return 1;
+  }
+
+  function renderComposite(qrImage, scale, padding){
+    if (!tplImage) throw new Error("底图未就绪");
+    var chosen = boxes.filter(function(_, i){ return selected.has(i); });
+    if (!chosen.length) throw new Error("请至少选择一个白框");
+    var canvas = document.createElement("canvas");
+    canvas.width = tplW * scale;
+    canvas.height = tplH * scale;
+    var ctx = canvas.getContext("2d");
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = "high";
+    ctx.drawImage(tplImage, 0, 0, canvas.width, canvas.height);
+    for (var i = 0; i < chosen.length; i++) drawQrImage(ctx, qrImage, chosen[i], padding, scale);
+    return canvas;
+  }
+
+  function composeQr(img, scaleMode, padding){
+    var art = analyzeQr(img);
+    var scale = scaleMode === "auto" ? autoScale(art.modules) : scaleMode;
+    var canvas = renderComposite(art.image, scale, padding);
+    return { image: art.image, modules: art.modules, canvas: canvas, scale: scale };
+  }
+
+  function makePreview(canvas){
+    var maxW = 460;
+    if (canvas.width <= maxW) return canvas.toDataURL("image/png");
+    var c = document.createElement("canvas");
+    c.width = maxW;
+    c.height = Math.round(canvas.height * maxW / canvas.width);
+    var ctx = c.getContext("2d");
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = "high";
+    ctx.drawImage(canvas, 0, 0, c.width, c.height);
+    return c.toDataURL("image/png");
+  }
+
+  function itemSub(item){
+    var extra = item.auto ? (" · 自动 " + item.scale + "x") : "";
+    if (!item.auto && autoScale(item.modules) > item.scale){
+      extra += " · 建议 " + autoScale(item.modules) + "x";
+    }
+    return item.modules + "×" + item.modules + " 模块 · " + item.canvas.width + "×" + item.canvas.height + extra;
+  }
+
+  /* ───────────────────────────────────────────── 结果与下载 */
+  var items = [];
+  var busy = false;
+
+  function refreshResults(){
+    var box = $("results");
+    box.innerHTML = "";
+    $("count").textContent = items.length + " 张";
+    $("zipBtn").disabled = !items.length || busy;
+    $("clearBtn").disabled = !items.length || busy;
+
+    if (!items.length){
+      box.innerHTML = '<div class="empty">还没有二维码，先从左侧导入几张吧</div>';
+      return;
+    }
+    items.forEach(function(item){
+      var card = document.createElement("div");
+      card.className = "res-card";
+      var thumb = document.createElement("div");
+      thumb.className = "thumb";
+      var im = document.createElement("img");
+      im.src = item.previewUrl;
+      im.alt = item.name;
+      thumb.appendChild(im);
+      card.appendChild(thumb);
+
+      var meta = document.createElement("div");
+      meta.className = "meta";
+      var info = document.createElement("div");
+      info.className = "name";
+      info.textContent = item.name;
+      var sub = document.createElement("div");
+      sub.className = "sub";
+      sub.textContent = itemSub(item);
+      info.appendChild(sub);
+
+      var btn = document.createElement("button");
+      btn.className = "icon-btn";
+      btn.title = "下载这张";
+      btn.textContent = "↓";
+      btn.addEventListener("click", function(){ downloadOne(item); });
+
+      meta.appendChild(info);
+      meta.appendChild(btn);
+      card.appendChild(meta);
+      box.appendChild(card);
+    });
+  }
+
+  function rerenderAll(){
+    if (!items.length || !tplImage || busy) return;
+    var mode = $("scale").value;
+    var padding = Math.max(0, Math.min(80, parseInt($("padding").value, 10) || 0));
+    try {
+      items.forEach(function(item){
+        var scale = mode === "auto" ? autoScale(item.modules) : Math.max(1, Math.min(3, parseInt(mode, 10) || 1));
+        item.canvas = renderComposite(item.image, scale, padding);
+        item.scale = scale;
+        item.auto = mode === "auto" && scale > 1;
+        item.previewUrl = makePreview(item.canvas);
+      });
+      refreshResults();
+      $("status").textContent = mode === "auto"
+        ? ("已按自动清晰度重新生成 " + items.length + " 张")
+        : ("已按 " + mode + "x 重新生成 " + items.length + " 张");
+    } catch (err){
+      toast(err.message || "重新生成失败");
+    }
+  }
+
+  function downloadBlob(blob, filename){
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(function(){ URL.revokeObjectURL(a.href); }, 4000);
+  }
+
+  function downloadOne(item){
+    item.canvas.toBlob(function(blob){
+      if (blob) downloadBlob(blob, item.name + ".png");
+    }, "image/png");
+  }
+
+  function addFiles(files){
+    if (busy) return;
+    var list = Array.from(files).filter(function(f){ return f.type.indexOf("image/") === 0; });
+    if (!list.length){ toast("请选择图片文件"); return; }
+    if (!tplImage){ toast("请先导入底图"); return; }
+
+    busy = true;
+    $("zipBtn").disabled = true;
+    $("clearBtn").disabled = true;
+    $("progress").classList.add("show");
+    var bar = $("progress").firstElementChild;
+    bar.style.width = "0%";
+
+    var mode = $("scale").value;
+    var padding = Math.max(0, Math.min(80, parseInt($("padding").value, 10) || 0));
+    var queue = Promise.resolve();
+
+    list.forEach(function(file, i){
+      queue = queue.then(function(){
+        $("status").textContent = "正在处理 " + (i+1) + "/" + list.length + "：" + file.name;
+        var url = URL.createObjectURL(file);
+        return loadImage(url).then(function(img){
+          URL.revokeObjectURL(url);
+          var res = composeQr(img, mode, padding);
+          items.push({
+            name: file.name.replace(/\.[^.]+$/, "") || ("qr-" + (i+1)),
+            image: res.image,
+            canvas: res.canvas,
+            modules: res.modules,
+            scale: res.scale,
+            auto: mode === "auto" && res.scale > 1,
+            previewUrl: makePreview(res.canvas)
+          });
+          refreshResults();
+        }).catch(function(err){
+          console.warn(file.name, err);
+          toast(file.name + "：" + (err.message || "处理失败"));
+        }).then(function(){
+          bar.style.width = Math.round(((i+1) / list.length) * 100) + "%";
+          return new Promise(function(r){ setTimeout(r, 0); });
+        });
+      });
+    });
+
+    queue.then(function(){
+      busy = false;
+      $("progress").classList.remove("show");
+      $("status").textContent = items.length ? ("已生成 " + items.length + " 张") : "等待导入二维码";
+      refreshResults();
+      if (list.length){
+        var dense = items.some(function(it){ return !it.auto && autoScale(it.modules) > it.scale; });
+        toast(dense ? "完成合成；高密度码在 1x 下可能偏小，建议选「自动」" : ("完成 " + list.length + " 张合成"));
+      }
+    });
+  }
+
+  /* ───────────────────────────────────────────── ZIP 打包 */
+  var CRC_TABLE = (function(){
+    var table = new Uint32Array(256);
+    for (var n = 0; n < 256; n++){
+      var c = n;
+      for (var k = 0; k < 8; k++) c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
+      table[n] = c >>> 0;
+    }
+    return table;
+  })();
+
+  function crc32(bytes){
+    var c = 0xFFFFFFFF;
+    for (var i = 0; i < bytes.length; i++){
+      c = CRC_TABLE[(c ^ bytes[i]) & 0xFF] ^ (c >>> 8);
+    }
+    return (c ^ 0xFFFFFFFF) >>> 0;
+  }
+
+  function buildZip(entries){
+    var encoder = new TextEncoder();
+    var now = new Date();
+    var dosTime = ((now.getHours() << 11) | (now.getMinutes() << 5) | (now.getSeconds() >> 1)) & 0xFFFF;
+    var dosDate = (((now.getFullYear() - 1980) << 9) | ((now.getMonth() + 1) << 5) | now.getDate()) & 0xFFFF;
+
+    var parts = [];
+    var central = [];
+    var offset = 0;
+
+    return entries.reduce(function(chain, entry){
+      return chain.then(function(){
+        var nameBytes = encoder.encode(entry.name);
+        return entry.blob.arrayBuffer().then(function(buf){
+          var data = new Uint8Array(buf);
+          var crc = crc32(data);
+
+          var local = new DataView(new ArrayBuffer(30));
+          local.setUint32(0, 0x04034B50, true);
+          local.setUint16(4, 20, true);
+          local.setUint16(6, 0x0800, true);
+          local.setUint16(8, 0, true);
+          local.setUint16(10, dosTime, true);
+          local.setUint16(12, dosDate, true);
+          local.setUint32(14, crc, true);
+          local.setUint32(18, data.length, true);
+          local.setUint32(22, data.length, true);
+          local.setUint16(26, nameBytes.length, true);
+          local.setUint16(28, 0, true);
+
+          parts.push(new Uint8Array(local.buffer), nameBytes, data);
+
+          var cd = new DataView(new ArrayBuffer(46));
+          cd.setUint32(0, 0x02014B50, true);
+          cd.setUint16(4, 20, true);
+          cd.setUint16(6, 20, true);
+          cd.setUint16(8, 0x0800, true);
+          cd.setUint16(10, 0, true);
+          cd.setUint16(12, dosTime, true);
+          cd.setUint16(14, dosDate, true);
+          cd.setUint32(16, crc, true);
+          cd.setUint32(20, data.length, true);
+          cd.setUint32(24, data.length, true);
+          cd.setUint16(28, nameBytes.length, true);
+          cd.setUint32(42, offset, true);
+          central.push(new Uint8Array(cd.buffer), nameBytes);
+
+          offset += 30 + nameBytes.length + data.length;
+        });
+      });
+    }, Promise.resolve()).then(function(){
+      var centralStart = offset;
+      var centralSize = 0;
+      for (var i = 0; i < central.length; i++) centralSize += central[i].length;
+
+      var eocd = new DataView(new ArrayBuffer(22));
+      eocd.setUint32(0, 0x06054B50, true);
+      eocd.setUint16(8, entries.length, true);
+      eocd.setUint16(10, entries.length, true);
+      eocd.setUint32(12, centralSize, true);
+      eocd.setUint32(16, centralStart, true);
+
+      return new Blob(parts.concat(central, [new Uint8Array(eocd.buffer)]), { type: "application/zip" });
+    });
+  }
+
+  function downloadZip(){
+    if (!items.length || busy) return;
+    $("zipBtn").disabled = true;
+    $("status").textContent = "正在打包 ZIP…";
+    var used = new Map();
+    var entries = [];
+    var chain = Promise.resolve();
+
+    items.forEach(function(item){
+      chain = chain.then(function(){
+        return new Promise(function(resolve){
+          item.canvas.toBlob(function(blob){
+            var name = item.name + ".png";
+            var count = used.get(name) || 0;
+            used.set(name, count + 1);
+            if (count) name = item.name + "-" + (count + 1) + ".png";
+            entries.push({ name: name, blob: blob });
+            resolve();
+          }, "image/png");
+        });
+      });
+    });
+
+    chain.then(function(){ return buildZip(entries); }).then(function(zip){
+      downloadBlob(zip, "二维码合成_" + items.length + "张.zip");
+      toast("ZIP 已开始下载");
+    }).catch(function(err){
+      console.error(err);
+      toast("打包失败：" + (err.message || err));
+    }).then(function(){
+      $("zipBtn").disabled = !items.length;
+      $("status").textContent = items.length ? ("已生成 " + items.length + " 张") : "等待导入二维码";
+    });
+  }
+
+  /* ───────────────────────────────────────────── 事件绑定 */
+  $("tplBtn").addEventListener("click", function(){ $("tplInput").click(); });
+  $("tplDrop").addEventListener("click", function(){ $("tplInput").click(); });
+  $("tplInput").addEventListener("change", function(e){
+    var file = e.target.files[0];
+    e.target.value = "";
+    if (!file) return;
+    var url = URL.createObjectURL(file);
+    setTemplate(url, file.name).then(function(){
+      URL.revokeObjectURL(url);
+      $("tplText").textContent = "✓ " + file.name;
+      $("tplDrop").classList.add("active");
+      toast("底图已导入，已自动识别白框");
+    }).catch(function(err){
+      URL.revokeObjectURL(url);
+      toast(err.message || "底图加载失败");
+    });
+  });
+
+  $("drop").addEventListener("click", function(){ $("fileInput").click(); });
+  $("fileInput").addEventListener("change", function(e){
+    addFiles(e.target.files);
+    e.target.value = "";
+  });
+
+  $("zipBtn").addEventListener("click", downloadZip);
+  $("clearBtn").addEventListener("click", function(){
+    if (busy) return;
+    items = [];
+    refreshResults();
+    $("status").textContent = "等待导入二维码";
+  });
+
+  $("selectAll").addEventListener("click", function(){
+    if (!boxes.length) return;
+    selected = new Set(boxes.map(function(_, i){ return i; }));
+    drawTemplate();
+    updateBoxInfo();
+    rerenderAll();
+  });
+  $("selectLargest").addEventListener("click", function(){
+    if (!boxes.length) return;
+    selected = new Set([0]);
+    drawTemplate();
+    updateBoxInfo();
+    rerenderAll();
+  });
+  $("manualBtn").addEventListener("click", function(){
+    if (!tplImage) return;
+    manualMode = !manualMode;
+    this.classList.toggle("active", manualMode);
+    this.textContent = manualMode ? "拖拽框选…" : "手动框选";
+    updateBoxInfo();
+  });
+
+  $("scale").addEventListener("change", rerenderAll);
+  $("padding").addEventListener("change", rerenderAll);
+
+  // 拖拽导入底图
+  ["dragenter", "dragover"].forEach(function(evt){
+    tplFrame.addEventListener(evt, function(e){
+      e.preventDefault(); e.stopPropagation();
+      tplFrame.style.outline = "2px dashed var(--accent)";
+    });
+  });
+  ["dragleave", "drop"].forEach(function(evt){
+    tplFrame.addEventListener(evt, function(e){
+      e.preventDefault(); e.stopPropagation();
+      tplFrame.style.outline = "";
+    });
+  });
+  tplFrame.addEventListener("drop", function(e){
+    var file = e.dataTransfer.files[0];
+    if (!file || file.type.indexOf("image/") !== 0) return;
+    var url = URL.createObjectURL(file);
+    setTemplate(url, file.name).then(function(){
+      URL.revokeObjectURL(url);
+      $("tplText").textContent = "✓ " + file.name;
+      $("tplDrop").classList.add("active");
+      toast("底图已导入，已自动识别白框");
+    }).catch(function(err){
+      URL.revokeObjectURL(url);
+      toast(err.message || "底图加载失败");
+    });
+  });
+
+  // 拖拽导入二维码
+  var dropEl = $("drop");
+  ["dragenter", "dragover"].forEach(function(evt){
+    dropEl.addEventListener(evt, function(e){
+      e.preventDefault(); e.stopPropagation();
+      dropEl.classList.add("dragover");
+    });
+  });
+  ["dragleave", "drop"].forEach(function(evt){
+    dropEl.addEventListener(evt, function(e){
+      e.preventDefault(); e.stopPropagation();
+      dropEl.classList.remove("dragover");
+    });
+  });
+  dropEl.addEventListener("drop", function(e){
+    if (e.dataTransfer.files.length) addFiles(e.dataTransfer.files);
+  });
+})();
+</script>
+</body>
+</html>
