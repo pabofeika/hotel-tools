@@ -36,9 +36,9 @@ body{font-family:var(--font-sans);background:var(--bg-primary);min-height:100vh;
 .container{max-width:1180px;margin:0 auto}
 .panel{background:var(--bg-surface);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:20px;margin-bottom:14px;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
 .section-title,.preview-title{font-size:12px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:14px}
-.form-group,.field{margin-bottom:14px}
-.form-group:last-child,.field:last-of-type{margin-bottom:0}
-label,.field label{display:block;font-size:12px;font-weight:500;color:var(--text-secondary);margin-bottom:8px;letter-spacing:0.2px}
+.field{margin-bottom:14px}
+.field:last-child{margin-bottom:0}
+.field label{display:block;font-size:12px;font-weight:500;color:var(--text-secondary);margin-bottom:8px;letter-spacing:0.2px}
 select{width:100%;padding:11px 14px;background:var(--bg-input);border:1px solid var(--border-subtle);border-radius:var(--radius-md);color:var(--text-primary);font-size:14px;font-family:var(--font-sans);outline:none;transition:all var(--transition);appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='rgba(255,255,255,0.32)'%3E%3Cpath d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:36px}
 select:focus{border-color:var(--border-focus);background-color:var(--bg-input-focus);box-shadow:0 0 0 3px var(--accent-subtle)}
 select option{background:#1c1c1e;color:var(--text-primary)}
@@ -51,8 +51,6 @@ select option{background:#1c1c1e;color:var(--text-primary)}
 .btn-secondary{background:transparent;border:1px solid var(--border-default);color:var(--text-secondary);margin-top:8px}
 .btn-secondary:hover:not(:disabled){background:var(--bg-surface-hover);color:var(--text-primary)}
 .btn:disabled{opacity:0.4;cursor:not-allowed}
-.btn-mini{padding:8px 14px;border:1px solid var(--border-default);background:transparent;border-radius:var(--radius-md);color:var(--text-secondary);font-size:12px;font-family:var(--font-sans);cursor:pointer;transition:all var(--transition)}
-.btn-mini:hover{background:var(--bg-surface-hover);color:var(--text-primary)}
 
 /* 上传 */
 .upload-wrap{display:block;position:relative}
@@ -69,18 +67,17 @@ select option{background:#1c1c1e;color:var(--text-primary)}
 .left-panel .panel{padding:16px;margin-bottom:10px}
 .left-panel .section-title{margin-bottom:10px}
 
-/* 环境徽章 */
+/* 引擎徽章 */
 .env-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:20px;font-size:12px;font-weight:500;margin-bottom:14px}
-.env-badge.checking{background:rgba(255,255,255,0.08);color:var(--text-secondary)}
 .env-badge.ok{background:rgba(48,209,88,0.14);color:var(--success)}
-.env-badge.no{background:rgba(255,69,58,0.14);color:var(--error)}
+.env-badge.warn{background:rgba(255,214,10,0.14);color:var(--warning)}
 .env-badge code{font-family:var(--font-mono);font-size:11px;background:rgba(0,0,0,0.3);padding:1px 5px;border-radius:3px}
 
 /* 预览 */
 .preview-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .preview-box{background:#0a0a0a;border:1px solid var(--border-subtle);border-radius:var(--radius-md);min-height:220px;display:flex;align-items:center;justify-content:center;padding:12px;position:relative;overflow:hidden}
-.preview-box .label{position:absolute;top:8px;left:10px;font-size:10px;color:var(--text-tertiary);letter-spacing:0.5px;text-transform:uppercase;z-index:2}
-.preview-box img{max-width:100%;max-height:300px;display:block;image-rendering:auto}
+.preview-box .label{position:absolute;top:8px;left:10px;font-size:10px;color:var(--text-tertiary);letter-spacing:0.5px;text-transform:uppercase;z-index:2;background:rgba(0,0,0,.45);padding:2px 6px;border-radius:4px}
+.preview-box img{max-width:100%;max-height:300px;display:block}
 .preview-box.checker{background-image:linear-gradient(45deg,#1a1a1a 25%,transparent 25%),linear-gradient(-45deg,#1a1a1a 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#1a1a1a 75%),linear-gradient(-45deg,transparent 75%,#1a1a1a 75%);background-size:16px 16px;background-position:0 0,0 8px,8px -8px,-8px 0;background-color:#111}
 .ph{color:var(--text-tertiary);font-size:12px;text-align:center;line-height:1.8}
 .ph .icon{font-size:30px;display:block;margin-bottom:6px;opacity:0.5}
@@ -104,6 +101,7 @@ select option{background:#1c1c1e;color:var(--text-primary)}
 
 h1{text-align:center;margin-bottom:8px;font-size:24px;font-weight:600;letter-spacing:-0.3px}
 .subtitle{text-align:center;font-size:12px;color:var(--text-tertiary);margin-bottom:16px}
+.footnote{text-align:center;font-size:10px;color:var(--text-tertiary);margin-top:18px;line-height:1.7}
 @media(max-width:940px){.layout{grid-template-columns:1fr}.preview-grid{grid-template-columns:1fr}}
 </style>
 </head>
@@ -112,7 +110,7 @@ h1{text-align:center;margin-bottom:8px;font-size:24px;font-weight:600;letter-spa
   <h1>✒️ Logo 矢量化</h1>
   <p class="subtitle">位图 Logo / 印章 / 字标 → 平滑 SVG（Potrace 贝塞尔拟合，可无限放大）</p>
 
-  <div class="env-badge checking" id="envBadge">⏳ 检测本地矢量服务…</div>
+  <div class="env-badge ok" id="envBadge">🚀 浏览器本地运算 · 无需任何服务</div>
 
   <div class="layout">
     <!-- ═══ 左侧控制 ═══ -->
@@ -159,6 +157,13 @@ h1{text-align:center;margin-bottom:8px;font-size:24px;font-weight:600;letter-spa
             </select>
           </div>
         </div>
+        <div class="field" id="engineField" style="margin-top:12px;display:none">
+          <label>运算引擎</label>
+          <select id="optEngine">
+            <option value="browser" selected>浏览器（快，无需服务）</option>
+            <option value="local">本地 Potrace 原生（更精细）</option>
+          </select>
+        </div>
       </div>
 
       <div class="panel">
@@ -169,7 +174,7 @@ h1{text-align:center;margin-bottom:8px;font-size:24px;font-weight:600;letter-spa
         <button class="btn btn-secondary" id="pngBtn" disabled>🖼️ 导出 PNG (2x)</button>
       </div>
 
-      <div class="tip" id="hintBox">
+      <div class="tip">
         💡 适用于扁平色图形。照片、渐变、复杂插画会被色块化。
       </div>
     </div>
@@ -212,12 +217,19 @@ h1{text-align:center;margin-bottom:8px;font-size:24px;font-weight:600;letter-spa
       </div>
     </div>
   </div>
+
+  <p class="footnote">
+    引擎：Potrace 曲线拟合（浏览器端 JS 移植版 / 本地原生二进制）。<br>
+    浏览器模式全部在本地完成，图片不会上传到任何服务器。
+  </p>
 </div>
 
 <div class="toast" id="toast"></div>
 
+<script src="./potrace.js"></script>
 <script>
 (function(){
+  "use strict";
   var $ = function(id){ return document.getElementById(id); };
   var toastTimer = null;
   function toast(msg){
@@ -225,41 +237,328 @@ h1{text-align:center;margin-bottom:8px;font-size:24px;font-weight:600;letter-spa
     el.textContent = msg;
     el.classList.add("show");
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(function(){ el.classList.remove("show"); }, 2800);
+    toastTimer = setTimeout(function(){ el.classList.remove("show"); }, 3000);
   }
 
-  var API = "/api/vectorize";
-  var serviceReady = false;
+  var localReady = false;
   var currentFile = null;
   var currentSvg = null;
   var currentName = "logo";
+  var busy = false;
 
-  /* ───────────── 环境检测 ───────────── */
-  function checkEnv(){
+  /* ═══════════════ 引擎检测（本地服务为可选项） ═══════════════ */
+  function checkLocal(){
     fetch("/api/ping", { cache: "no-store" })
-      .then(function(r){ return r.ok ? r.text() : Promise.reject(new Error("no")); })
+      .then(function(r){ return r.ok ? r.text() : Promise.reject(); })
       .then(function(t){
         if (t.trim() !== "OK") throw new Error("no");
-        serviceReady = true;
+        localReady = true;
+        $("engineField").style.display = "";
         var b = $("envBadge");
         b.className = "env-badge ok";
-        b.textContent = "✅ 本地矢量服务就绪";
-        updateBtn();
+        b.innerHTML = "🚀 浏览器本地运算 · 无需任何服务（检测到本地高精度引擎，可切换）";
       })
       .catch(function(){
-        serviceReady = false;
-        var b = $("envBadge");
-        b.className = "env-badge no";
-        b.innerHTML = "⚠️ 需要本地服务 — 终端运行 <code>node server.js</code> 后访问 <code>localhost:8765</code>";
-        updateBtn();
+        localReady = false;
+        $("engineField").style.display = "none";
       });
   }
 
-  function updateBtn(){
-    $("convertBtn").disabled = !(serviceReady && currentFile);
+  /* ═══════════════ 浏览器端管线 ═══════════════ */
+  function decodeImage(url, maxDim){
+    return new Promise(function(resolve, reject){
+      var img = new Image();
+      img.onload = function(){
+        var s = Math.min(1, maxDim / Math.max(img.naturalWidth, img.naturalHeight));
+        var w = Math.max(1, Math.round(img.naturalWidth * s));
+        var h = Math.max(1, Math.round(img.naturalHeight * s));
+        var c = document.createElement("canvas");
+        c.width = w; c.height = h;
+        var ctx = c.getContext("2d", { willReadFrequently: true });
+        ctx.drawImage(img, 0, 0, w, h);
+        resolve({ canvas: c, ctx: ctx, w: w, h: h, id: ctx.getImageData(0, 0, w, h) });
+      };
+      img.onerror = function(){ reject(new Error("图片解码失败")); };
+      img.src = url;
+    });
   }
 
-  /* ───────────── 上传 ───────────── */
+  // 背景色 = 边框像素众数
+  function estimateBackground(id){
+    var w = id.width, h = id.height, d = id.data;
+    var strip = Math.max(1, Math.round(Math.min(w, h) * 0.02));
+    var hist = new Map();
+    function push(x, y){
+      var p = (y * w + x) * 4;
+      if (d[p + 3] < 10) return;
+      var key = ((d[p] >> 3) << 10) | ((d[p + 1] >> 3) << 5) | (d[p + 2] >> 3);
+      var e = hist.get(key);
+      if (!e){ e = { n: 0, r: 0, g: 0, b: 0 }; hist.set(key, e); }
+      e.n++; e.r += d[p]; e.g += d[p + 1]; e.b += d[p + 2];
+    }
+    for (var x = 0; x < w; x++){ for (var y = 0; y < strip; y++){ push(x, y); push(x, h - 1 - y); } }
+    for (var y2 = 0; y2 < h; y2++){ for (var x2 = 0; x2 < strip; x2++){ push(x2, y2); push(w - 1 - x2, y2); } }
+    if (!hist.size) return null;
+    var best = null, total = 0;
+    hist.forEach(function(e){ total += e.n; if (!best || e.n > best.n) best = e; });
+    var col = [best.r / best.n, best.g / best.n, best.b / best.n];
+    var dev = 0;
+    hist.forEach(function(e){
+      var c = [e.r / e.n, e.g / e.n, e.b / e.n];
+      dev += (Math.abs(c[0] - col[0]) + Math.abs(c[1] - col[1]) + Math.abs(c[2] - col[2])) / 3 * e.n;
+    });
+    return { color: col.map(Math.round), spread: (dev / Math.max(1, total)) / 255 * 100, ratio: best.n / total };
+  }
+
+  // 颜色核心：内部像素直方图 → 合并相近色（复刻 Python 的 core 取色）
+  function extractCores(id, ink, requestK, bgTest){
+    var w = id.width, h = id.height, d = id.data;
+    var inner = [];
+    for (var y = 1; y < h - 1; y++){
+      for (var x = 1; x < w - 1; x++){
+        var i = y * w + x;
+        if (!ink[i]) continue;
+        if (!ink[i - 1] || !ink[i + 1] || !ink[i - w] || !ink[i + w]) continue;
+        if (bgTest && bgTest(i)) continue;
+        inner.push(i);
+      }
+    }
+    if (inner.length < 300){
+      inner = [];
+      for (var j = 0; j < w * h; j++){ if (ink[j] && !(bgTest && bgTest(j))) inner.push(j); }
+    }
+    if (!inner.length) return [];
+
+    var hist = new Map();
+    for (var n = 0; n < inner.length; n++){
+      var p = inner[n] * 4;
+      var key = ((d[p] >> 3) << 10) | ((d[p + 1] >> 3) << 5) | (d[p + 2] >> 3);
+      var e = hist.get(key);
+      if (!e){ e = { n: 0, r: 0, g: 0, b: 0 }; hist.set(key, e); }
+      e.n++; e.r += d[p]; e.g += d[p + 1]; e.b += d[p + 2];
+    }
+    var buckets = [];
+    hist.forEach(function(e){ buckets.push({ n: e.n, c: [e.r / e.n, e.g / e.n, e.b / e.n] }); });
+    buckets.sort(function(a, b){ return b.n - a.n; });
+    if (buckets.length > 400) buckets = buckets.slice(0, 400);
+
+    var MERGE = 42, cores = [];
+    for (var bi = 0; bi < buckets.length; bi++){
+      var b = buckets[bi], hit = -1;
+      for (var ci = 0; ci < cores.length; ci++){
+        var c = cores[ci];
+        var dist = Math.sqrt(
+          Math.pow(b.c[0] - c.c[0], 2) + Math.pow(b.c[1] - c.c[1], 2) + Math.pow(b.c[2] - c.c[2], 2)
+        );
+        if (dist < MERGE){ hit = ci; break; }
+      }
+      if (hit >= 0){
+        var c2 = cores[hit], total = c2.n + b.n;
+        c2.c = [
+          (c2.c[0] * c2.n + b.c[0] * b.n) / total,
+          (c2.c[1] * c2.n + b.c[1] * b.n) / total,
+          (c2.c[2] * c2.n + b.c[2] * b.n) / total
+        ];
+        c2.n = total;
+      } else {
+        cores.push({ n: b.n, c: b.c.slice() });
+      }
+      if (cores.length >= 12) break;
+    }
+    cores.sort(function(a, b){ return b.n - a.n; });
+
+    var totalInk = inner.length;
+    if (requestK === "auto"){
+      var keep = cores.filter(function(c){ return c.n >= totalInk * 0.012; });
+      if (!keep.length) keep = [cores[0]];
+      cores = keep.slice(0, 6);
+    } else {
+      cores = cores.slice(0, Math.max(1, Math.min(6, requestK)));
+    }
+    return cores;
+  }
+
+  function hexOf(c){
+    return "#" + c.map(function(v){
+      return ("0" + Math.max(0, Math.min(255, Math.round(v))).toString(16)).slice(-2);
+    }).join("").toUpperCase();
+  }
+
+  function extractPathD(svg){
+    var m = svg.match(/<path d="([^"]*)"/);
+    return m ? m[1] : "";
+  }
+
+  function traceMask(maskCanvas){
+    return new Promise(function(resolve){
+      Potrace.setParameter({
+        turnpolicy: "minority",
+        turdsize: 2,
+        optcurve: true,
+        alphamax: 1,
+        opttolerance: 0.2
+      });
+      Potrace.loadImageFromUrl(maskCanvas.toDataURL());
+      Potrace.process(function(){ resolve(extractPathD(Potrace.getSVG(1))); });
+    });
+  }
+
+  function vectorizeInBrowser(file, opts, onStep){
+    return new Promise(function(resolve, reject){
+      var url = URL.createObjectURL(file);
+      decodeImage(url, 1600).then(function(img){
+        URL.revokeObjectURL(url);
+        var w = img.w, h = img.h, d = img.id.data;
+        var bg = estimateBackground(img.id);
+        var removeBg = opts.background === "remove";
+        var tol = 30;
+        var bgTest = null;
+
+        if (removeBg && bg && bg.ratio > 0.45){
+          bgTest = function(i){
+            var p = i * 4;
+            if (d[p + 3] < 12) return true;
+            return Math.max(
+              Math.abs(d[p] - bg.color[0]),
+              Math.abs(d[p + 1] - bg.color[1]),
+              Math.abs(d[p + 2] - bg.color[2])
+            ) <= tol;
+          };
+        } else if (removeBg){
+          bgTest = function(i){ return d[i * 4 + 3] < 12; };
+        }
+
+        var ink = new Uint8Array(w * h);
+        for (var i = 0; i < w * h; i++){
+          if (d[i * 4 + 3] < 12) continue;
+          if (bgTest && bgTest(i)) continue;
+          ink[i] = 1;
+        }
+
+        var cores = extractCores(img.id, ink, opts.colors, (removeBg && bg && bg.ratio > 0.45) ? bgTest : null);
+        if (!cores.length) throw new Error("没有可描摹的前景像素");
+
+        // 逐像素归属最近色核心
+        var labels = new Int32Array(w * h).fill(-1);
+        var counts = new Array(cores.length).fill(0);
+        for (var y = 0; y < h; y++){
+          for (var x = 0; x < w; x++){
+            var idx = y * w + x;
+            if (!ink[idx]) continue;
+            var p2 = idx * 4;
+            var best = 0, bd = Infinity;
+            for (var ci = 0; ci < cores.length; ci++){
+              var dr = d[p2] - cores[ci].c[0];
+              var dg = d[p2 + 1] - cores[ci].c[1];
+              var db = d[p2 + 2] - cores[ci].c[2];
+              var dd = dr * dr + dg * dg + db * db;
+              if (dd < bd){ bd = dd; best = ci; }
+            }
+            labels[idx] = best;
+            counts[best]++;
+          }
+        }
+
+        var order = [];
+        for (var oi = 0; oi < cores.length; oi++){
+          if (counts[oi] > 0) order.push({ i: oi, c: cores[oi].c, n: counts[oi] });
+        }
+        order.sort(function(a, b){ return b.n - a.n; });
+
+        var blur = opts.detail === "fine" ? 0 : (opts.detail === "smooth" ? 1.4 : 0.75);
+        var paths = "";
+        var k = 0;
+
+        function nextLayer(){
+          if (k >= order.length) return finish();
+          var o = order[k++];
+          if (onStep) onStep(k, order.length);
+
+          var mc = document.createElement("canvas");
+          mc.width = w; mc.height = h;
+          var mctx = mc.getContext("2d", { willReadFrequently: true });
+          var mid = mctx.createImageData(w, h);
+          var md = mid.data;
+          for (var j = 0; j < w * h; j++){
+            var on = labels[j] === o.i;
+            var pj = j * 4;
+            md[pj] = md[pj + 1] = md[pj + 2] = on ? 0 : 255;
+            md[pj + 3] = 255;
+          }
+          mctx.putImageData(mid, 0, 0);
+
+          // 平滑：模糊后重新二值化，削掉锯齿
+          if (blur > 0){
+            var sc = document.createElement("canvas");
+            sc.width = w; sc.height = h;
+            var sctx = sc.getContext("2d", { willReadFrequently: true });
+            sctx.filter = "blur(" + blur + "px)";
+            sctx.drawImage(mc, 0, 0);
+            sctx.filter = "none";
+            var sid = sctx.getImageData(0, 0, w, h);
+            var sd = sid.data;
+            for (var q = 0; q < w * h; q++){
+              var pq = q * 4;
+              var lum = 0.2126 * sd[pq] + 0.7153 * sd[pq + 1] + 0.0721 * sd[pq + 2];
+              var on2 = lum < 200;
+              sd[pq] = sd[pq + 1] = sd[pq + 2] = on2 ? 0 : 255;
+              sd[pq + 3] = 255;
+            }
+            sctx.putImageData(sid, 0, 0);
+            mctx.clearRect(0, 0, w, h);
+            mctx.drawImage(sc, 0, 0);
+          }
+
+          traceMask(mc).then(function(dd){
+            if (dd) paths += '<path fill="' + hexOf(o.c) + '" fill-rule="evenodd" d="' + dd + '"/>';
+            nextLayer();
+          }).catch(function(err){
+            reject(err);
+          });
+        }
+
+        function finish(){
+          var svg = '<?xml version="1.0" encoding="UTF-8"?>\n'
+            + '<svg xmlns="http://www.w3.org/2000/svg" width="' + w + '" height="' + h
+            + '" viewBox="0 0 ' + w + ' ' + h + '" role="img"><title>矢量 logo</title>'
+            + paths + '</svg>';
+          resolve({
+            svg: svg,
+            width: w,
+            height: h,
+            scale: 1,
+            colors: order.map(function(o){ return { hex: hexOf(o.c), pixels: o.n }; }),
+            background: bg ? hexOf(bg.color) : null,
+            background_removed: removeBg,
+            background_spread: bg ? +bg.spread.toFixed(2) : 0,
+            engine: "browser"
+          });
+        }
+
+        nextLayer();
+      }).catch(reject);
+    });
+  }
+
+  /* ═══════════════ 本地高精度引擎 ═══════════════ */
+  function vectorizeLocally(file, opts){
+    var qs = "?colors=" + encodeURIComponent(opts.colors)
+           + "&background=" + encodeURIComponent(opts.background)
+           + "&detail=" + encodeURIComponent(opts.detail);
+    return fetch("/api/vectorize" + qs, {
+      method: "POST",
+      headers: { "Content-Type": "application/octet-stream" },
+      body: file
+    }).then(function(r){
+      return r.json().then(function(data){
+        if (!data || !data.ok || !data.svg) throw new Error((data && data.error) || ("转换失败（HTTP " + r.status + "）"));
+        data.engine = "local";
+        return data;
+      });
+    });
+  }
+
+  /* ═══════════════ 上传 ═══════════════ */
   var dropArea = $("dropArea"), fileInput = $("fileInput");
 
   dropArea.addEventListener("click", function(){ fileInput.click(); });
@@ -268,13 +567,13 @@ h1{text-align:center;margin-bottom:8px;font-size:24px;font-weight:600;letter-spa
     e.target.value = "";
     if (f) handleFile(f);
   });
-  ["dragenter","dragover"].forEach(function(evt){
+  ["dragenter", "dragover"].forEach(function(evt){
     dropArea.addEventListener(evt, function(e){
       e.preventDefault(); e.stopPropagation();
       dropArea.classList.add("dragover");
     });
   });
-  ["dragleave","drop"].forEach(function(evt){
+  ["dragleave", "drop"].forEach(function(evt){
     dropArea.addEventListener(evt, function(e){
       e.preventDefault(); e.stopPropagation();
       dropArea.classList.remove("dragover");
@@ -282,19 +581,15 @@ h1{text-align:center;margin-bottom:8px;font-size:24px;font-weight:600;letter-spa
   });
   dropArea.addEventListener("drop", function(e){
     var f = e.dataTransfer.files[0];
-    if (f && f.type.indexOf("image/") === 0) handleFile(f);
-    else if (f) toast("请上传图片文件");
+    if (!f) return;
+    if (f.type.indexOf("image/") !== 0){ toast("请上传图片文件（PNG / JPG / WebP）"); return; }
+    handleFile(f);
   });
 
   function handleFile(file){
-    if (file.type.indexOf("image/") !== 0){
-      toast("请上传图片文件（PNG / JPG / WebP）");
-      return;
-    }
-    if (file.size > 25 * 1024 * 1024){
-      toast("图片超过 25MB，请先压缩");
-      return;
-    }
+    if (file.type.indexOf("image/") !== 0){ toast("请上传图片文件"); return; }
+    if (file.size > 25 * 1024 * 1024){ toast("图片超过 25MB，请先压缩"); return; }
+
     currentFile = file;
     currentSvg = null;
     currentName = file.name.replace(/\.[^.]+$/, "") || "logo";
@@ -307,7 +602,6 @@ h1{text-align:center;margin-bottom:8px;font-size:24px;font-weight:600;letter-spa
     $("srcImg").style.display = "block";
     $("srcPh").style.display = "none";
 
-    // 重置结果
     $("outImg").style.display = "none";
     $("outImg").removeAttribute("src");
     $("outPh").style.display = "";
@@ -317,65 +611,59 @@ h1{text-align:center;margin-bottom:8px;font-size:24px;font-weight:600;letter-spa
     $("downloadBtn").disabled = true;
     $("copyBtn").disabled = true;
     $("pngBtn").disabled = true;
-    updateBtn();
+    $("convertBtn").disabled = false;
   }
 
-  /* ───────────── 矢量化 ───────────── */
+  /* ═══════════════ 转换 ═══════════════ */
   $("convertBtn").addEventListener("click", function(){
-    if (!currentFile || !serviceReady) return;
-    var colors = $("optColors").value;
-    var bg = $("optBg").value;
-    var detail = $("optDetail").value;
-
+    if (!currentFile || busy) return;
+    busy = true;
     $("convertBtn").disabled = true;
     $("progress").classList.add("show");
     $("outPh").style.display = "";
     $("outPh").innerHTML = '<span class="icon">⏳</span>正在描摹…';
     $("outImg").style.display = "none";
+
     var t0 = Date.now();
+    var opts = {
+      colors: $("optColors").value,
+      background: $("optBg").value,
+      detail: $("optDetail").value
+    };
+    var engine = $("optEngine") ? $("optEngine").value : "browser";
+    if (engine === "local" && !localReady) engine = "browser";
 
-    var qs = "?colors=" + encodeURIComponent(colors)
-           + "&background=" + encodeURIComponent(bg)
-           + "&detail=" + encodeURIComponent(detail);
+    var task = engine === "local"
+      ? vectorizeLocally(currentFile, opts)
+      : vectorizeInBrowser(currentFile, opts, function(step, total){
+          $("outPh").innerHTML = '<span class="icon">⏳</span>描摹第 ' + step + '/' + total + ' 层…';
+        });
 
-    fetch(API + qs, {
-      method: "POST",
-      headers: { "Content-Type": "application/octet-stream" },
-      body: currentFile
-    })
-      .then(function(r){
-        return r.json().then(function(data){ return { status: r.status, data: data }; });
-      })
-      .then(function(res){
-        var data = res.data;
-        if (!data || !data.ok || !data.svg){
-          throw new Error((data && data.error) || ("转换失败（HTTP " + res.status + "）"));
-        }
-        currentSvg = data.svg;
-        showResult(data, Date.now() - t0);
-      })
-      .catch(function(err){
-        $("outPh").innerHTML = '<span class="icon">⚠️</span>' + (err.message || "转换失败");
-        $("outPh").style.display = "";
-        toast(err.message || "转换失败");
-      })
-      .then(function(){
-        $("progress").classList.remove("show");
-        updateBtn();
-      });
+    task.then(function(data){
+      currentSvg = data.svg;
+      showResult(data, Date.now() - t0);
+    }).catch(function(err){
+      $("outPh").innerHTML = '<span class="icon">⚠️</span>' + (err.message || "转换失败");
+      $("outPh").style.display = "";
+      toast(err.message || "转换失败");
+    }).then(function(){
+      busy = false;
+      $("progress").classList.remove("show");
+      $("convertBtn").disabled = !currentFile;
+    });
   });
 
   function showResult(data, ms){
-    var svg = data.svg;
-    // 用 data URI 显示 SVG
-    var b64 = btoa(unescape(encodeURIComponent(svg)));
+    var b64 = btoa(unescape(encodeURIComponent(data.svg)));
     $("outImg").src = "data:image/svg+xml;base64," + b64;
     $("outImg").style.display = "block";
     $("outPh").style.display = "none";
 
     $("metaRow").style.display = "flex";
     $("metaSize").innerHTML = "尺寸 <b>" + (data.width || "?") + "×" + (data.height || "?") + "</b>";
-    $("metaScale").innerHTML = "SVG 精度 <b>" + (data.scale || "?") + "x</b>";
+    $("metaScale").innerHTML = (data.engine === "local")
+      ? ("SVG 精度 <b>" + (data.scale || 1) + "x</b>")
+      : "输出 <b>矢量路径</b>";
     $("metaElapsed").innerHTML = "耗时 <b>" + (data.elapsed != null ? data.elapsed + "s" : (ms + "ms")) + "</b>";
 
     var colors = data.colors || [];
@@ -404,12 +692,10 @@ h1{text-align:center;margin-bottom:8px;font-size:24px;font-weight:600;letter-spa
     $("copyBtn").disabled = false;
     $("pngBtn").disabled = false;
 
-    if (data.warning){
-      toast("提示：" + data.warning);
-    }
+    if (data.warning) toast("提示：" + data.warning);
   }
 
-  /* ───────────── 导出 ───────────── */
+  /* ═══════════════ 导出 ═══════════════ */
   $("downloadBtn").addEventListener("click", function(){
     if (!currentSvg) return;
     var blob = new Blob([currentSvg], { type: "image/svg+xml;charset=utf-8" });
@@ -427,9 +713,7 @@ h1{text-align:center;margin-bottom:8px;font-size:24px;font-weight:600;letter-spa
     if (!currentSvg) return;
     var done = function(){ toast("SVG 代码已复制到剪贴板"); };
     if (navigator.clipboard && navigator.clipboard.writeText){
-      navigator.clipboard.writeText(currentSvg).then(done).catch(function(){
-        toast("复制失败，请用下载按钮");
-      });
+      navigator.clipboard.writeText(currentSvg).then(done).catch(function(){ toast("复制失败，请用下载按钮"); });
     } else {
       var ta = document.createElement("textarea");
       ta.value = currentSvg;
@@ -437,17 +721,15 @@ h1{text-align:center;margin-bottom:8px;font-size:24px;font-weight:600;letter-spa
       ta.style.opacity = "0";
       document.body.appendChild(ta);
       ta.select();
-      try { document.execCommand("copy"); done(); }
-      catch (e) { toast("复制失败，请用下载按钮"); }
+      try { document.execCommand("copy"); done(); } catch (e) { toast("复制失败，请用下载按钮"); }
       ta.remove();
     }
   });
 
-  // 用 canvas 把 SVG 栅格化成 2x PNG
   $("pngBtn").addEventListener("click", function(){
     if (!currentSvg) return;
-    var img = new Image();
     var b64 = btoa(unescape(encodeURIComponent(currentSvg)));
+    var img = new Image();
     img.onload = function(){
       var scale = 2;
       var w = img.naturalWidth || 800;
@@ -475,8 +757,15 @@ h1{text-align:center;margin-bottom:8px;font-size:24px;font-weight:600;letter-spa
     img.src = "data:image/svg+xml;base64," + b64;
   });
 
-  /* ───────────── 启动 ───────────── */
-  checkEnv();
+  /* ═══════════════ 启动 ═══════════════ */
+  if (typeof Potrace === "undefined"){
+    var b = $("envBadge");
+    b.className = "env-badge warn";
+    b.textContent = "⚠️ potrace.js 未加载，请检查文件是否完整";
+    $("convertBtn").disabled = true;
+    $("convertBtn").title = "potrace.js 缺失";
+  }
+  checkLocal();
 })();
 </script>
 </body>
