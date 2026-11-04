@@ -23,6 +23,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Ne
   <h1>🏨 酒店工具集</h1>
   <div class="tabs">
     <button class="tab active" data-id="logo">✨ 生成logo</button>
+    <button class="tab" data-id="vector">✒️ Logo矢量化</button>
     <button class="tab" data-id="welcome">📝 欢迎文本</button>
     <button class="tab" data-id="qr">📱 二维码叠加</button>
     <button class="tab" data-id="convert">📺 开机logo制作</button>
@@ -34,6 +35,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Ne
 </div>
 <div class="content">
   <iframe class="active" id="fl" src="./logo-generator.html"></iframe>
+  <iframe id="fv" src="./logo-vectorizer.html"></iframe>
   <iframe id="fw" src="./hotel-welcome-generator.html"></iframe>
   <iframe id="fq" src="./qr-overlay-generator.html"></iframe>
   <iframe id="fcv" src="./image-converter.html"></iframe>
@@ -43,7 +45,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Ne
   <iframe id="fvid" src="./video-converter.html"></iframe>
 </div>
 <script>
-// 非本地环境隐藏"开机视频"Tab（视频转换依赖本地 server.js）
+// 非本地环境隐藏"开机视频"Tab（视频转码依赖本地 ffmpeg 二进制）
+// 注：Logo矢量化 Tab 保留显示，页面内会自检本地服务并给出启动指引
 var isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1' || location.hostname === '0.0.0.0';
 if (!isLocal) {
   var videoTab = document.querySelector('.tab[data-id="video"]');
@@ -54,7 +57,7 @@ if (!isLocal) {
 
 document.querySelectorAll('.tab').forEach(function(t) {
   t.onclick = function() {
-    var map = {welcome:'fw', qr:'fq', card:'fc', logo:'fl', overlay:'fov', convert:'fcv', compose:'fcp', video:'fvid'};
+    var map = {welcome:'fw', qr:'fq', card:'fc', logo:'fl', vector:'fv', overlay:'fov', convert:'fcv', compose:'fcp', video:'fvid'};
     document.querySelectorAll('.tab').forEach(function(b) { b.classList.remove('active'); });
     this.classList.add('active');
     document.querySelectorAll('.content iframe').forEach(function(f) { f.classList.remove('active'); });
