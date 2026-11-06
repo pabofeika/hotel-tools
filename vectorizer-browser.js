@@ -43,14 +43,15 @@
     return new Promise(function (resolve, reject) {
       var img = new Image();
       img.onload = function () {
-        var s = Math.min(1, MAX_LOAD_DIM / Math.max(img.naturalWidth, img.naturalHeight));
-        var w = Math.max(1, Math.round(img.naturalWidth * s));
-        var h = Math.max(1, Math.round(img.naturalHeight * s));
+        var ow = img.naturalWidth, oh = img.naturalHeight;
+        var s = Math.min(1, MAX_LOAD_DIM / Math.max(ow, oh));
+        var w = Math.max(1, Math.round(ow * s));
+        var h = Math.max(1, Math.round(oh * s));
         var c = document.createElement('canvas');
         c.width = w; c.height = h;
         var ctx = c.getContext('2d', { willReadFrequently: true });
         ctx.drawImage(img, 0, 0, w, h);
-        resolve({ w: w, h: h, id: ctx.getImageData(0, 0, w, h) });
+        resolve({ w: w, h: h, ow: ow, oh: oh, id: ctx.getImageData(0, 0, w, h) });
       };
       img.onerror = function () { reject(new Error('图片解码失败')); };
       img.src = url;
@@ -556,14 +557,16 @@
               + '" fill="' + hexOf(built.bg.color) + '"/>';
           }
           var svg = '<?xml version="1.0" encoding="UTF-8"?>\n'
-            + '<svg xmlns="http://www.w3.org/2000/svg" width="' + w + '" height="' + h
+            + '<svg xmlns="http://www.w3.org/2000/svg" width="' + img.ow + '" height="' + img.oh
             + '" viewBox="0 0 ' + (w * scale) + ' ' + (h * scale) + '" role="img"><title>矢量 logo</title>'
             + rect + paths + '</svg>';
           debug.elapsed = +((Date.now() - t0) / 1000).toFixed(2);
+          debug.originalSize = [img.ow, img.oh];
+          debug.workingSize = [w, h];
           resolve({
             svg: svg,
-            width: w,
-            height: h,
+            width: img.ow,
+            height: img.oh,
             scale: scale,
             colors: order.map(function (o) { return { hex: hexOf(o.c), pixels: o.n }; }),
             background: built.bg ? hexOf(built.bg.color) : null,
@@ -600,6 +603,6 @@
   window.ToolsVectorizer = {
     vectorize: vectorizeFile,
     resolveBackground: resolveBackground,
-    version: '4'
+    version: '5'
   };
 })();
