@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>Logo 矢量化</title>
 <style>
 :root {
@@ -461,6 +464,7 @@ h1{text-align:center;margin-bottom:8px;font-size:24px;font-weight:600;letter-spa
 
     task.then(function(data){
       currentSvg = data.svg;
+      if (data.engine === "browser") toast("已用引擎 v" + (data.version || "?") + " 生成，导出文件自带版本标记");
       showResult(data, Date.now() - t0);
     }).catch(function(err){
       $("outPh").innerHTML = '<span class="icon">⚠️</span>' + (err.message || "转换失败");
@@ -482,7 +486,7 @@ h1{text-align:center;margin-bottom:8px;font-size:24px;font-weight:600;letter-spa
     $("metaRow").style.display = "flex";
     $("metaSize").innerHTML = "尺寸 <b>" + (data.width || "?") + "×" + (data.height || "?") + "</b>";
     $("metaScale").innerHTML = (data.engine === "local")
-      ? ("SVG 精度 <b>" + (data.scale || 1) + "x</b> · 本地原生")
+      ? ("SVG 精度 <b>" + (data.scale || 1) + "x</b> · 本地原生" + (data.version ? " v" + String(data.version).split("-")[0] : ""))
       : ("输出 <b>矢量路径</b> · 引擎 v" + (data.version || (window.ToolsVectorizer && window.ToolsVectorizer.version) || "?"));
     $("metaElapsed").innerHTML = "耗时 <b>" + (data.elapsed != null ? data.elapsed + "s" : (ms + "ms")) + "</b>";
 
@@ -529,7 +533,7 @@ h1{text-align:center;margin-bottom:8px;font-size:24px;font-weight:600;letter-spa
     var url = URL.createObjectURL(blob);
     var a = document.createElement("a");
     a.href = url;
-    a.download = currentName + ".svg";
+    a.download = currentName + "-v9.svg";
     document.body.appendChild(a);
     a.click();
     a.remove();

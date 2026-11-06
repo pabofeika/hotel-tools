@@ -599,7 +599,8 @@
           }
           var svg = '<?xml version="1.0" encoding="UTF-8"?>\n'
             + '<svg xmlns="http://www.w3.org/2000/svg" width="' + img.ow + '" height="' + img.oh
-            + '" viewBox="0 0 ' + img.ow + ' ' + img.oh + '" role="img"><title>矢量 logo</title>'
+            + '" viewBox="0 0 ' + img.ow + ' ' + img.oh + '" role="img">'
+            + '<title>矢量 logo</title><desc>hotel-tools vectorizer v9 · browser</desc>'
             + rect2 + paths + '</svg>';
           debug.elapsed = +((Date.now() - t0) / 1000).toFixed(2);
           debug.originalSize = [img.ow, img.oh];
