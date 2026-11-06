@@ -8,131 +8,185 @@
 <meta http-equiv="Expires" content="0">
 <title>Logo 矢量化</title>
 <style>
-:root {
-  --bg-primary: #000000;
-  --bg-surface: rgba(255,255,255,0.04);
-  --bg-surface-hover: rgba(255,255,255,0.06);
-  --bg-input: rgba(255,255,255,0.06);
-  --bg-input-focus: rgba(255,255,255,0.08);
-  --accent: #0071E3;
-  --accent-hover: #0077ED;
-  --accent-subtle: rgba(0,113,227,0.12);
-  --success: #30D158;
-  --warning: #FFD60A;
-  --error: #FF453A;
-  --text-primary: rgba(255,255,255,0.92);
-  --text-secondary: rgba(255,255,255,0.55);
-  --text-tertiary: rgba(255,255,255,0.32);
-  --border-subtle: rgba(255,255,255,0.06);
-  --border-default: rgba(255,255,255,0.1);
-  --border-focus: rgba(0,113,227,0.4);
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 16px;
-  --radius-xl: 24px;
-  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", sans-serif;
-  --font-mono: "SF Mono", "Menlo", "Monaco", monospace;
-  --transition: 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
+:root{
+  --bg:#141415;
+  --surface:#19191b;
+  --raised:#232325;
+  --field:#1f1f22;
+  --text:#ededed;
+  --text-2:#a1a1a6;
+  --text-3:#85858b;
+  --hair:rgba(237,237,237,.08);
+  --hair-2:rgba(237,237,237,.14);
+  --accent:#e0a458;
+  --accent-ink:#1b1408;
+  --ok:#4cc38a;
+  --radius:14px;
+  --radius-ctl:10px;
+  --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif;
+  --mono:"SF Mono","JetBrains Mono",Menlo,monospace;
+  --ease:cubic-bezier(.22,1,.36,1);
 }
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:var(--font-sans);background:var(--bg-primary);min-height:100vh;color:var(--text-primary);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;padding:24px 16px}
-.container{max-width:1180px;margin:0 auto}
-.panel{background:var(--bg-surface);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:20px;margin-bottom:14px;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
-.section-title,.preview-title{font-size:12px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:14px}
-.field{margin-bottom:14px}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;padding:0 24px 20px;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+button,select,input{font-family:inherit}
+svg{display:block}
+::selection{background:rgba(224,164,88,.28)}
+
+.topbar{border-bottom:1px solid var(--hair);margin-bottom:24px}
+.topbar-inner{max-width:1360px;margin:0 auto;height:64px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.brand{display:flex;align-items:center;gap:12px;min-width:0}
+.brand svg{width:22px;height:22px;color:var(--text-2);flex:none}
+.brand h1{font-size:17px;line-height:1.25;font-weight:500;letter-spacing:0}
+.brand p{font-size:12px;line-height:1.4;color:var(--text-3);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.env-badge{display:inline-flex;align-items:center;gap:8px;font-size:12px;color:var(--text-3);white-space:nowrap}
+.env-badge .dot{width:6px;height:6px;border-radius:50%;background:var(--ok);flex:none}
+.env-badge.warn .dot{background:var(--accent)}
+.env-badge.warn{color:var(--text-2)}
+
+.workspace{max-width:1360px;margin:0 auto;display:grid;grid-template-columns:320px minmax(0,1fr);gap:20px;align-items:stretch;min-height:calc(100vh - 148px)}
+.panel{background:var(--surface);border:1px solid var(--hair);border-radius:var(--radius)}
+.rail .panel{overflow:hidden}
+.block{padding:20px}
+.rule{height:1px;border:0;background:var(--hair)}
+.block-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:12px}
+.block h2,.stage-head h2{font-size:12px;line-height:16px;font-weight:500;color:var(--text-2);letter-spacing:0}
+.hint{font-size:12px;color:var(--text-3);font-family:var(--mono)}
+
+.upload-wrap{display:block}
+.upload-wrap input[type=file]{display:none}
+.upload-area{display:flex;align-items:center;justify-content:center;gap:8px;height:64px;padding:0 12px;border:1px dashed var(--hair-2);border-radius:var(--radius-ctl);background:transparent;color:var(--text-2);font-size:13px;cursor:pointer;transition:border-color 150ms var(--ease),background-color 150ms var(--ease),color 150ms var(--ease)}
+.upload-area svg{width:18px;height:18px;color:var(--text-3);flex:none;transition:color 150ms var(--ease)}
+.upload-area:hover{border-color:var(--accent);color:var(--text)}
+.upload-area:hover svg{color:var(--accent)}
+.upload-area.active{border-color:var(--accent);background:rgba(224,164,88,.06);color:var(--text)}
+#dropText{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.upload-area.dragover{border-color:var(--accent);background:rgba(224,164,88,.1)}
+
+.field{margin-bottom:16px}
 .field:last-child{margin-bottom:0}
-.field label{display:block;font-size:12px;font-weight:500;color:var(--text-secondary);margin-bottom:8px;letter-spacing:0.2px}
-select{width:100%;padding:11px 14px;background:var(--bg-input);border:1px solid var(--border-subtle);border-radius:var(--radius-md);color:var(--text-primary);font-size:14px;font-family:var(--font-sans);outline:none;transition:all var(--transition);appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='rgba(255,255,255,0.32)'%3E%3Cpath d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:36px}
-select:focus{border-color:var(--border-focus);background-color:var(--bg-input-focus);box-shadow:0 0 0 3px var(--accent-subtle)}
-select option{background:#1c1c1e;color:var(--text-primary)}
+.field label{display:block;font-size:12px;line-height:16px;color:var(--text-3);margin-bottom:8px;letter-spacing:0}
+select{width:100%;height:36px;padding:0 32px 0 12px;background:var(--field);border:1px solid var(--hair);border-radius:var(--radius-ctl);color:var(--text);font-size:13px;outline:none;appearance:none;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2385858b' stroke-width='1.8'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 11px center;transition:border-color 150ms var(--ease),background-color 150ms var(--ease)}
+select:hover{background-color:var(--raised)}
+select:focus-visible{border-color:var(--accent);box-shadow:0 0 0 3px rgba(224,164,88,.16)}
+select option{background:#1c1c1e;color:var(--text)}
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .grid-2 .field{margin-bottom:0}
-.btn{width:100%;padding:13px;border:none;border-radius:var(--radius-xl);font-size:14px;font-weight:500;font-family:var(--font-sans);cursor:pointer;transition:all var(--transition);letter-spacing:0.2px}
-.btn-primary{background:var(--accent);color:#fff}
-.btn-primary:hover:not(:disabled){background:var(--accent-hover)}
-.btn-primary:active:not(:disabled){transform:scale(0.98);opacity:0.9}
-.btn-secondary{background:transparent;border:1px solid var(--border-default);color:var(--text-secondary);margin-top:8px}
-.btn-secondary:hover:not(:disabled){background:var(--bg-surface-hover);color:var(--text-primary)}
-.btn:disabled{opacity:0.4;cursor:not-allowed}
+#engineField{margin-top:16px}
 
-/* 上传 */
-.upload-wrap{display:block;position:relative}
-.upload-wrap input[type="file"]{display:none}
-.upload-area{padding:12px;background:var(--bg-surface);border:2px dashed var(--border-default);border-radius:var(--radius-md);text-align:center;cursor:pointer;transition:all var(--transition)}
-.upload-area:hover{border-color:var(--accent);background:var(--bg-surface-hover)}
-.upload-area.active{border-color:var(--success);background:rgba(48,209,88,0.06)}
-.upload-area.dragover{border-color:var(--accent);background:var(--accent-subtle)}
-.upload-icon{font-size:16px;margin-right:6px;opacity:0.6;display:inline-block;vertical-align:middle}
-.upload-text{font-size:12px;color:var(--text-secondary);display:inline-block;vertical-align:middle}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:40px;padding:0 16px;border:1px solid transparent;border-radius:var(--radius-ctl);font-size:13px;font-weight:500;letter-spacing:0;cursor:pointer;transition:background-color 150ms var(--ease),border-color 150ms var(--ease),color 150ms var(--ease),opacity 150ms var(--ease),transform 120ms var(--ease)}
+.btn svg{width:16px;height:16px;flex:none}
+.btn:active:not(:disabled){transform:scale(.98)}
+.btn:disabled{opacity:.38;cursor:not-allowed}
+.btn-primary:disabled{background:var(--raised);color:var(--text-3);border-color:var(--hair);opacity:1}
+.btn-primary{width:100%;background:var(--accent);color:var(--accent-ink)}
+.btn-primary:hover:not(:disabled){background:#e8b06b}
+.btn-quiet{height:36px;padding:0 8px;white-space:nowrap;background:var(--raised);border-color:var(--hair);color:var(--text-2);font-size:12px;font-weight:400}
+.btn-quiet svg{width:16px;height:16px;color:var(--text-3)}
+.btn-quiet:hover:not(:disabled){color:var(--text);border-color:var(--hair-2)}
+.btn-quiet:hover:not(:disabled) svg{color:var(--text-2)}
+.action-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:8px}
 
-/* 布局 */
-.layout{display:grid;grid-template-columns:340px 1fr;gap:16px;align-items:start}
-.left-panel .panel{padding:16px;margin-bottom:10px}
-.left-panel .section-title{margin-bottom:10px}
-
-/* 引擎徽章 */
-.env-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:20px;font-size:12px;font-weight:500;margin-bottom:14px}
-.env-badge.ok{background:rgba(48,209,88,0.14);color:var(--success)}
-.env-badge.warn{background:rgba(255,214,10,0.14);color:var(--warning)}
-.env-badge code{font-family:var(--font-mono);font-size:11px;background:rgba(0,0,0,0.3);padding:1px 5px;border-radius:3px}
-
-/* 预览 */
-.preview-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.preview-box{background:#0a0a0a;border:1px solid var(--border-subtle);border-radius:var(--radius-md);min-height:220px;display:flex;align-items:center;justify-content:center;padding:12px;position:relative;overflow:hidden}
-.preview-box .label{position:absolute;top:8px;left:10px;font-size:10px;color:var(--text-tertiary);letter-spacing:0.5px;text-transform:uppercase;z-index:2;background:rgba(0,0,0,.45);padding:2px 6px;border-radius:4px}
-.preview-box img{max-width:100%;max-height:300px;display:block}
-.preview-box.checker{background-image:linear-gradient(45deg,#1a1a1a 25%,transparent 25%),linear-gradient(-45deg,#1a1a1a 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#1a1a1a 75%),linear-gradient(-45deg,transparent 75%,#1a1a1a 75%);background-size:16px 16px;background-position:0 0,0 8px,8px -8px,-8px 0;background-color:#111}
-.ph{color:var(--text-tertiary);font-size:12px;text-align:center;line-height:1.8}
-.ph .icon{font-size:30px;display:block;margin-bottom:6px;opacity:0.5}
-
-/* 元数据 */
-.meta-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
-.meta-item{padding:6px 12px;background:var(--bg-input);border-radius:var(--radius-sm);font-size:11px;color:var(--text-secondary)}
-.meta-item b{color:var(--accent);font-weight:600}
-.swatches{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
-.swatch{width:16px;height:16px;border-radius:4px;border:1px solid rgba(255,255,255,0.18)}
-.progress{height:3px;background:var(--bg-input);border-radius:2px;overflow:hidden;margin-top:10px;display:none}
+.progress{height:2px;background:var(--raised);border-radius:1px;overflow:hidden;margin-top:12px;display:none}
 .progress.show{display:block}
-.progress i{display:block;height:100%;width:30%;background:var(--accent);border-radius:2px;animation:slide 1.1s ease-in-out infinite}
+.progress i{display:block;height:100%;width:30%;background:var(--accent);border-radius:1px;animation:slide 1.1s ease-in-out infinite}
 @keyframes slide{0%{transform:translateX(-100%)}100%{transform:translateX(400%)}}
-.tip{padding:11px 13px;background:rgba(255,149,0,0.08);border-radius:var(--radius-md);font-size:11px;color:rgba(255,149,0,0.75);line-height:1.6}
-.guide-box{padding:11px 13px;background:var(--accent-subtle);border-radius:var(--radius-md);border-left:3px solid var(--accent)}
-.guide-box p{font-size:11px;color:var(--text-secondary);line-height:1.65}
 
-.toast{position:fixed;left:50%;bottom:36px;transform:translateX(-50%) translateY(14px);background:rgba(28,28,30,0.96);border:1px solid var(--border-default);color:var(--text-primary);font-size:13px;padding:11px 20px;border-radius:var(--radius-md);opacity:0;pointer-events:none;transition:all 0.25s;z-index:999;backdrop-filter:blur(20px);max-width:80vw;text-align:center}
+.note{display:flex;gap:8px;align-items:flex-start;font-size:12px;line-height:1.6;color:var(--text-3);margin:12px 4px 0}
+.note svg{width:16px;height:16px;color:var(--text-3);flex:none;margin-top:1px}
+
+.stage{display:flex;flex-direction:column;gap:20px;min-width:0;min-height:0}
+.preview-panel{padding:20px;flex:1;display:flex;flex-direction:column;min-height:0}
+.stage-head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin-bottom:12px;flex-wrap:wrap}
+.meta-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px 0;font-family:var(--mono);font-size:12px;line-height:16px;color:var(--text-3)}
+.meta-item{white-space:nowrap}
+.meta-item + .meta-item::before{content:"·";margin:0 8px;color:var(--text-3)}
+.meta-item b{color:var(--text);font-weight:500}
+.swatch-row{display:flex;align-items:center;gap:8px;margin-top:12px;flex-wrap:wrap}
+.swatches{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.swatch{width:12px;height:12px;border-radius:3px;border:1px solid var(--hair-2)}
+.swatch-text{font-family:var(--mono);font-size:12px;color:var(--text-3)}
+
+.preview-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;flex:1;min-height:360px}
+.preview-box{position:relative;margin:0;min-height:0;height:100%;padding:44px 16px 16px;border:1px solid var(--hair);border-radius:var(--radius-ctl);background:#0f0f10;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.preview-box .label{position:absolute;top:12px;left:14px;font-size:12px;line-height:16px;color:var(--text-3);z-index:2}
+.preview-box.checker{background-color:#131315;background-image:linear-gradient(45deg,#1b1b1e 25%,transparent 25%),linear-gradient(-45deg,#1b1b1e 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#1b1b1e 75%),linear-gradient(-45deg,transparent 75%,#1b1b1e 75%);background-size:16px 16px;background-position:0 0,0 8px,8px -8px,-8px 0}
+.preview-box img{max-width:100%;max-height:360px;display:block}
+.preview-box.crop::after{content:"";position:absolute;inset:8px;pointer-events:none;background:
+  linear-gradient(var(--hair-2),var(--hair-2)) left top/9px 1px no-repeat,
+  linear-gradient(var(--hair-2),var(--hair-2)) left top/1px 9px no-repeat,
+  linear-gradient(var(--hair-2),var(--hair-2)) right top/9px 1px no-repeat,
+  linear-gradient(var(--hair-2),var(--hair-2)) right top/1px 9px no-repeat,
+  linear-gradient(var(--hair-2),var(--hair-2)) left bottom/9px 1px no-repeat,
+  linear-gradient(var(--hair-2),var(--hair-2)) left bottom/1px 9px no-repeat,
+  linear-gradient(var(--hair-2),var(--hair-2)) right bottom/9px 1px no-repeat,
+  linear-gradient(var(--hair-2),var(--hair-2)) right bottom/1px 9px no-repeat}
+.ph{display:flex;flex-direction:column;align-items:center;gap:8px;color:var(--text-3);font-size:12px;line-height:1.6;text-align:center}
+.ph svg{width:20px;height:20px;color:var(--text-3);opacity:.8}
+
+.guide{padding:0 4px}
+.guide h2{font-size:12px;line-height:16px;font-weight:500;color:var(--text-3);margin-bottom:12px}
+.guide dl{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+.guide dt{font-size:13px;line-height:18px;color:var(--text);margin-bottom:4px}
+.guide dd{font-size:12px;line-height:1.65;color:var(--text-3)}
+
+.footnote{max-width:1360px;margin:24px auto 0;padding-top:12px;border-top:1px solid var(--hair);display:flex;align-items:center;justify-content:space-between;gap:16px;font-size:12px;line-height:16px;color:var(--text-3);font-family:var(--mono)}
+.footnote span{min-width:0}
+
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(8px);background:#232325;border:1px solid var(--hair-2);color:var(--text);font-size:13px;line-height:18px;padding:10px 16px;border-radius:var(--radius-ctl);opacity:0;pointer-events:none;transition:opacity 160ms var(--ease),transform 160ms var(--ease);z-index:99;max-width:80vw;text-align:center}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
-h1{text-align:center;margin-bottom:8px;font-size:24px;font-weight:600;letter-spacing:-0.3px}
-.subtitle{text-align:center;font-size:12px;color:var(--text-tertiary);margin-bottom:16px}
-.footnote{text-align:center;font-size:10px;color:var(--text-tertiary);margin-top:18px;line-height:1.7}
-@media(max-width:940px){.layout{grid-template-columns:1fr}.preview-grid{grid-template-columns:1fr}}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button:focus-visible{outline-offset:2px}
+
+@media(max-width:1080px){
+  .workspace{grid-template-columns:1fr}
+  .preview-box{min-height:320px}
+  .guide dl{grid-template-columns:1fr;gap:12px}
+}
+@media(max-width:720px){
+  body{padding:0 16px 16px}
+  .topbar-inner{height:auto;padding:14px 0;align-items:flex-start;flex-direction:column;gap:8px}
+  .brand p{white-space:normal}
+  .workspace{min-height:0}
+  .preview-grid{grid-template-columns:1fr}
+  .preview-box{min-height:260px}
+  .footnote{flex-direction:column;align-items:flex-start;gap:4px}
+}
 </style>
 </head>
 <body>
-<div class="container">
-  <h1>✒️ Logo 矢量化</h1>
-  <p class="subtitle">位图 Logo / 印章 / 字标 → 平滑 SVG（Potrace 贝塞尔拟合，可无限放大）</p>
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 19 7-7 3 3-7 7-3-3z"/><path d="m18 13-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="m2 2 7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>
+      <div>
+        <h1>Logo 矢量化</h1>
+        <p>位图 logo、印章、字标 → 可无限放大的 SVG</p>
+      </div>
+    </div>
+    <div class="env-badge ok" id="envBadge"><i class="dot"></i><span>本地运算 · 引擎 v11</span></div>
+  </div>
+</header>
 
-  <div class="env-badge ok" id="envBadge">🚀 浏览器本地运算 · 无需任何服务 · 引擎 v11</div>
-
-  <div class="layout">
-    <!-- ═══ 左侧控制 ═══ -->
-    <div class="left-panel">
-      <div class="panel">
-        <div class="section-title">上传图片</div>
+<main class="workspace">
+  <aside class="rail">
+    <section class="panel">
+      <div class="block">
+        <div class="block-head"><h2>图片</h2><span class="hint">PNG · JPG · WebP</span></div>
         <label class="upload-wrap">
           <div class="upload-area" id="dropArea">
-            <span class="upload-icon">🖼️</span>
-            <span class="upload-text" id="dropText">点击或拖入 Logo 图片</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4"/><path d="m6 10 6-6 6 6"/><path d="M4 20h16"/></svg>
+            <span id="dropText">选择或拖入图片</span>
           </div>
           <input type="file" id="fileInput" accept="image/*">
         </label>
       </div>
-
-      <div class="panel">
-        <div class="section-title">矢量化参数</div>
+      <hr class="rule">
+      <div class="block">
+        <div class="block-head"><h2>参数</h2></div>
         <div class="field">
-          <label>颜色数量</label>
+          <label for="optColors">颜色数量</label>
           <select id="optColors">
             <option value="auto" selected>自动识别（1-6 色）</option>
             <option value="1">单色 · 剪影</option>
@@ -145,15 +199,15 @@ h1{text-align:center;margin-bottom:8px;font-size:24px;font-weight:600;letter-spa
         </div>
         <div class="grid-2">
           <div class="field">
-            <label>背景</label>
+            <label for="optBg">背景</label>
             <select id="optBg">
-              <option value="auto" selected>自动判断（推荐）</option>
-              <option value="remove">去除（透明 · 适合白底）</option>
-              <option value="keep">保留原图背景</option>
+              <option value="auto" selected>自动判断</option>
+              <option value="remove">去除（透明）</option>
+              <option value="keep">保留原背景</option>
             </select>
           </div>
           <div class="field">
-            <label>线条细节</label>
+            <label for="optDetail">线条细节</label>
             <select id="optDetail">
               <option value="standard" selected>标准</option>
               <option value="fine">精细 · 小字细线</option>
@@ -161,72 +215,87 @@ h1{text-align:center;margin-bottom:8px;font-size:24px;font-weight:600;letter-spa
             </select>
           </div>
         </div>
-        <div class="field" id="engineField" style="margin-top:12px;display:none">
-          <label>运算引擎</label>
+        <div class="field" id="engineField" style="display:none">
+          <label for="optEngine">运算引擎</label>
           <select id="optEngine">
-            <option value="browser" selected>浏览器（快，无需服务）</option>
-            <option value="local">本地 Potrace 原生（更精细）</option>
+            <option value="browser" selected>浏览器 · 无需服务</option>
+            <option value="local">本地 Potrace 原生</option>
           </select>
         </div>
       </div>
-
-      <div class="panel">
-        <button class="btn btn-primary" id="convertBtn" disabled>✒️ 开始矢量化</button>
+      <hr class="rule">
+      <div class="block">
+        <button class="btn btn-primary" id="convertBtn" disabled>开始矢量化</button>
         <div class="progress" id="progress"><i></i></div>
-        <button class="btn btn-secondary" id="downloadBtn" disabled>⬇️ 下载 SVG</button>
-        <button class="btn btn-secondary" id="copyBtn" disabled>📋 复制 SVG 代码</button>
-        <button class="btn btn-secondary" id="pngBtn" disabled>🖼️ 导出 PNG (2x)</button>
-      </div>
-
-      <div class="tip">
-        💡 适用于扁平色图形。照片、渐变、复杂插画会被色块化。
-      </div>
-    </div>
-
-    <!-- ═══ 右侧预览 ═══ -->
-    <div class="right-panel">
-      <div class="panel">
-        <div class="preview-grid">
-          <div class="preview-box" id="srcBox">
-            <span class="label">原图</span>
-            <div class="ph" id="srcPh"><span class="icon">🖼️</span>未上传</div>
-            <img id="srcImg" style="display:none" alt="原图">
-          </div>
-          <div class="preview-box checker" id="outBox">
-            <span class="label">SVG 结果</span>
-            <div class="ph" id="outPh"><span class="icon">✒️</span>等待矢量化</div>
-            <img id="outImg" style="display:none" alt="SVG 结果">
-          </div>
+        <div class="action-grid">
+          <button class="btn btn-quiet" id="downloadBtn" title="下载 SVG" disabled>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12"/><path d="m6 10 6 6 6-6"/><path d="M4 20h16"/></svg>
+            <span>下载</span>
+          </button>
+          <button class="btn btn-quiet" id="copyBtn" title="复制 SVG 代码" disabled>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
+            <span>复制</span>
+          </button>
+          <button class="btn btn-quiet" id="pngBtn" title="导出 PNG 2x" disabled>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+            <span>PNG</span>
+          </button>
         </div>
+      </div>
+    </section>
+    <p class="note">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 8h.01"/></svg>
+      <span>适合扁平色图形；照片、渐变和复杂插画会被色块化</span>
+    </p>
+  </aside>
+
+  <section class="stage">
+    <div class="panel preview-panel">
+      <div class="stage-head">
+        <h2>预览</h2>
         <div class="meta-row" id="metaRow" style="display:none">
           <div class="meta-item" id="metaSize">—</div>
           <div class="meta-item" id="metaScale">—</div>
           <div class="meta-item" id="metaElapsed">—</div>
           <div class="meta-item" id="metaColors">—</div>
         </div>
-        <div class="meta-row" style="display:none" id="swatchRow">
-          <div class="meta-item swatches" id="swatches"></div>
-        </div>
       </div>
-
-      <div class="panel">
-        <div class="guide-box">
-          <p>
-            <b>参数怎么选：</b><br>
-            · 颜色数量：默认「自动」。自动漏掉小色块时手动指定 3-6 色<br>
-            · 背景：默认「自动判断」——白底自动抠成透明，深色/彩色/渐变底保留（结果更接近原图）；需要强制透明时选「去除」<br>
-            · 线条细节：小字/细线选「精细」，毛边多选「平滑」
-          </p>
-        </div>
+      <div class="preview-grid">
+        <figure class="preview-box crop" id="srcBox">
+          <figcaption class="label">原图</figcaption>
+          <div class="ph" id="srcPh">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+            <span>尚未选择图片</span>
+          </div>
+          <img id="srcImg" style="display:none" alt="原图">
+        </figure>
+        <figure class="preview-box checker crop" id="outBox">
+          <figcaption class="label">矢量结果</figcaption>
+          <div class="ph" id="outPh"><span>点击「开始矢量化」</span></div>
+          <img id="outImg" style="display:none" alt="SVG 结果">
+        </figure>
+      </div>
+      <div class="swatch-row" id="swatchRow" style="display:none">
+        <span class="swatch-text">色板</span>
+        <div class="swatches" id="swatches"></div>
       </div>
     </div>
-  </div>
 
-  <p class="footnote">
-    引擎：Potrace 曲线拟合（浏览器端 JS 移植版 v11 / 本地原生二进制）。<br>
-    浏览器模式全部在本地完成，图片不会上传到任何服务器。
-  </p>
-</div>
+    <div class="guide">
+      <h2>参数建议</h2>
+      <dl>
+        <div><dt>颜色数量</dt><dd>默认自动；小色块漏掉时手动指定 3–6 色</dd></div>
+        <div><dt>背景</dt><dd>白底自动转透明；深色、彩色、渐变底保留原图观感</dd></div>
+        <div><dt>线条细节</dt><dd>小字细线用精细，毛边多用平滑</dd></div>
+      </dl>
+    </div>
+  </section>
+</main>
+
+<footer class="footnote">
+  <span>Potrace 曲线拟合 · 浏览器 JS 版 v11 / 本地原生</span>
+  <span>图片不会上传到服务器</span>
+</footer>
 
 <div class="toast" id="toast"></div>
 
@@ -267,16 +336,16 @@ h1{text-align:center;margin-bottom:8px;font-size:24px;font-weight:600;letter-spa
         $("engineField").style.display = localReady ? "" : "none";
         var b = $("envBadge");
         b.className = "env-badge ok";
-        b.innerHTML = localReady
-          ? "🚀 浏览器本地运算 · 无需任何服务（检测到原生高精度引擎，可切换）" + engineVer()
-          : "🚀 浏览器本地运算 · 无需任何服务" + engineVer();
+        b.innerHTML = '<i class="dot"></i><span>' + (localReady
+          ? "本地运算 · 可切换原生引擎" + engineVer()
+          : "本地运算" + engineVer()) + '</span>';
       })
       .catch(function(){
         localReady = false;
         $("engineField").style.display = "none";
         var b = $("envBadge");
         b.className = "env-badge ok";
-        b.textContent = "🚀 浏览器本地运算 · 无需任何服务" + engineVer();
+        b.innerHTML = '<i class="dot"></i><span>本地运算' + engineVer() + '</span>';
       });
   }
 
@@ -414,7 +483,7 @@ h1{text-align:center;margin-bottom:8px;font-size:24px;font-weight:600;letter-spa
     currentSvg = null;
     currentName = file.name.replace(/\.[^.]+$/, "") || "logo";
 
-    $("dropText").textContent = "✓ " + file.name;
+    $("dropText").textContent = file.name;
     dropArea.classList.add("active");
 
     var url = URL.createObjectURL(file);
@@ -425,7 +494,7 @@ h1{text-align:center;margin-bottom:8px;font-size:24px;font-weight:600;letter-spa
     $("outImg").style.display = "none";
     $("outImg").removeAttribute("src");
     $("outPh").style.display = "";
-    $("outPh").innerHTML = '<span class="icon">✒️</span>点击「开始矢量化」';
+    $("outPh").textContent = "点击「开始矢量化」";
     $("metaRow").style.display = "none";
     $("swatchRow").style.display = "none";
     $("downloadBtn").disabled = true;
@@ -441,7 +510,7 @@ h1{text-align:center;margin-bottom:8px;font-size:24px;font-weight:600;letter-spa
     $("convertBtn").disabled = true;
     $("progress").classList.add("show");
     $("outPh").style.display = "";
-    $("outPh").innerHTML = '<span class="icon">⏳</span>正在描摹…';
+    $("outPh").textContent = "正在描摹…";
     $("outImg").style.display = "none";
 
     var t0 = Date.now();
@@ -457,19 +526,19 @@ h1{text-align:center;margin-bottom:8px;font-size:24px;font-weight:600;letter-spa
     var task = engine === "local"
       ? resolveLocalOptions(opts).then(function(localOpts){
           return vectorizeLocally(currentFile, localOpts, function(stage){
-            $("outPh").innerHTML = '<span class="icon">⏳</span>' + stage + '…';
+            $("outPh").textContent = stage + "…";
           });
         })
       : vectorizeInBrowser(currentFile, opts, function(step, total){
-          $("outPh").innerHTML = '<span class="icon">⏳</span>描摹第 ' + step + '/' + total + ' 层…';
+          $("outPh").textContent = "描摹第 " + step + "/" + total + " 层…";
         });
 
     task.then(function(data){
       currentSvg = data.svg;
-      if (data.engine === "browser") toast("已用引擎 v" + (data.version || "?") + " 生成，导出文件自带版本标记");
+      if (data.engine === "browser") toast("已用引擎 v" + (data.version || "?") + " 生成");
       showResult(data, Date.now() - t0);
     }).catch(function(err){
-      $("outPh").innerHTML = '<span class="icon">⚠️</span>' + (err.message || "转换失败");
+      $("outPh").textContent = err.message || "转换失败";
       $("outPh").style.display = "";
       toast(err.message || "转换失败");
     }).then(function(){
@@ -489,7 +558,7 @@ h1{text-align:center;margin-bottom:8px;font-size:24px;font-weight:600;letter-spa
     $("metaSize").innerHTML = "尺寸 <b>" + (data.width || "?") + "×" + (data.height || "?") + "</b>";
     $("metaScale").innerHTML = (data.engine === "local")
       ? ("SVG 精度 <b>" + (data.scale || 1) + "x</b> · 本地原生" + (data.version ? " v" + String(data.version).split("-")[0] : ""))
-      : ("输出 <b>矢量路径</b> · 引擎 v" + (data.version || (window.ToolsVectorizer && window.ToolsVectorizer.version) || "?"));
+      : ("引擎 v" + (data.version || (window.ToolsVectorizer && window.ToolsVectorizer.version) || "?"));
     $("metaElapsed").innerHTML = "耗时 <b>" + (data.elapsed != null ? data.elapsed + "s" : (ms + "ms")) + "</b>";
 
     var colors = data.colors || [];
@@ -514,7 +583,7 @@ h1{text-align:center;margin-bottom:8px;font-size:24px;font-weight:600;letter-spa
         box.appendChild(d);
       });
       var txt = document.createElement("span");
-      txt.style.cssText = "font-size:10px;color:var(--text-tertiary);margin-left:4px";
+      txt.style.cssText = "font-size:12px;color:var(--text-3);font-family:var(--mono);margin-left:2px";
       txt.textContent = colors.map(function(c){ return c.hex; }).join(" ");
       box.appendChild(txt);
     } else {
@@ -594,7 +663,7 @@ h1{text-align:center;margin-bottom:8px;font-size:24px;font-weight:600;letter-spa
   if (typeof Potrace === "undefined"){
     var b = $("envBadge");
     b.className = "env-badge warn";
-    b.textContent = "⚠️ potrace.js 未加载，请检查文件是否完整";
+    b.innerHTML = '<i class="dot"></i><span>引擎未加载 · 检查 potrace.js</span>';
     $("convertBtn").disabled = true;
     $("convertBtn").title = "potrace.js 缺失";
   }

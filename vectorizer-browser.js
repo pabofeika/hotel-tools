@@ -671,6 +671,7 @@
             background_spread: built.bg ? +built.bg.spread.toFixed(2) : 0,
             engine: 'browser',
             version: '11',
+            elapsed: debug.elapsed,
             detail: opts.detail,
             debug: debug
           });
