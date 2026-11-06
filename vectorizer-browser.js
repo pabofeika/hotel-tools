@@ -14,16 +14,24 @@
 (function () {
   'use strict';
 
-  var MAX_LOAD_DIM = 1600;  // 解码上限，避免超大图卡浏览器
-  var MAX_TRACE_PIXELS = 12e6; // 超采样后的像素上限（内存保护）
+  var MAX_LOAD_DIM = 3600;  // 解码上限，避免超大图卡浏览器
+  var MAX_LOAD_PIXELS = 6e6;
+  var MAX_TRACE_PIXELS = 24e6; // 超采样后的像素上限（内存保护）
 
   // 与 vectorizer-kit 原生引擎一致的细节参数
   // 注意：opttolerance 不能大——容差大会把圆弧近似成直线段，放大后就是多边形边。
   // 去噪靠 sigma / threshold / median，曲线始终保持低容差拟合。
   var DETAILS = {
-    fine:     { sigma: 0.24, alphamax: 1.00, opttolerance: 0.20, speck: 0.80, threshold: 128 },
-    standard: { sigma: 0.50, alphamax: 1.20, opttolerance: 0.20, speck: 1.50, threshold: 136 },
-    smooth:   { sigma: 0.80, alphamax: 1.30, opttolerance: 0.25, speck: 2.60, median: 1, threshold: 140 }
+    fine:     { sigma: 0.24, alphamax: 1.00, opttolerance: 0.20, speck: 0.80, threshold: 128, target: 6000 },
+    standard: { sigma: 0.50, alphamax: 1.20, opttolerance: 0.20, speck: 1.50, threshold: 136, target: 6000 },
+    smooth:   { sigma: 0.80, alphamax: 1.30, opttolerance: 0.25, speck: 2.60, median: 1, threshold: 140, target: 6000 }
+  };
+
+  // 透明底：alpha 本身已是抗锯齿覆盖率，几乎不需要模糊；用更高描摹分辨率和更小容差
+  var ALPHA_DETAILS = {
+    fine:     { sigma: 0.10, alphamax: 0.20, opttolerance: 0.10, speck: 0.80, threshold: 128, target: 9000 },
+    standard: { sigma: 0.15, alphamax: 0.30, opttolerance: 0.15, speck: 1.00, threshold: 127, target: 9000 },
+    smooth:   { sigma: 0.50, alphamax: 0.80, opttolerance: 0.25, speck: 2.00, median: 1, threshold: 130, target: 6000 }
   };
 
   /* ───────────────── 解码 ───────────────── */
@@ -46,7 +54,7 @@
       var img = new Image();
       img.onload = function () {
         var ow = img.naturalWidth, oh = img.naturalHeight;
-        var s = Math.min(1, MAX_LOAD_DIM / Math.max(ow, oh));
+        var s = Math.min(1, MAX_LOAD_DIM / Math.max(ow, oh), Math.sqrt(MAX_LOAD_PIXELS / (ow * oh)));
         var w = Math.max(1, Math.round(ow * s));
         var h = Math.max(1, Math.round(oh * s));
         var c = document.createElement('canvas');
@@ -608,7 +616,10 @@
       debug.layerCount = order.length;
       debug.layers = order.map(function (o) { return { hex: hexOf(o.c), pixels: o.n }; });
 
-      var scale = traceScaleFor(w, h, 6000);
+      var activeDetail = built.alphaBg
+        ? (ALPHA_DETAILS[opts.detail] || ALPHA_DETAILS.standard)
+        : detail;
+      var scale = traceScaleFor(w, h, activeDetail.target || 6000);
       debug.scale = scale;
       debug.softMask = built.uniform;
 
@@ -625,9 +636,7 @@
             : (built.uniform
               ? softMask(img.id, labels, o.i, cores[o.i], built.bg, w, h)
               : binaryMask(labels, o.i, w, h));
-          var layerDetail = built.alphaBg
-            ? Object.assign({}, detail, { threshold: 128 })
-            : detail;
+          var layerDetail = built.alphaBg ? activeDetail : detail;
 
           traceMask(mask, scale, layerDetail).then(function (dd) {
             if (dd) paths += '<path fill="' + hexOf(o.c) + '" fill-rule="evenodd" d="'
@@ -646,7 +655,7 @@
           var svg = '<?xml version="1.0" encoding="UTF-8"?>\n'
             + '<svg xmlns="http://www.w3.org/2000/svg" width="' + img.ow + '" height="' + img.oh
             + '" viewBox="0 0 ' + img.ow + ' ' + img.oh + '" role="img">'
-            + '<title>矢量 logo</title><desc>hotel-tools vectorizer v10 · browser · ' + opts.detail + '</desc>'
+            + '<title>矢量 logo</title><desc>hotel-tools vectorizer v11 · browser · ' + opts.detail + '</desc>'
             + rect2 + paths + '</svg>';
           debug.elapsed = +((Date.now() - t0) / 1000).toFixed(2);
           debug.originalSize = [img.ow, img.oh];
@@ -661,7 +670,7 @@
             background_removed: opts.removeBg,
             background_spread: built.bg ? +built.bg.spread.toFixed(2) : 0,
             engine: 'browser',
-            version: '10',
+            version: '11',
             detail: opts.detail,
             debug: debug
           });
@@ -693,6 +702,6 @@
   window.ToolsVectorizer = {
     vectorize: vectorizeFile,
     resolveBackground: resolveBackground,
-    version: '10'
+    version: '11'
   };
 })();
