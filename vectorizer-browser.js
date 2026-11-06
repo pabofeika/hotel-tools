@@ -556,10 +556,14 @@
             rect = '<rect width="' + (w * scale) + '" height="' + (h * scale)
               + '" fill="' + hexOf(built.bg.color) + '"/>';
           }
+          // 坐标系也映射回原图像素：width/height/viewBox 三者一致，
+          // 不论设计工具按哪个属性导入，尺寸都与原图一致
+          var sx = img.ow / (w * scale), sy = img.oh / (h * scale);
           var svg = '<?xml version="1.0" encoding="UTF-8"?>\n'
             + '<svg xmlns="http://www.w3.org/2000/svg" width="' + img.ow + '" height="' + img.oh
-            + '" viewBox="0 0 ' + (w * scale) + ' ' + (h * scale) + '" role="img"><title>矢量 logo</title>'
-            + rect + paths + '</svg>';
+            + '" viewBox="0 0 ' + img.ow + ' ' + img.oh + '" role="img"><title>矢量 logo</title>'
+            + '<g transform="scale(' + sx.toFixed(8) + ' ' + sy.toFixed(8) + ')">'
+            + rect + paths + '</g></svg>';
           debug.elapsed = +((Date.now() - t0) / 1000).toFixed(2);
           debug.originalSize = [img.ow, img.oh];
           debug.workingSize = [w, h];
@@ -603,6 +607,6 @@
   window.ToolsVectorizer = {
     vectorize: vectorizeFile,
     resolveBackground: resolveBackground,
-    version: '5'
+    version: '6'
   };
 })();
