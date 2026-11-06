@@ -482,6 +482,13 @@ h1{text-align:center;margin-bottom:8px;font-size:24px;font-weight:600;letter-spa
     $("metaElapsed").innerHTML = "耗时 <b>" + (data.elapsed != null ? data.elapsed + "s" : (ms + "ms")) + "</b>";
 
     var colors = data.colors || [];
+    // 本地引擎返回的颜色统计可能只有一个代表色：以 SVG 里的 fill 为准
+    if (data.svg && colors.length < 2){
+      var uniq = {}, m, re = /fill="#([0-9A-Fa-f]{6})"/g;
+      while ((m = re.exec(data.svg))) uniq["#" + m[1].toUpperCase()] = 1;
+      var parsed = Object.keys(uniq).map(function(hex){ return { hex: hex }; });
+      if (parsed.length) colors = parsed;
+    }
     $("metaColors").innerHTML = "颜色 <b>" + colors.length + "</b> 种";
 
     if (colors.length){
@@ -492,7 +499,7 @@ h1{text-align:center;margin-bottom:8px;font-size:24px;font-weight:600;letter-spa
         var d = document.createElement("div");
         d.className = "swatch";
         d.style.background = c.hex;
-        d.title = c.hex + " · " + c.pixels + " px";
+        d.title = c.pixels != null ? (c.hex + " · " + c.pixels + " px") : c.hex;
         box.appendChild(d);
       });
       var txt = document.createElement("span");
