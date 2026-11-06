@@ -1,21 +1,28 @@
 /**
  * 浏览器端 Logo 矢量化管线（无需任何服务）
  *
- * 设计要点（对应实测问题）：
- *   1. 背景估计分两条路：
- *      - 均匀底（边框众数占比高、离差小）→ 用边框众数色 + 容差
- *      - 渐变/照片底（离差大）→ 用**局部背景**（强模糊后近似）做差分，避免整张图被判成背景而塌掉
- *   2. 颜色核心：内部像素直方图 + 相近色合并，阈值按占比自适应，避免小面积文字被丢掉
- *   3. 逐色掩膜 → 轻度模糊重二值化去锯齿 → potrace 拟合
+ * v4 与原生引擎对齐的关键点：
+ *   1. 背景判定：边框众数占比高、离差小 → 均匀底；否则用局部模糊差分
+ *   2. 颜色核心：内部像素直方图 + 相近色合并，小面积强调色补救
+ *   3. **抗锯齿覆盖率掩膜**：均匀底时不再按硬阈值切边，而是把每个像素到
+ *      "背景→该颜色"的投影比例作为覆盖率（0..1），保留亚像素边缘
+ *   4. **超采样描摹**：掩膜先双三次放大 2-6 倍（按图幅自适应），轻度高斯
+ *      模糊后二值化，再交给 Potrace 拟合；细笔画和小字不会糊成一团
  *
  * 对外接口：window.ToolsVectorizer.vectorize(file, opts) → Promise<result>
  */
 (function () {
   'use strict';
 
-  var BOX_WHITE = 238;      // 判定"底图白框"用的白阈值
-  var MERGE_DIST = 42;      // 相近色合并距离
   var MAX_LOAD_DIM = 1600;  // 解码上限，避免超大图卡浏览器
+  var MAX_TRACE_PIXELS = 12e6; // 超采样后的像素上限（内存保护）
+
+  // 与 vectorizer-kit 原生引擎一致的细节参数
+  var DETAILS = {
+    fine:     { sigma: 0.24, alphamax: 1.00, opttolerance: 0.18, speck: 0.80 },
+    standard: { sigma: 0.36, alphamax: 1.20, opttolerance: 0.30, speck: 1.50 },
+    smooth:   { sigma: 0.52, alphamax: 1.30, opttolerance: 0.45, speck: 2.60 }
+  };
 
   /* ───────────────── 解码 ───────────────── */
 
@@ -92,7 +99,6 @@
     var r = Math.max(1, radius | 0);
     var i, x, y, c, sum, n;
 
-    // 水平
     for (y = 0; y < h; y++) {
       for (c = 0; c < 3; c++) {
         sum = 0; n = 0;
@@ -108,7 +114,6 @@
         }
       }
     }
-    // 垂直
     for (x = 0; x < w; x++) {
       for (c = 0; c < 3; c++) {
         sum = 0; n = 0;
@@ -136,12 +141,14 @@
     var mode = 'border';
     var tol = 30;
 
-    // 均匀底：边框众数占比高且离差小
-    var uniform = bg && bg.ratio >= 0.45 && bg.spread <= 4.0;
-    if (!opts.removeBg) {
-      // 保留背景：全部非透明像素都算前景
+    // 均匀底：边框众数占比高且离差小（8% 以内仍视为纯色底，
+    // 允许 logo 有一小部分贴边，否则会退化成整图分层、SVG 体积暴涨）
+    var uniform = bg && bg.ratio >= 0.45 && bg.spread <= 8.0;
+
+    // 保留背景 + 非均匀底（渐变/照片）：整张图都要参与分层，否则会丢背景
+    if (!opts.removeBg && !uniform) {
       for (var i0 = 0; i0 < w * h; i0++) if (d[i0 * 4 + 3] >= 12) ink[i0] = 1;
-      return { ink: ink, bg: bg, mode: 'keep-all', bgTest: null };
+      return { ink: ink, bg: bg, mode: 'keep-all', uniform: false };
     }
 
     if (uniform) {
@@ -190,19 +197,62 @@
       }
     }
 
-    return { ink: ink, bg: bg, mode: mode, bgTest: null };
+    return { ink: ink, bg: bg, mode: mode, uniform: uniform };
   }
 
   /* ───────────────── 颜色核心 ───────────────── */
 
-  function extractCores(id, ink, requestK, opts) {
+  function rgb2hsv(c) {
+    var r = c[0] / 255, g = c[1] / 255, b = c[2] / 255;
+    var max = Math.max(r, g, b), min = Math.min(r, g, b);
+    var v = max, s = max === 0 ? 0 : (max - min) / max;
+    var h = 0, d = max - min;
+    if (d > 1e-6) {
+      if (max === r) h = ((g - b) / d) % 6;
+      else if (max === g) h = (b - r) / d + 2;
+      else h = (r - g) / d + 4;
+      h *= 60;
+      if (h < 0) h += 360;
+    }
+    return { h: h, s: s, v: v };
+  }
+
+  // 与原生引擎 _is_similar 一致：同色系的明暗差（含 JPEG 压缩灰边）合并成一层
+  function similarColor(a, b) {
+    var dr = a[0] - b[0], dg = a[1] - b[1], db = a[2] - b[2];
+    if (Math.sqrt(dr * dr + dg * dg + db * db) < 26) return true;
+    var x = rgb2hsv(a), y = rgb2hsv(b);
+    if (x.s < 0.16 && y.s < 0.16) return Math.abs(x.v - y.v) < 0.24;
+    var dh = Math.min(Math.abs(x.h - y.h), 360 - Math.abs(x.h - y.h));
+    return dh < 14 && Math.abs(x.s - y.s) < 0.36 && Math.abs(x.v - y.v) < 0.24;
+  }
+
+  // 判断颜色 c 是否是"背景 bg ↔ 实色 strong"之间的抗锯齿过渡色
+  function isBlendOf(c, bg, strong) {
+    var vr = strong[0] - bg[0], vg = strong[1] - bg[1], vb = strong[2] - bg[2];
+    var denom = vr * vr + vg * vg + vb * vb;
+    if (denom < 400) return false;
+    var wr = c[0] - bg[0], wg = c[1] - bg[1], wb = c[2] - bg[2];
+    var t = (wr * vr + wg * vg + wb * vb) / denom;
+    if (t <= 0.12 || t >= 0.9) return false;
+    var pr = bg[0] + vr * t, pg = bg[1] + vg * t, pb = bg[2] + vb * t;
+    var off = Math.sqrt(
+      Math.pow(c[0] - pr, 2) + Math.pow(c[1] - pg, 2) + Math.pow(c[2] - pb, 2)
+    );
+    return off < 36;
+  }
+
+  function extractCores(id, ink, requestK, strict, bgColor) {
     var w = id.width, h = id.height, d = id.data;
+    // 均匀底时用 2px 腐蚀取"实心内部"：抗锯齿灰边只有 1-2px，会被剔除，
+    // 避免白色文字旁边多出一层灰色描边（原图上的实心灰色文字不受影响）。
+    var r = strict ? 2 : 1;
     var inner = [];
-    for (var y = 1; y < h - 1; y++) {
-      for (var x = 1; x < w - 1; x++) {
+    for (var y = r; y < h - r; y++) {
+      for (var x = r; x < w - r; x++) {
         var i = y * w + x;
         if (!ink[i]) continue;
-        if (!ink[i - 1] || !ink[i + 1] || !ink[i - w] || !ink[i + w]) continue;
+        if (!ink[i - r] || !ink[i + r] || !ink[i - r * w] || !ink[i + r * w]) continue;
         inner.push(i);
       }
     }
@@ -231,10 +281,16 @@
       var b = buckets[bi], hit = -1;
       for (var ci = 0; ci < cores.length; ci++) {
         var c = cores[ci];
-        var dist = Math.sqrt(
-          Math.pow(b.c[0] - c.c[0], 2) + Math.pow(b.c[1] - c.c[1], 2) + Math.pow(b.c[2] - c.c[2], 2)
-        );
-        if (dist < MERGE_DIST) { hit = ci; break; }
+        var same;
+        if (strict) {
+          // 纯色底：同色系明暗差是抗锯齿灰边，合并成一层
+          same = similarColor(b.c, c.c);
+        } else {
+          // 渐变/照片底：保留层次，避免把渐变合并成色块
+          var dr0 = b.c[0] - c.c[0], dg0 = b.c[1] - c.c[1], db0 = b.c[2] - c.c[2];
+          same = Math.sqrt(dr0 * dr0 + dg0 * dg0 + db0 * db0) < 42;
+        }
+        if (same) { hit = ci; break; }
       }
       if (hit >= 0) {
         var c2 = cores[hit], total = c2.n + b.n;
@@ -253,8 +309,9 @@
 
     var totalInk = inner.length;
     if (requestK === 'auto') {
-      // 主色：占比 >= 1.2%（实测与原生引擎的分层结果最接近，避免深浅色被拆成多层）
-      var minShare = 0.012;
+      // 主色门槛：均匀底要求 3%（实心色），抗锯齿灰边通常 <2%，会被剔除；
+      // 非均匀底（渐变/照片）保持 1.2%，避免丢失小色块。
+      var minShare = strict ? 0.03 : 0.012;
       var keep = cores.filter(function (c) { return c.n >= totalInk * minShare; });
       if (!keep.length) keep = [cores[0]];
 
@@ -266,6 +323,10 @@
         var cand = cores[ri];
         if (keep.indexOf(cand) >= 0) continue;
         if (cand.n < rescueMin) continue;
+        // 背景与实色之间的过渡色（AA 灰边）不抢救；非均匀底的"背景色"不可靠，不做此判断
+        if (strict && bgColor && keep.some(function (k3) {
+          return isBlendOf(cand.c, bgColor, k3.c);
+        })) continue;
         var far = keep.every(function (k2) {
           var dd = Math.sqrt(
             Math.pow(cand.c[0] - k2.c[0], 2) +
@@ -297,18 +358,98 @@
     return m ? m[1] : '';
   }
 
-  function traceMask(maskCanvas) {
+  function traceScaleFor(w, h) {
+    var want = Math.round(4200 / Math.max(w, h));
+    want = Math.max(2, Math.min(6, want));
+    while (want > 1 && w * want * h * want > MAX_TRACE_PIXELS) want--;
+    return want;
+  }
+
+  function traceMask(maskCanvas, scale, detail, onProgress) {
     return new Promise(function (resolve) {
+      var W = maskCanvas.width * scale, H = maskCanvas.height * scale;
+      var big = document.createElement('canvas');
+      big.width = W; big.height = H;
+      var bctx = big.getContext('2d', { willReadFrequently: true });
+      bctx.imageSmoothingEnabled = true;
+      bctx.imageSmoothingQuality = 'high';
+      // 先双三次放大，再按比例做高斯模糊：等价于原生引擎的 resize + GaussianBlur
+      bctx.filter = 'blur(' + (detail.sigma * scale).toFixed(2) + 'px)';
+      bctx.drawImage(maskCanvas, 0, 0, W, H);
+      bctx.filter = 'none';
+
+      var bid = bctx.getImageData(0, 0, W, H);
+      var bd = bid.data;
+      for (var i = 0; i < bd.length; i += 4) {
+        var lum = 0.2126 * bd[i] + 0.7153 * bd[i + 1] + 0.0721 * bd[i + 2];
+        bd[i] = bd[i + 1] = bd[i + 2] = lum < 128 ? 0 : 255;
+        bd[i + 3] = 255;
+      }
+      bctx.putImageData(bid, 0, 0);
+
       Potrace.setParameter({
         turnpolicy: 'minority',
-        turdsize: 2,
+        turdsize: Math.max(2, Math.round(detail.speck * scale * scale)),
         optcurve: true,
-        alphamax: 1,
-        opttolerance: 0.2
+        alphamax: detail.alphamax,
+        opttolerance: detail.opttolerance
       });
-      Potrace.loadImageFromUrl(maskCanvas.toDataURL());
-      Potrace.process(function () { resolve(extractPathD(Potrace.getSVG(1))); });
+      Potrace.loadImageFromUrl(big.toDataURL());
+      Potrace.process(function () {
+        resolve(extractPathD(Potrace.getSVG(1)));
+      });
     });
+  }
+
+  /* ───────────────── 掩膜 ───────────────── */
+
+  // 均匀底：用"背景→颜色"的投影比例作为抗锯齿覆盖率
+  function softMask(id, labels, layerIndex, core, bg, w, h) {
+    var d = id.data;
+    var vr = core.c[0] - bg.color[0];
+    var vg = core.c[1] - bg.color[1];
+    var vb = core.c[2] - bg.color[2];
+    var denom = vr * vr + vg * vg + vb * vb;
+    var mc = document.createElement('canvas');
+    mc.width = w; mc.height = h;
+    var ctx = mc.getContext('2d', { willReadFrequently: true });
+    var mid = ctx.createImageData(w, h);
+    var md = mid.data;
+    for (var i = 0; i < w * h; i++) {
+      var p = i * 4;
+      var a = 0;
+      if (labels[i] === layerIndex) {
+        if (denom > 400) {
+          var dot = (d[p] - bg.color[0]) * vr + (d[p + 1] - bg.color[1]) * vg + (d[p + 2] - bg.color[2]) * vb;
+          a = dot / denom;
+          a = a < 0 ? 0 : (a > 1 ? 1 : a);
+        } else {
+          var dr = d[p] - core.c[0], dg = d[p + 1] - core.c[1], db = d[p + 2] - core.c[2];
+          a = (dr * dr + dg * dg + db * db) < 1600 ? 1 : 0;
+        }
+      }
+      // 覆盖率越高 → 越黑（Potrace 把深色当墨）
+      md[p] = md[p + 1] = md[p + 2] = Math.round(255 - a * 255);
+      md[p + 3] = 255;
+    }
+    ctx.putImageData(mid, 0, 0);
+    return mc;
+  }
+
+  function binaryMask(labels, layerIndex, w, h) {
+    var mc = document.createElement('canvas');
+    mc.width = w; mc.height = h;
+    var ctx = mc.getContext('2d', { willReadFrequently: true });
+    var mid = ctx.createImageData(w, h);
+    var md = mid.data;
+    for (var i = 0; i < w * h; i++) {
+      var on = labels[i] === layerIndex;
+      var p = i * 4;
+      md[p] = md[p + 1] = md[p + 2] = on ? 0 : 255;
+      md[p + 3] = 255;
+    }
+    ctx.putImageData(mid, 0, 0);
+    return mc;
   }
 
   /* ───────────────── 主流程 ───────────────── */
@@ -319,6 +460,7 @@
       background: 'auto',
       detail: 'standard'
     }, options || {});
+    var detail = DETAILS[opts.detail] || DETAILS.standard;
 
     var debug = { steps: [] };
 
@@ -350,7 +492,7 @@
 
       if (inkCount < 10) throw new Error('没有可描摹的前景像素（图片可能整张都是背景色）');
 
-      var cores = extractCores(img.id, ink, opts.colors, opts);
+      var cores = extractCores(img.id, ink, opts.colors, built.uniform, built.bg ? built.bg.color : null);
       debug.coreCount = cores.length;
       debug.cores = cores.map(function (c) { return { hex: hexOf(c.c), pixels: c.n }; });
       if (!cores.length) throw new Error('没有可描摹的前景像素');
@@ -384,7 +526,9 @@
       debug.layerCount = order.length;
       debug.layers = order.map(function (o) { return { hex: hexOf(o.c), pixels: o.n }; });
 
-      var blur = opts.detail === 'fine' ? 0 : (opts.detail === 'smooth' ? 1.4 : 0.75);
+      var scale = traceScaleFor(w, h);
+      debug.scale = scale;
+      debug.softMask = built.uniform;
 
       var paths = '';
       var k = 0;
@@ -394,57 +538,33 @@
           var o = order[k++];
           if (opts.onLayer) opts.onLayer(k, order.length);
 
-          var mc = document.createElement('canvas');
-          mc.width = w; mc.height = h;
-          var mctx = mc.getContext('2d', { willReadFrequently: true });
-          var mid = mctx.createImageData(w, h);
-          var md = mid.data;
-          for (var j = 0; j < w * h; j++) {
-            var on = labels[j] === o.i;
-            var pj = j * 4;
-            md[pj] = md[pj + 1] = md[pj + 2] = on ? 0 : 255;
-            md[pj + 3] = 255;
-          }
-          mctx.putImageData(mid, 0, 0);
+          var mask = built.uniform
+            ? softMask(img.id, labels, o.i, cores[o.i], built.bg, w, h)
+            : binaryMask(labels, o.i, w, h);
 
-          if (blur > 0) {
-            var sc = document.createElement('canvas');
-            sc.width = w; sc.height = h;
-            var sctx = sc.getContext('2d', { willReadFrequently: true });
-            sctx.filter = 'blur(' + blur + 'px)';
-            sctx.drawImage(mc, 0, 0);
-            sctx.filter = 'none';
-            var sid = sctx.getImageData(0, 0, w, h);
-            var sd = sid.data;
-            for (var q = 0; q < w * h; q++) {
-              var pq = q * 4;
-              var lum = 0.2126 * sd[pq] + 0.7153 * sd[pq + 1] + 0.0721 * sd[pq + 2];
-              var on2 = lum < 200;
-              sd[pq] = sd[pq + 1] = sd[pq + 2] = on2 ? 0 : 255;
-              sd[pq + 3] = 255;
-            }
-            sctx.putImageData(sid, 0, 0);
-            mctx.clearRect(0, 0, w, h);
-            mctx.drawImage(sc, 0, 0);
-          }
-
-          traceMask(mc).then(function (dd) {
+          traceMask(mask, scale, detail).then(function (dd) {
             if (dd) paths += '<path fill="' + hexOf(o.c) + '" fill-rule="evenodd" d="' + dd + '"/>';
             nextLayer();
           }).catch(reject);
         }
 
         function finish() {
+          // 保留背景：均匀底补一个背景矩形；非均匀底的背景已包含在图层里
+          var rect = '';
+          if (!opts.removeBg && built.uniform && built.bg) {
+            rect = '<rect width="' + (w * scale) + '" height="' + (h * scale)
+              + '" fill="' + hexOf(built.bg.color) + '"/>';
+          }
           var svg = '<?xml version="1.0" encoding="UTF-8"?>\n'
             + '<svg xmlns="http://www.w3.org/2000/svg" width="' + w + '" height="' + h
-            + '" viewBox="0 0 ' + w + ' ' + h + '" role="img"><title>矢量 logo</title>'
-            + paths + '</svg>';
+            + '" viewBox="0 0 ' + (w * scale) + ' ' + (h * scale) + '" role="img"><title>矢量 logo</title>'
+            + rect + paths + '</svg>';
           debug.elapsed = +((Date.now() - t0) / 1000).toFixed(2);
           resolve({
             svg: svg,
             width: w,
             height: h,
-            scale: 1,
+            scale: scale,
             colors: order.map(function (o) { return { hex: hexOf(o.c), pixels: o.n }; }),
             background: built.bg ? hexOf(built.bg.color) : null,
             background_removed: opts.removeBg,
@@ -480,6 +600,6 @@
   window.ToolsVectorizer = {
     vectorize: vectorizeFile,
     resolveBackground: resolveBackground,
-    version: '3'
+    version: '4'
   };
 })();
