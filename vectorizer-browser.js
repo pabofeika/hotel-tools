@@ -148,10 +148,33 @@
     // 允许 logo 有一小部分贴边，否则会退化成整图分层、SVG 体积暴涨）
     var uniform = bg && bg.ratio >= 0.45 && bg.spread <= 8.0;
 
+    // 透明底（PNG/WebP）：边框大部分是 alpha=0。此时 alpha 通道就是现成的
+    // 抗锯齿覆盖率，直接用 alpha 描摹，不能再二值化，否则字会变粗。
+    var borderTotal = 0, borderClear = 0;
+    for (var bx = 0; bx < w; bx++) {
+      for (var by = 0; by < Math.min(3, h); by++) {
+        borderTotal += 2;
+        if (d[(by * w + bx) * 4 + 3] < 10) borderClear++;
+        if (d[((h - 1 - by) * w + bx) * 4 + 3] < 10) borderClear++;
+      }
+    }
+    for (var by2 = 0; by2 < h; by2++) {
+      for (var bx2 = 0; bx2 < Math.min(3, w); bx2++) {
+        borderTotal += 2;
+        if (d[(by2 * w + bx2) * 4 + 3] < 10) borderClear++;
+        if (d[(by2 * w + (w - 1 - bx2)) * 4 + 3] < 10) borderClear++;
+      }
+    }
+    var alphaBg = borderTotal > 0 && borderClear / borderTotal > 0.5;
+    if (alphaBg) {
+      for (var ia = 0; ia < w * h; ia++) if (d[ia * 4 + 3] >= 12) ink[ia] = 1;
+      return { ink: ink, bg: null, mode: 'alpha', uniform: false, alphaBg: true };
+    }
+
     // 保留背景 + 非均匀底（渐变/照片）：整张图都要参与分层，否则会丢背景
     if (!opts.removeBg && !uniform) {
       for (var i0 = 0; i0 < w * h; i0++) if (d[i0 * 4 + 3] >= 12) ink[i0] = 1;
-      return { ink: ink, bg: bg, mode: 'keep-all', uniform: false };
+      return { ink: ink, bg: bg, mode: 'keep-all', uniform: false, alphaBg: false };
     }
 
     if (uniform) {
@@ -200,7 +223,7 @@
       }
     }
 
-    return { ink: ink, bg: bg, mode: mode, uniform: uniform };
+    return { ink: ink, bg: bg, mode: mode, uniform: uniform, alphaBg: false };
   }
 
   /* ───────────────── 颜色核心 ───────────────── */
@@ -477,6 +500,24 @@
     return mc;
   }
 
+  // 透明底：alpha 即覆盖率（白=墨）
+  function alphaMask(id, labels, layerIndex, w, h) {
+    var d = id.data;
+    var mc = document.createElement('canvas');
+    mc.width = w; mc.height = h;
+    var ctx = mc.getContext('2d', { willReadFrequently: true });
+    var mid = ctx.createImageData(w, h);
+    var md = mid.data;
+    for (var i = 0; i < w * h; i++) {
+      var p = i * 4;
+      var a = (labels[i] === layerIndex) ? d[p + 3] / 255 : 0;
+      md[p] = md[p + 1] = md[p + 2] = Math.round(255 - a * 255);
+      md[p + 3] = 255;
+    }
+    ctx.putImageData(mid, 0, 0);
+    return mc;
+  }
+
   function binaryMask(labels, layerIndex, w, h) {
     var mc = document.createElement('canvas');
     mc.width = w; mc.height = h;
@@ -579,11 +620,16 @@
           var o = order[k++];
           if (opts.onLayer) opts.onLayer(k, order.length);
 
-          var mask = built.uniform
-            ? softMask(img.id, labels, o.i, cores[o.i], built.bg, w, h)
-            : binaryMask(labels, o.i, w, h);
+          var mask = built.alphaBg
+            ? alphaMask(img.id, labels, o.i, w, h)
+            : (built.uniform
+              ? softMask(img.id, labels, o.i, cores[o.i], built.bg, w, h)
+              : binaryMask(labels, o.i, w, h));
+          var layerDetail = built.alphaBg
+            ? Object.assign({}, detail, { threshold: 128 })
+            : detail;
 
-          traceMask(mask, scale, detail).then(function (dd) {
+          traceMask(mask, scale, layerDetail).then(function (dd) {
             if (dd) paths += '<path fill="' + hexOf(o.c) + '" fill-rule="evenodd" d="'
               + scalePath(dd, img.ow / (w * scale)) + '"/>';
             nextLayer();
@@ -600,7 +646,7 @@
           var svg = '<?xml version="1.0" encoding="UTF-8"?>\n'
             + '<svg xmlns="http://www.w3.org/2000/svg" width="' + img.ow + '" height="' + img.oh
             + '" viewBox="0 0 ' + img.ow + ' ' + img.oh + '" role="img">'
-            + '<title>矢量 logo</title><desc>hotel-tools vectorizer v9 · browser</desc>'
+            + '<title>矢量 logo</title><desc>hotel-tools vectorizer v10 · browser · ' + opts.detail + '</desc>'
             + rect2 + paths + '</svg>';
           debug.elapsed = +((Date.now() - t0) / 1000).toFixed(2);
           debug.originalSize = [img.ow, img.oh];
@@ -615,7 +661,8 @@
             background_removed: opts.removeBg,
             background_spread: built.bg ? +built.bg.spread.toFixed(2) : 0,
             engine: 'browser',
-            version: '9',
+            version: '10',
+            detail: opts.detail,
             debug: debug
           });
         }
@@ -646,6 +693,6 @@
   window.ToolsVectorizer = {
     vectorize: vectorizeFile,
     resolveBackground: resolveBackground,
-    version: '9'
+    version: '10'
   };
 })();

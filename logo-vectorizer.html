@@ -113,7 +113,7 @@ h1{text-align:center;margin-bottom:8px;font-size:24px;font-weight:600;letter-spa
   <h1>✒️ Logo 矢量化</h1>
   <p class="subtitle">位图 Logo / 印章 / 字标 → 平滑 SVG（Potrace 贝塞尔拟合，可无限放大）</p>
 
-  <div class="env-badge ok" id="envBadge">🚀 浏览器本地运算 · 无需任何服务 · 引擎 v9</div>
+  <div class="env-badge ok" id="envBadge">🚀 浏览器本地运算 · 无需任何服务 · 引擎 v10</div>
 
   <div class="layout">
     <!-- ═══ 左侧控制 ═══ -->
@@ -223,7 +223,7 @@ h1{text-align:center;margin-bottom:8px;font-size:24px;font-weight:600;letter-spa
   </div>
 
   <p class="footnote">
-    引擎：Potrace 曲线拟合（浏览器端 JS 移植版 v9 / 本地原生二进制）。<br>
+    引擎：Potrace 曲线拟合（浏览器端 JS 移植版 v10 / 本地原生二进制）。<br>
     浏览器模式全部在本地完成，图片不会上传到任何服务器。
   </p>
 </div>
@@ -231,7 +231,7 @@ h1{text-align:center;margin-bottom:8px;font-size:24px;font-weight:600;letter-spa
 <div class="toast" id="toast"></div>
 
 <script src="./potrace.js"></script>
-<script src="./vectorizer-browser.js?v=9"></script>
+<script src="./vectorizer-browser.js?v=10"></script>
 <script>
 (function(){
   "use strict";
@@ -249,6 +249,7 @@ h1{text-align:center;margin-bottom:8px;font-size:24px;font-weight:600;letter-spa
   var currentFile = null;
   var currentSvg = null;
   var currentName = "logo";
+  var currentDetail = "standard";
   var busy = false;
 
   /* ═══════════════ 引擎检测（按服务真实能力，而不是凭 ping） ═══════════════ */
@@ -284,7 +285,7 @@ h1{text-align:center;margin-bottom:8px;font-size:24px;font-weight:600;letter-spa
     return new Promise(function(resolve, reject){
       if (window.ToolsVectorizer) return resolve(window.ToolsVectorizer);
       var s = document.createElement("script");
-      s.src = "./vectorizer-browser.js?v=9";
+      s.src = "./vectorizer-browser.js?v=10";
       s.onload = function(){ resolve(window.ToolsVectorizer); };
       s.onerror = function(){ reject(new Error("浏览器矢量引擎加载失败")); };
       document.head.appendChild(s);
@@ -449,6 +450,7 @@ h1{text-align:center;margin-bottom:8px;font-size:24px;font-weight:600;letter-spa
       background: $("optBg").value,
       detail: $("optDetail").value
     };
+    currentDetail = opts.detail;
     var engine = $("optEngine") ? $("optEngine").value : "browser";
     if (engine === "local" && !localReady) engine = "browser";
 
@@ -533,7 +535,7 @@ h1{text-align:center;margin-bottom:8px;font-size:24px;font-weight:600;letter-spa
     var url = URL.createObjectURL(blob);
     var a = document.createElement("a");
     a.href = url;
-    a.download = currentName + "-v9.svg";
+    a.download = currentName + "-v10-" + (currentDetail || "standard") + ".svg";
     document.body.appendChild(a);
     a.click();
     a.remove();
