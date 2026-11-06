@@ -110,7 +110,7 @@ h1{text-align:center;margin-bottom:8px;font-size:24px;font-weight:600;letter-spa
   <h1>✒️ Logo 矢量化</h1>
   <p class="subtitle">位图 Logo / 印章 / 字标 → 平滑 SVG（Potrace 贝塞尔拟合，可无限放大）</p>
 
-  <div class="env-badge ok" id="envBadge">🚀 浏览器本地运算 · 无需任何服务</div>
+  <div class="env-badge ok" id="envBadge">🚀 浏览器本地运算 · 无需任何服务 · 引擎 v9</div>
 
   <div class="layout">
     <!-- ═══ 左侧控制 ═══ -->
@@ -220,7 +220,7 @@ h1{text-align:center;margin-bottom:8px;font-size:24px;font-weight:600;letter-spa
   </div>
 
   <p class="footnote">
-    引擎：Potrace 曲线拟合（浏览器端 JS 移植版 / 本地原生二进制）。<br>
+    引擎：Potrace 曲线拟合（浏览器端 JS 移植版 v9 / 本地原生二进制）。<br>
     浏览器模式全部在本地完成，图片不会上传到任何服务器。
   </p>
 </div>
@@ -249,6 +249,11 @@ h1{text-align:center;margin-bottom:8px;font-size:24px;font-weight:600;letter-spa
   var busy = false;
 
   /* ═══════════════ 引擎检测（按服务真实能力，而不是凭 ping） ═══════════════ */
+  function engineVer(){
+    var v = window.ToolsVectorizer && window.ToolsVectorizer.version;
+    return v ? (" · 引擎 v" + v) : "";
+  }
+
   function checkLocal(){
     fetch("/api/capabilities", { cache: "no-store" })
       .then(function(r){ return r.ok ? r.json() : Promise.reject(); })
@@ -259,15 +264,15 @@ h1{text-align:center;margin-bottom:8px;font-size:24px;font-weight:600;letter-spa
         var b = $("envBadge");
         b.className = "env-badge ok";
         b.innerHTML = localReady
-          ? "🚀 浏览器本地运算 · 无需任何服务（检测到原生高精度引擎，可切换）"
-          : "🚀 浏览器本地运算 · 无需任何服务";
+          ? "🚀 浏览器本地运算 · 无需任何服务（检测到原生高精度引擎，可切换）" + engineVer()
+          : "🚀 浏览器本地运算 · 无需任何服务" + engineVer();
       })
       .catch(function(){
         localReady = false;
         $("engineField").style.display = "none";
         var b = $("envBadge");
         b.className = "env-badge ok";
-        b.textContent = "🚀 浏览器本地运算 · 无需任何服务";
+        b.textContent = "🚀 浏览器本地运算 · 无需任何服务" + engineVer();
       });
   }
 
