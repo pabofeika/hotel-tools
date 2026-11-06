@@ -19,9 +19,9 @@
 
   // 与 vectorizer-kit 原生引擎一致的细节参数
   var DETAILS = {
-    fine:     { sigma: 0.24, alphamax: 1.00, opttolerance: 0.18, speck: 0.80 },
-    standard: { sigma: 0.36, alphamax: 1.20, opttolerance: 0.30, speck: 1.50 },
-    smooth:   { sigma: 0.52, alphamax: 1.30, opttolerance: 0.45, speck: 2.60 }
+    fine:     { sigma: 0.24, alphamax: 1.00, opttolerance: 0.60, speck: 0.80 },
+    standard: { sigma: 0.36, alphamax: 1.20, opttolerance: 1.60, speck: 1.50 },
+    smooth:   { sigma: 0.52, alphamax: 1.30, opttolerance: 2.00, speck: 2.60, median: 1 }
   };
 
   /* ───────────────── 解码 ───────────────── */
@@ -366,7 +366,45 @@
     return want;
   }
 
+  function medianMask(canvas, radius) {
+    var w = canvas.width, h = canvas.height;
+    var ctx = canvas.getContext('2d', { willReadFrequently: true });
+    var id = ctx.getImageData(0, 0, w, h), d = id.data;
+    var out = new Uint8ClampedArray(d.length);
+    var r = radius, size = (2 * r + 1) * (2 * r + 1);
+    var win = new Uint8Array(size);
+    for (var y = 0; y < h; y++) {
+      for (var x = 0; x < w; x++) {
+        var k = 0;
+        for (var dy = -r; dy <= r; dy++) {
+          var yy = y + dy; if (yy < 0) yy = 0; else if (yy >= h) yy = h - 1;
+          for (var dx = -r; dx <= r; dx++) {
+            var xx = x + dx; if (xx < 0) xx = 0; else if (xx >= w) xx = w - 1;
+            win[k++] = d[(yy * w + xx) * 4];
+          }
+        }
+        for (var i = 1; i < size; i++) {
+          var v = win[i], j = i - 1;
+          while (j >= 0 && win[j] > v) { win[j + 1] = win[j]; j--; }
+          win[j + 1] = v;
+        }
+        var m = win[size >> 1];
+        var p = (y * w + x) * 4;
+        out[p] = out[p + 1] = out[p + 2] = m; out[p + 3] = 255;
+      }
+    }
+    ctx.putImageData(new ImageData(out, w, h), 0, 0);
+    return canvas;
+  }
+
+  function scalePath(d, k) {
+    return d.replace(/-?\d+(?:\.\d+)?/g, function (n) {
+      return (parseFloat(n) * k).toFixed(3).replace(/\.?0+$/, '');
+    });
+  }
+
   function traceMask(maskCanvas, scale, detail, onProgress) {
+    if (detail.median) maskCanvas = medianMask(maskCanvas, detail.median);
     return new Promise(function (resolve) {
       var W = maskCanvas.width * scale, H = maskCanvas.height * scale;
       var big = document.createElement('canvas');
@@ -544,26 +582,23 @@
             : binaryMask(labels, o.i, w, h);
 
           traceMask(mask, scale, detail).then(function (dd) {
-            if (dd) paths += '<path fill="' + hexOf(o.c) + '" fill-rule="evenodd" d="' + dd + '"/>';
+            if (dd) paths += '<path fill="' + hexOf(o.c) + '" fill-rule="evenodd" d="'
+              + scalePath(dd, img.ow / (w * scale)) + '"/>';
             nextLayer();
           }).catch(reject);
         }
 
         function finish() {
-          // 保留背景：均匀底补一个背景矩形；非均匀底的背景已包含在图层里
-          var rect = '';
+          // 路径坐标已换算到原图像素；width/height/viewBox 一致，无 transform
+          var rect2 = '';
           if (!opts.removeBg && built.uniform && built.bg) {
-            rect = '<rect width="' + (w * scale) + '" height="' + (h * scale)
+            rect2 = '<rect width="' + img.ow + '" height="' + img.oh
               + '" fill="' + hexOf(built.bg.color) + '"/>';
           }
-          // 坐标系也映射回原图像素：width/height/viewBox 三者一致，
-          // 不论设计工具按哪个属性导入，尺寸都与原图一致
-          var sx = img.ow / (w * scale), sy = img.oh / (h * scale);
           var svg = '<?xml version="1.0" encoding="UTF-8"?>\n'
             + '<svg xmlns="http://www.w3.org/2000/svg" width="' + img.ow + '" height="' + img.oh
             + '" viewBox="0 0 ' + img.ow + ' ' + img.oh + '" role="img"><title>矢量 logo</title>'
-            + '<g transform="scale(' + sx.toFixed(8) + ' ' + sy.toFixed(8) + ')">'
-            + rect + paths + '</g></svg>';
+            + rect2 + paths + '</svg>';
           debug.elapsed = +((Date.now() - t0) / 1000).toFixed(2);
           debug.originalSize = [img.ow, img.oh];
           debug.workingSize = [w, h];
@@ -577,6 +612,7 @@
             background_removed: opts.removeBg,
             background_spread: built.bg ? +built.bg.spread.toFixed(2) : 0,
             engine: 'browser',
+            version: '8',
             debug: debug
           });
         }
@@ -607,6 +643,6 @@
   window.ToolsVectorizer = {
     vectorize: vectorizeFile,
     resolveBackground: resolveBackground,
-    version: '6'
+    version: '8'
   };
 })();
