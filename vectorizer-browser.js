@@ -18,10 +18,12 @@
   var MAX_TRACE_PIXELS = 12e6; // 超采样后的像素上限（内存保护）
 
   // 与 vectorizer-kit 原生引擎一致的细节参数
+  // 注意：opttolerance 不能大——容差大会把圆弧近似成直线段，放大后就是多边形边。
+  // 去噪靠 sigma / threshold / median，曲线始终保持低容差拟合。
   var DETAILS = {
-    fine:     { sigma: 0.24, alphamax: 1.00, opttolerance: 0.60, speck: 0.80 },
-    standard: { sigma: 0.36, alphamax: 1.20, opttolerance: 1.60, speck: 1.50 },
-    smooth:   { sigma: 0.52, alphamax: 1.30, opttolerance: 2.00, speck: 2.60, median: 1 }
+    fine:     { sigma: 0.24, alphamax: 1.00, opttolerance: 0.20, speck: 0.80, threshold: 128 },
+    standard: { sigma: 0.50, alphamax: 1.20, opttolerance: 0.20, speck: 1.50, threshold: 136 },
+    smooth:   { sigma: 0.80, alphamax: 1.30, opttolerance: 0.25, speck: 2.60, median: 1, threshold: 140 }
   };
 
   /* ───────────────── 解码 ───────────────── */
@@ -359,8 +361,8 @@
     return m ? m[1] : '';
   }
 
-  function traceScaleFor(w, h) {
-    var want = Math.round(4200 / Math.max(w, h));
+  function traceScaleFor(w, h, target) {
+    var want = Math.round((target || 6000) / Math.max(w, h));
     want = Math.max(2, Math.min(6, want));
     while (want > 1 && w * want * h * want > MAX_TRACE_PIXELS) want--;
     return want;
@@ -421,7 +423,7 @@
       var bd = bid.data;
       for (var i = 0; i < bd.length; i += 4) {
         var lum = 0.2126 * bd[i] + 0.7153 * bd[i + 1] + 0.0721 * bd[i + 2];
-        bd[i] = bd[i + 1] = bd[i + 2] = lum < 128 ? 0 : 255;
+        bd[i] = bd[i + 1] = bd[i + 2] = lum < (detail.threshold || 128) ? 0 : 255;
         bd[i + 3] = 255;
       }
       bctx.putImageData(bid, 0, 0);
@@ -565,7 +567,7 @@
       debug.layerCount = order.length;
       debug.layers = order.map(function (o) { return { hex: hexOf(o.c), pixels: o.n }; });
 
-      var scale = traceScaleFor(w, h);
+      var scale = traceScaleFor(w, h, 6000);
       debug.scale = scale;
       debug.softMask = built.uniform;
 
@@ -612,7 +614,7 @@
             background_removed: opts.removeBg,
             background_spread: built.bg ? +built.bg.spread.toFixed(2) : 0,
             engine: 'browser',
-            version: '8',
+            version: '9',
             debug: debug
           });
         }
@@ -643,6 +645,6 @@
   window.ToolsVectorizer = {
     vectorize: vectorizeFile,
     resolveBackground: resolveBackground,
-    version: '8'
+    version: '9'
   };
 })();
