@@ -37,26 +37,26 @@ h1{text-align:center;margin-bottom:24px;font-size:24px;font-weight:600;letter-sp
 .field{margin-bottom:16px}
 .field:last-of-type{margin-bottom:0}
 label{display:block;font-size:12px;font-weight:500;color:var(--text-secondary);margin-bottom:8px;letter-spacing:0.2px}
-select{width:100%;padding:12px 14px;background:var(--bg-input);border:1px solid var(--border-subtle);border-radius:var(--radius-md);color:var(--text-primary);font-size:14px;font-family:var(--font-sans);outline:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='rgba(255,255,255,0.32)'%3E%3Cpath d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:36px;transition:all var(--transition)}
+select{width:100%;padding:12px 14px;background:var(--bg-input);border:1px solid var(--border-subtle);border-radius:var(--radius-md);color:var(--text-primary);font-size:14px;font-family:var(--font-sans);outline:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='rgba(255,255,255,0.32)'%3E%3Cpath d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:36px;transition:background-color var(--transition),border-color var(--transition),color var(--transition),opacity var(--transition),transform var(--transition)}
 select:focus{border-color:var(--border-focus);background-color:var(--bg-input-focus);box-shadow:0 0 0 3px var(--accent-subtle)}
-input[type="number"]{width:100%;padding:12px 14px;background:var(--bg-input);border:1px solid var(--border-subtle);border-radius:var(--radius-md);color:var(--text-primary);font-size:14px;font-family:var(--font-sans);outline:none;transition:all var(--transition)}
+input[type="number"]{width:100%;padding:12px 14px;background:var(--bg-input);border:1px solid var(--border-subtle);border-radius:var(--radius-md);color:var(--text-primary);font-size:14px;font-family:var(--font-sans);outline:none;transition:background-color var(--transition),border-color var(--transition),color var(--transition),opacity var(--transition),transform var(--transition)}
 input[type="number"]:focus{border-color:var(--border-focus);background:var(--bg-input-focus);box-shadow:0 0 0 3px var(--accent-subtle)}
 input[type="range"]{width:100%;height:4px;-webkit-appearance:none;appearance:none;background:var(--bg-input);border-radius:2px;outline:none;margin-top:4px}
-input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;background:var(--accent);border-radius:50%;cursor:pointer;box-shadow:0 0 0 4px var(--accent-subtle);transition:all var(--transition)}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;background:var(--accent);border-radius:50%;cursor:pointer;box-shadow:0 0 0 4px var(--accent-subtle);transition:background-color var(--transition),border-color var(--transition),color var(--transition),opacity var(--transition),transform var(--transition)}
 .range-label{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:12px;color:var(--text-secondary)}
 .range-label .val{font-size:12px;color:var(--accent);font-weight:500}
 input[type="color"]{width:100%;height:40px;padding:4px;background:var(--bg-input);border:1px solid var(--border-subtle);border-radius:var(--radius-md);cursor:pointer}
 
 .mode-tabs{display:flex;gap:0;background:var(--bg-input);border-radius:var(--radius-md);padding:3px;margin-bottom:14px}
-.mode-tab,.bg-tab{flex:1;padding:9px 6px;text-align:center;border:none;background:transparent;color:var(--text-secondary);font-size:12px;font-family:var(--font-sans);cursor:pointer;border-radius:var(--radius-sm);transition:all var(--transition);white-space:nowrap}
+.mode-tab,.bg-tab{flex:1;padding:9px 6px;text-align:center;border:none;background:transparent;color:var(--text-secondary);font-size:12px;font-family:var(--font-sans);cursor:pointer;border-radius:var(--radius-sm);transition:background-color var(--transition),border-color var(--transition),color var(--transition),opacity var(--transition),transform var(--transition);white-space:nowrap}
 .mode-tab.active,.bg-tab.active{background:var(--accent);color:#fff;font-weight:500}
 
-input[type="text"]{width:100%;padding:12px 14px;background:var(--bg-input);border:1px solid var(--border-subtle);border-radius:var(--radius-md);color:var(--text-primary);font-size:14px;font-family:var(--font-mono),monospace;outline:none;transition:all var(--transition);letter-spacing:1px}
+input[type="text"]{width:100%;padding:12px 14px;background:var(--bg-input);border:1px solid var(--border-subtle);border-radius:var(--radius-md);color:var(--text-primary);font-size:14px;font-family:var(--font-mono),monospace;outline:none;transition:background-color var(--transition),border-color var(--transition),color var(--transition),opacity var(--transition),transform var(--transition);letter-spacing:1px}
 input[type="text"]:focus{border-color:var(--border-focus);background:var(--bg-input-focus);box-shadow:0 0 0 3px var(--accent-subtle)}
 
 .upload-wrap{display:block}
 .upload-wrap input[type="file"]{display:none}
-.upload-area{padding:32px 16px;background:var(--bg-surface);border:2px dashed var(--border-default);border-radius:var(--radius-md);text-align:center;cursor:pointer;transition:all var(--transition)}
+.upload-area{padding:32px 16px;background:var(--bg-surface);border:2px dashed var(--border-default);border-radius:var(--radius-md);text-align:center;cursor:pointer;transition:background-color var(--transition),border-color var(--transition),color var(--transition),opacity var(--transition),transform var(--transition)}
 .upload-area:hover{border-color:var(--accent);background:var(--bg-surface-hover)}
 .upload-area.active{border-color:#30D158;background:rgba(48,209,88,0.06)}
 .upload-icon{font-size:36px;margin-bottom:8px;opacity:0.6}
@@ -81,7 +81,7 @@ input[type="text"]:focus{border-color:var(--border-focus);background:var(--bg-in
 .info-bar span:first-child{color:var(--text-secondary)}
 .info-bar span:last-child{color:var(--accent);font-weight:500}
 
-.btn{width:100%;padding:14px;border:none;border-radius:var(--radius-xl);font-size:15px;font-weight:500;font-family:var(--font-sans);cursor:pointer;transition:all var(--transition);letter-spacing:0.2px}
+.btn{width:100%;padding:14px;border:none;border-radius:var(--radius-xl);font-size:15px;font-weight:500;font-family:var(--font-sans);cursor:pointer;transition:background-color var(--transition),border-color var(--transition),color var(--transition),opacity var(--transition),transform var(--transition);letter-spacing:0.2px}
 .btn-primary{background:var(--accent);color:#fff;margin-top:14px}
 .btn-primary:hover{background:var(--accent-hover)}
 .btn-primary:active{transform:scale(0.98);opacity:0.9}
@@ -110,7 +110,7 @@ input[type="text"]:focus{border-color:var(--border-focus);background:var(--bg-in
 .grad-pos-labels span.active{color:var(--accent);font-weight:500}
 .stop-editor{padding:12px;background:var(--bg-input);border-radius:var(--radius-md);margin-top:8px}
 .stop-editor-label{font-size:11px;font-weight:600;color:var(--text-secondary);margin-bottom:8px;letter-spacing:0.3px}
-.stop-action-btn{flex:1;padding:7px 12px;border:1px solid var(--border-default);border-radius:var(--radius-sm);background:transparent;color:var(--text-secondary);font-size:11px;font-family:var(--font-sans);cursor:pointer;transition:all var(--transition)}
+.stop-action-btn{flex:1;padding:7px 12px;border:1px solid var(--border-default);border-radius:var(--radius-sm);background:transparent;color:var(--text-secondary);font-size:11px;font-family:var(--font-sans);cursor:pointer;transition:background-color var(--transition),border-color var(--transition),color var(--transition),opacity var(--transition),transform var(--transition)}
 .stop-action-btn:hover{background:var(--bg-surface-hover);color:var(--text-primary)}
 .stop-action-btn.danger:hover{background:rgba(255,69,58,0.1);border-color:rgba(255,69,58,0.3);color:#FF453A}
 /* SVG gradient editor extras */
@@ -126,22 +126,23 @@ input[type="text"]:focus{border-color:var(--border-focus);background:var(--bg-in
 .color-row input[type="color"]{width:32px;height:32px;padding:2px;background:transparent;border:1px solid var(--border-subtle);border-radius:var(--radius-sm);cursor:pointer;flex-shrink:0}
 .color-row input[type="text"]{flex:1;padding:8px 10px;background:var(--bg-input);border:1px solid var(--border-subtle);border-radius:var(--radius-sm);color:var(--text-primary);font-size:12px;font-family:SF Mono,monospace;outline:none;letter-spacing:0.5px;height:32px;box-sizing:border-box}
 .color-row input[type="text"]:focus{border-color:var(--border-focus);box-shadow:0 0 0 2px var(--accent-subtle)}
-.svg-color-apply{margin-top:10px;padding:8px 16px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-md);font-size:13px;font-family:var(--font-sans);cursor:pointer;transition:all var(--transition);width:100%}
+.svg-color-apply{margin-top:10px;padding:8px 16px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-md);font-size:13px;font-family:var(--font-sans);cursor:pointer;transition:background-color var(--transition),border-color var(--transition),color var(--transition),opacity var(--transition),transform var(--transition);width:100%}
 .svg-color-apply:hover{background:var(--accent-hover)}
-.svg-color-reset{margin-top:6px;padding:6px 16px;background:transparent;color:var(--text-secondary);border:1px solid var(--border-default);border-radius:var(--radius-md);font-size:12px;font-family:var(--font-sans);cursor:pointer;transition:all var(--transition);width:100%}
+.svg-color-reset{margin-top:6px;padding:6px 16px;background:transparent;color:var(--text-secondary);border:1px solid var(--border-default);border-radius:var(--radius-md);font-size:12px;font-family:var(--font-sans);cursor:pointer;transition:background-color var(--transition),border-color var(--transition),color var(--transition),opacity var(--transition),transform var(--transition);width:100%}
 .svg-color-reset:hover{background:var(--bg-surface-hover)}
 </style>
+<link rel="stylesheet" href="./theme.css">
 </head>
 <body>
 <div class="container">
-  <h1>📺 电视开机logo制作</h1>
+  <h1>电视开机 Logo 制作</h1>
 
   <!-- 上传 -->
   <div class="card">
     <div class="section-title">上传文件</div>
     <label class="upload-wrap">
       <div class="upload-area" id="uploadArea">
-        <div class="upload-icon">📤</div>
+        
         <div class="upload-text" id="uploadText">点击选择文件</div>
         <div class="upload-sub">支持 JPG / PNG / WebP / BMP / SVG / PDF / AI / CDR</div>
       </div>
@@ -154,14 +155,14 @@ input[type="text"]:focus{border-color:var(--border-focus);background:var(--bg-in
     </div>
     <!-- PDF 页面导航 (PDF 文件时显示) -->
     <div id="pdfNav" style="display:none;margin-top:14px;align-items:center;gap:12px">
-      <button class="btn btn-secondary" id="pdfPrev" style="width:auto;margin-top:0;padding:6px 16px;font-size:12px">◀ 上一页</button>
+      <button class="btn btn-secondary" id="pdfPrev" style="width:auto;margin-top:0;padding:6px 16px;font-size:12px">上一页</button>
       <span style="font-size:12px;color:var(--text-secondary)" id="pdfPageInfo">第 1 / 1 页</span>
-      <button class="btn btn-secondary" id="pdfNext" style="width:auto;margin-top:0;padding:6px 16px;font-size:12px">下一页 ▶</button>
+      <button class="btn btn-secondary" id="pdfNext" style="width:auto;margin-top:0;padding:6px 16px;font-size:12px">下一页</button>
     </div>
 
     <!-- SVG 颜色替换 (SVG 文件时显示) -->
     <div class="svg-colors" id="svgColorPanel">
-      <div class="section-title">🎨 SVG 颜色替换</div>
+      <div class="section-title">SVG 颜色替换</div>
       <div id="svgColorList"></div>
       <button class="svg-color-apply" id="svgApplyBtn">应用颜色替换</button>
       <button class="svg-color-reset" id="svgResetBtn">重置为原始颜色</button>
@@ -169,7 +170,7 @@ input[type="text"]:focus{border-color:var(--border-focus);background:var(--bg-in
 
     <!-- SVG 渐变编辑 (SVG 文件有渐变时显示) -->
     <div class="svg-colors" id="svgGradientPanel">
-      <div class="section-title">🌈 SVG 渐变编辑</div>
+      <div class="section-title">SVG 渐变编辑</div>
       <!-- 渐变选择器 -->
       <div class="grad-select-wrap" id="gradSelectWrap">
         <select id="svgGradSelect"></select>
@@ -214,7 +215,7 @@ input[type="text"]:focus{border-color:var(--border-focus);background:var(--bg-in
           <input type="range" id="svgStopOpacity" min="0" max="100" value="100">
         </div>
         <div style="display:flex;gap:8px;margin-top:10px">
-          <button class="stop-action-btn danger" id="svgDelStopBtn">🗑 删除</button>
+          <button class="stop-action-btn danger" id="svgDelStopBtn">删除</button>
           <button class="stop-action-btn" id="svgAddStopBtn">＋ 添加停止点</button>
         </div>
       </div>
@@ -227,8 +228,8 @@ input[type="text"]:focus{border-color:var(--border-focus);background:var(--bg-in
   <div class="card">
     <div class="section-title">扩展方式</div>
     <div class="mode-tabs">
-      <button class="mode-tab active" data-mode="keep">📐 保持原尺寸</button>
-      <button class="mode-tab" data-mode="expand">🖥️ 扩展至目标画布</button>
+      <button class="mode-tab active" data-mode="keep">保持原尺寸</button>
+      <button class="mode-tab" data-mode="expand">扩展至目标画布</button>
     </div>
 
     <div id="expandPanel" style="display:none">
@@ -251,8 +252,8 @@ input[type="text"]:focus{border-color:var(--border-focus);background:var(--bg-in
 
       <!-- 填充模式切换 -->
       <div class="mode-tabs" style="margin-top:0">
-        <button class="bg-tab active" data-bg="solid">🎨 纯色</button>
-        <button class="bg-tab" data-bg="gradient">🌈 渐变</button>
+        <button class="bg-tab active" data-bg="solid">纯色</button>
+        <button class="bg-tab" data-bg="gradient">渐变</button>
       </div>
 
       <!-- 纯色面板 -->
@@ -299,7 +300,7 @@ input[type="text"]:focus{border-color:var(--border-focus);background:var(--bg-in
             </div>
           </div>
           <div style="display:flex;gap:8px;margin-top:8px">
-            <button class="stop-action-btn" id="delStopBtn">🗑 删除此停止点</button>
+            <button class="stop-action-btn" id="delStopBtn">删除此停止点</button>
             <button class="stop-action-btn" id="addStopBtn">＋ 添加停止点</button>
           </div>
         </div>
@@ -329,7 +330,7 @@ input[type="text"]:focus{border-color:var(--border-focus);background:var(--bg-in
           <option value="image/webp">WebP · 新一代格式</option>
           <option value="image/bmp">BMP · 无压缩位图</option>
           <option value="image/raw">RAW · 原始像素数据</option>
-          <option value="hisilicon-img">📺 海思 V670 .img · 开机Logo</option>
+          <option value="hisilicon-img">海思 V670 .img · 开机 Logo</option>
         </select>
       </div>
       <div class="field" id="qualityGroup">
@@ -347,7 +348,7 @@ input[type="text"]:focus{border-color:var(--border-focus);background:var(--bg-in
     </div>
     <div class="preview-box" id="previewBox">
       <div class="preview-empty" id="previewEmpty">
-        <div class="icon">🖼️</div>
+        
         <div>上传图片后显示预览</div>
       </div>
       <canvas id="previewCanvas" style="display:none"></canvas>
@@ -356,7 +357,7 @@ input[type="text"]:focus{border-color:var(--border-focus);background:var(--bg-in
       <span id="infoText"></span>
       <span id="infoSize"></span>
     </div>
-    <button class="btn btn-primary" id="downloadBtn">⬇️ 下载转换结果</button>
+    <button class="btn btn-primary" id="downloadBtn" disabled>下载转换结果</button>
   </div>
 </div>
 
@@ -733,7 +734,7 @@ $('svgApplyBtn').addEventListener('click', applySVGColors);
 $('svgResetBtn').addEventListener('click', resetSVGColors);
 
 // ==============================
-// 🎨 SVG GRADIENT EDITOR
+// SVG GRADIENT EDITOR
 // ==============================
 
 // Parse SVG for <linearGradient> and <radialGradient> definitions
@@ -1234,6 +1235,7 @@ function updateUploadUI(fileOrName, dims, type){
   fileMeta.classList.add('show');
   infoBar.style.display='flex';
   downloadBtn.style.display='';
+  downloadBtn.disabled=false;
   render();
 }
 
@@ -1739,5 +1741,6 @@ function triggerDownload(blob, filename) {
 
 })();
 </script>
+<script src="./a11y.js" defer></script>
 </body>
 </html>

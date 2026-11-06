@@ -35,18 +35,18 @@ body{font-family:var(--font-sans);background:var(--bg-primary);min-height:100vh;
 .form-group,.field{margin-bottom:16px}
 .form-group:last-child,.field:last-of-type{margin-bottom:0}
 label,.field label{display:block;font-size:12px;font-weight:500;color:var(--text-secondary);margin-bottom:8px;letter-spacing:0.2px}
-input[type="text"],input[type="url"],input[type="number"],textarea,select{width:100%;padding:12px 14px;background:var(--bg-input);border:1px solid var(--border-subtle);border-radius:var(--radius-md);color:var(--text-primary);font-size:14px;font-family:var(--font-sans);outline:none;transition:all var(--transition)}
+input[type="text"],input[type="url"],input[type="number"],textarea,select{width:100%;padding:12px 14px;background:var(--bg-input);border:1px solid var(--border-subtle);border-radius:var(--radius-md);color:var(--text-primary);font-size:14px;font-family:var(--font-sans);outline:none;transition:background-color var(--transition),border-color var(--transition),color var(--transition),opacity var(--transition),transform var(--transition)}
 input[type="text"]:focus,input[type="url"]:focus,textarea:focus,select:focus{border-color:var(--border-focus);background:var(--bg-input-focus);box-shadow:0 0 0 3px var(--accent-subtle)}
 select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='rgba(255,255,255,0.32)'%3E%3Cpath d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:36px}
 select option{background:#1c1c1e;color:var(--text-primary)}
 input[type="range"]{width:100%;height:4px;-webkit-appearance:none;appearance:none;background:var(--bg-input);border-radius:2px;outline:none}
-input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;background:var(--accent);border-radius:50%;cursor:pointer;box-shadow:0 0 0 4px var(--accent-subtle);transition:all var(--transition)}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;background:var(--accent);border-radius:50%;cursor:pointer;box-shadow:0 0 0 4px var(--accent-subtle);transition:background-color var(--transition),border-color var(--transition),color var(--transition),opacity var(--transition),transform var(--transition)}
 input[type="range"]::-webkit-slider-thumb:hover{transform:scale(1.1)}
 .range-label,.rl{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:12px;color:var(--text-secondary)}
 .range-label .val,.rv{font-size:12px;color:var(--accent);font-weight:500}
 .row,.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .row .form-group,.grid-2 .field{margin-bottom:0}
-.btn{width:100%;padding:14px;border:none;border-radius:var(--radius-xl);font-size:15px;font-weight:500;font-family:var(--font-sans);cursor:pointer;transition:all var(--transition);letter-spacing:0.2px}
+.btn{width:100%;padding:14px;border:none;border-radius:var(--radius-xl);font-size:15px;font-weight:500;font-family:var(--font-sans);cursor:pointer;transition:background-color var(--transition),border-color var(--transition),color var(--transition),opacity var(--transition),transform var(--transition);letter-spacing:0.2px}
 .btn-primary,.btn-gen{background:var(--accent);color:#fff}
 .btn-primary:hover,.btn-gen:hover{background:var(--accent-hover)}
 .btn-primary:active,.btn-gen:active{transform:scale(0.98);opacity:0.9}
@@ -57,12 +57,12 @@ input[type="range"]::-webkit-slider-thumb:hover{transform:scale(1.1)}
 .ph,.placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:240px;color:var(--text-tertiary);font-size:13px;text-align:center}
 .ph-icon,.placeholder .icon{font-size:40px;margin-bottom:12px;opacity:0.5}
 .qr-source-tabs,.mode-tabs{display:flex;gap:0;margin-bottom:14px;background:var(--bg-input);border-radius:var(--radius-md);padding:3px}
-.qr-tab,.mode-tab{flex:1;padding:8px 12px;text-align:center;border:none;background:transparent;color:var(--text-secondary);font-size:12px;font-family:var(--font-sans);cursor:pointer;border-radius:var(--radius-sm);transition:all var(--transition);white-space:nowrap}
+.qr-tab,.mode-tab{flex:1;padding:8px 12px;text-align:center;border:none;background:transparent;color:var(--text-secondary);font-size:12px;font-family:var(--font-sans);cursor:pointer;border-radius:var(--radius-sm);transition:background-color var(--transition),border-color var(--transition),color var(--transition),opacity var(--transition),transform var(--transition);white-space:nowrap}
 .qr-tab.active,.mode-tab.active{background:var(--accent);color:#fff;font-weight:500}
 .layout{display:grid;grid-template-columns:360px 1fr;gap:20px;align-items:start}
 .left-panel,.right-panel{overflow:hidden}
 .upload-area-wrap,.upload-wrap{position:relative;display:block}
-.upload-area{position:relative;padding:10px 12px;background:var(--bg-surface);border:2px dashed var(--border-default);border-radius:var(--radius-md);text-align:center;cursor:pointer;transition:all var(--transition)}
+.upload-area{position:relative;padding:10px 12px;background:var(--bg-surface);border:2px dashed var(--border-default);border-radius:var(--radius-md);text-align:center;cursor:pointer;transition:background-color var(--transition),border-color var(--transition),color var(--transition),opacity var(--transition),transform var(--transition)}
 .upload-area:hover{border-color:var(--accent);background:var(--bg-surface-hover)}
 .upload-area.active{border-color:#30D158;background:rgba(48,209,88,0.06)}
 .upload-wrap input[type="file"]{display:none}
@@ -95,10 +95,11 @@ input[type="range"]::-webkit-slider-thumb:hover{transform:scale(1.1)}
 h1{text-align:center;margin-bottom:24px;font-size:24px;font-weight:600;color:var(--text-primary);letter-spacing:-0.3px}
 @media(max-width:860px){.layout{grid-template-columns:1fr}}
 </style>
+<link rel="stylesheet" href="./theme.css">
 </head>
 <body>
 <div class="container">
-  <h1>🖼️ 宣传图图片叠加</h1>
+  <h1>宣传图图片叠加</h1>
 
   <div class="layout">
 
@@ -107,8 +108,8 @@ h1{text-align:center;margin-bottom:24px;font-size:24px;font-weight:600;color:var
       <div class="panel">
         <div class="preview-title">选择样式</div>
         <div class="qr-source-tabs">
-          <button class="qr-tab active" data-style="1">🎨 样式 1</button>
-          <button class="qr-tab" data-style="2">🎨 样式 2</button>
+          <button class="qr-tab active" data-style="1">样式 1</button>
+          <button class="qr-tab" data-style="2">样式 2</button>
         </div>
       </div>
 
@@ -120,7 +121,7 @@ h1{text-align:center;margin-bottom:24px;font-size:24px;font-weight:600;color:var
             <label>底图（可选）</label>
             <label class="upload-wrap" for="bgFile">
               <div class="upload-area small" id="bgArea">
-                <span class="upload-icon">🖼️</span>
+                
                 <span class="upload-text" id="bgText">选择底图</span>
               </div>
               <input type="file" id="bgFile" accept="image/*">
@@ -130,7 +131,7 @@ h1{text-align:center;margin-bottom:24px;font-size:24px;font-weight:600;color:var
             <label>二维码 / 图片</label>
             <label class="upload-wrap" for="upFile">
               <div class="upload-area small" id="upArea">
-                <span class="upload-icon">📱</span>
+                
                 <span class="upload-text" id="upText">选择叠加图</span>
               </div>
               <input type="file" id="upFile" accept="image/*">
@@ -145,7 +146,7 @@ h1{text-align:center;margin-bottom:24px;font-size:24px;font-weight:600;color:var
 
       <!-- 位置与大小 -->
       <div class="panel">
-        <div class="section-title">📐 位置与大小</div>
+        <div class="section-title">位置与大小</div>
         <div class="grid-2">
           <div class="field">
             <div class="rl"><span>水平</span><span class="rv" id="xV">27%</span></div>
@@ -163,7 +164,7 @@ h1{text-align:center;margin-bottom:24px;font-size:24px;font-weight:600;color:var
       </div>
 
       <div class="guide-box">
-        <p>💡 上传图片后可直接在右侧预览区拖动 / 缩放叠加图。</p>
+        <p>上传图片后可直接在右侧预览区拖动 / 缩放叠加图。</p>
       </div>
     </div>
 
@@ -177,7 +178,7 @@ h1{text-align:center;margin-bottom:24px;font-size:24px;font-weight:600;color:var
         <div class="canvas-wrap" id="canvasWrap">
           <canvas id="cv" style="display:none"></canvas>
           <div class="placeholder" id="placeholder">
-            <div class="icon">🖼️</div>
+            
             <div>加载底图中...</div>
           </div>
           <div class="overlay-box" id="overlayBox">
@@ -192,12 +193,12 @@ h1{text-align:center;margin-bottom:24px;font-size:24px;font-weight:600;color:var
 
         <!-- 下载：紧贴预览图下方 -->
         <div style="display:flex;gap:10px;margin-top:14px;align-items:center">
-          <select id="fmt" style="flex:0 0 150px">
+          <select id="fmt" aria-label="输出格式" style="flex:0 0 150px">
             <option value="png">PNG · 无损</option>
             <option value="webp">WebP · 高压缩</option>
           </select>
-          <button class="btn btn-primary" id="dlBtn" style="flex:1;margin-top:0">⬇️ 下载合成图片</button>
-          <button class="btn btn-secondary" id="resetBtn" style="flex:0 0 100px;margin-top:0;padding:14px 10px">↺ 重置</button>
+          <button class="btn btn-primary" id="dlBtn" style="flex:1;margin-top:0">下载合成图片</button>
+          <button class="btn btn-secondary" id="resetBtn" style="flex:0 0 100px;margin-top:0;padding:14px 10px">重置</button>
         </div>
       </div>
     </div>
@@ -265,13 +266,13 @@ h1{text-align:center;margin-bottom:24px;font-size:24px;font-weight:600;color:var
       bgImg = img;
       ph.style.display = 'none';
       cv.style.display = 'block';
-      $('bgText').textContent = '样式 ' + currentStyle + ' ✓';
+      $('bgText').textContent = '样式 ' + currentStyle;
       $('bgArea').classList.add('active');
       resizeCanvas();
       render();
     };
     img.onerror = function(){
-      ph.innerHTML = '<div class="icon">🖼️</div><div>样式图未配置，请上传底图</div>';
+      ph.innerHTML = '<div>样式图未配置，请上传底图</div>';
       ph.style.display = '';
       cv.style.display = 'none';
       $('bgText').textContent = '点击选择底图（可选）';
@@ -328,7 +329,7 @@ h1{text-align:center;margin-bottom:24px;font-size:24px;font-weight:600;color:var
         bgImg = img;
         ph.style.display = 'none';
         cv.style.display = 'block';
-        bgText.textContent = '✓ ' + f.name;
+        bgText.textContent = f.name;
         bgArea.classList.add('active');
         resizeCanvas();
         render();
@@ -350,7 +351,7 @@ h1{text-align:center;margin-bottom:24px;font-size:24px;font-weight:600;color:var
       img.onload = function(){
         upImg = img;
         upLoaded = true;
-        upText.textContent = '✓ ' + f.name;
+        upText.textContent = f.name;
         upArea.classList.add('active');
         box.classList.add('active');
         $('metaRow').style.display = 'flex';
@@ -453,5 +454,6 @@ h1{text-align:center;margin-bottom:24px;font-size:24px;font-weight:600;color:var
   loadBg(STYLE_SRCS['1']);
 })();
 </script>
+<script src="./a11y.js" defer></script>
 </body>
 </html>

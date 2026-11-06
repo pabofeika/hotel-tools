@@ -4,66 +4,131 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
 <title>酒店工具集</title>
+<link rel="stylesheet" href="./theme.css">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",sans-serif;background:#000;min-height:100vh;overflow:hidden;-webkit-font-smoothing:antialiased}
-.header{position:fixed;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:12px 24px;background:rgba(0,0,0,0.8);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,0.06);z-index:100}
-.header h1{font-size:15px;font-weight:600;color:rgba(255,255,255,0.92);margin:0;letter-spacing:-0.2px}
-.tabs{display:flex;gap:2px;background:rgba(255,255,255,0.06);border-radius:10px;padding:3px}
-.tab{padding:7px 18px;border:none;background:transparent;color:rgba(255,255,255,0.45);font-size:13px;border-radius:8px;cursor:pointer;transition:all 0.2s ease;white-space:nowrap;font-family:inherit}
-.tab:hover{color:rgba(255,255,255,0.75)}
-.tab.active{background:#0071E3;color:#fff;font-weight:500}
-.content{position:fixed;top:53px;left:0;right:0;bottom:0}
-.content iframe{width:100%;height:100%;border:none;display:none}
+html,body{height:100%}
+body{font-family:var(--font-sans);background:var(--bg-primary);color:var(--text-primary);overflow:hidden;-webkit-font-smoothing:antialiased}
+.shell{height:100%;display:flex;flex-direction:column}
+.topbar{border-bottom:1px solid var(--border-subtle);background:var(--bg-primary);flex:none}
+.topbar-inner{max-width:1600px;margin:0 auto;height:60px;padding:0 24px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.brand{display:flex;align-items:baseline;gap:10px;min-width:0}
+.brand h1{font-size:16px;line-height:20px;font-weight:500;color:var(--text-primary);white-space:nowrap}
+.brand p{font-size:12px;line-height:16px;color:var(--text-tertiary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tabs-wrap{max-width:1600px;margin:0 auto;width:100%;padding:0 16px;border-bottom:1px solid var(--border-subtle);overflow-x:auto;scrollbar-width:none}
+.tabs-wrap::-webkit-scrollbar{display:none}
+.tabs{display:flex;gap:4px;min-width:max-content;height:44px;align-items:stretch}
+.tab{position:relative;height:100%;padding:0 12px;border:0;background:transparent;color:var(--text-tertiary);font-size:13px;line-height:44px;font-family:inherit;cursor:pointer;white-space:nowrap;transition:color 150ms var(--transition)}
+.tab:hover{color:var(--text-secondary)}
+.tab.active{color:var(--text-primary)}
+.tab.active::after{content:"";position:absolute;left:12px;right:12px;bottom:-1px;height:2px;background:var(--accent);border-radius:2px}
+.content{flex:1;min-height:0;position:relative;background:var(--bg-primary)}
+.content iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:none;background:var(--bg-primary)}
 .content iframe.active{display:block}
+@media(max-width:640px){
+  .topbar-inner{height:52px;padding:0 16px}
+  .brand p{display:none}
+  .tabs{height:42px}
+  .tab{line-height:42px;padding:0 10px;font-size:12px}
+  .tab.active::after{left:10px;right:10px}
+}
 </style>
 </head>
 <body>
-<div class="header">
-  <h1>🏨 酒店工具集</h1>
-  <div class="tabs">
-    <button class="tab active" data-id="logo">✨ 生成logo</button>
-    <button class="tab" data-id="vector">✒️ Logo矢量化</button>
-    <button class="tab" data-id="welcome">📝 欢迎文本</button>
-    <button class="tab" data-id="qr">📱 二维码叠加</button>
-    <button class="tab" data-id="convert">📺 开机logo制作</button>
-    <button class="tab" data-id="overlay">🖼️ 宣传图叠加</button>
-    <button class="tab" data-id="card">🔤 卡片文本</button>
-    <button class="tab" data-id="compose">🧩 批量码合成</button>
-    <button class="tab" data-id="video">🎬 开机视频</button>
+<div class="shell">
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <h1>酒店工具集</h1>
+        <p>图片、二维码、开机物料与视频</p>
+      </div>
+    </div>
+  </header>
+  <div class="tabs-wrap">
+    <nav class="tabs" aria-label="工具">
+      <button class="tab active" data-id="logo" type="button">生成 Logo</button>
+      <button class="tab" data-id="vector" type="button">Logo 矢量化</button>
+      <button class="tab" data-id="welcome" type="button">欢迎文本</button>
+      <button class="tab" data-id="qr" type="button">二维码叠加</button>
+      <button class="tab" data-id="convert" type="button">开机 Logo</button>
+      <button class="tab" data-id="overlay" type="button">宣传图叠加</button>
+      <button class="tab" data-id="card" type="button">卡片文本</button>
+      <button class="tab" data-id="compose" type="button">批量码合成</button>
+      <button class="tab" data-id="video" type="button">开机视频</button>
+    </nav>
   </div>
-</div>
-<div class="content">
-  <iframe class="active" id="fl" src="./logo-generator.html"></iframe>
-  <iframe id="fv" src="./logo-vectorizer.html"></iframe>
-  <iframe id="fw" src="./hotel-welcome-generator.html"></iframe>
-  <iframe id="fq" src="./qr-overlay-generator.html"></iframe>
-  <iframe id="fcv" src="./image-converter.html"></iframe>
-  <iframe id="fov" src="./image-overlay-generator.html"></iframe>
-  <iframe id="fc" src="./card-text-overlay.html"></iframe>
-  <iframe id="fcp" src="./qr-compose.html"></iframe>
-  <iframe id="fvid" src="./video-converter.html"></iframe>
+  <main class="content">
+    <iframe class="active" id="fl" src="./logo-generator.html" title="生成 Logo"></iframe>
+    <iframe id="fv" src="./logo-vectorizer.html" title="Logo 矢量化"></iframe>
+    <iframe id="fw" src="./hotel-welcome-generator.html" title="欢迎文本"></iframe>
+    <iframe id="fq" src="./qr-overlay-generator.html" title="二维码叠加"></iframe>
+    <iframe id="fcv" src="./image-converter.html" title="开机 Logo"></iframe>
+    <iframe id="fov" src="./image-overlay-generator.html" title="宣传图叠加"></iframe>
+    <iframe id="fc" src="./card-text-overlay.html" title="卡片文本"></iframe>
+    <iframe id="fcp" src="./qr-compose.html" title="批量码合成"></iframe>
+    <iframe id="fvid" src="./video-converter.html" title="开机视频"></iframe>
+  </main>
 </div>
 <script>
-// 非本地环境隐藏"开机视频"Tab（视频转码依赖本地 ffmpeg 二进制）
-// 注：Logo矢量化 Tab 保留显示，页面内会自检本地服务并给出启动指引
-var isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1' || location.hostname === '0.0.0.0';
-if (!isLocal) {
-  var videoTab = document.querySelector('.tab[data-id="video"]');
-  var videoIframe = document.getElementById('fvid');
-  if (videoTab) videoTab.style.display = 'none';
-  if (videoIframe) videoIframe.remove();
-}
+(function () {
+  var LOCAL_ONLY_TABS = ['video', 'vector'];
+  var map = {welcome:'fw', qr:'fq', card:'fc', logo:'fl', vector:'fv', overlay:'fov', convert:'fcv', compose:'fcp', video:'fvid'};
 
-document.querySelectorAll('.tab').forEach(function(t) {
-  t.onclick = function() {
-    var map = {welcome:'fw', qr:'fq', card:'fc', logo:'fl', vector:'fv', overlay:'fov', convert:'fcv', compose:'fcp', video:'fvid'};
-    document.querySelectorAll('.tab').forEach(function(b) { b.classList.remove('active'); });
-    this.classList.add('active');
-    document.querySelectorAll('.content iframe').forEach(function(f) { f.classList.remove('active'); });
-    document.getElementById(map[this.dataset.id]).classList.add('active');
-  };
-});
+  function hideTab(id) {
+    var tab = document.querySelector('.tab[data-id="' + id + '"]');
+    if (tab) tab.style.display = 'none';
+  }
+
+  function activateFirstVisible() {
+    var active = document.querySelector('.tab.active');
+    if (active && active.style.display !== 'none') return;
+    var first = null;
+    document.querySelectorAll('.tab').forEach(function (t) {
+      if (!first && t.style.display !== 'none') first = t;
+    });
+    if (first) first.click();
+  }
+
+  LOCAL_ONLY_TABS.forEach(function (id) {
+    var tab = document.querySelector('.tab[data-id="' + id + '"]');
+    if (tab) tab.dataset.pending = '1';
+  });
+
+  fetch('/api/capabilities', { cache: 'no-store' })
+    .then(function (r) { return r.ok ? r.json() : Promise.reject(); })
+    .then(function (data) {
+      var caps = (data && data.capabilities) || {};
+      if (caps.video) {
+        var vt = document.querySelector('.tab[data-id="video"]');
+        if (vt) { vt.style.display = ''; delete vt.dataset.pending; }
+      } else {
+        hideTab('video');
+      }
+      var vecTab = document.querySelector('.tab[data-id="vector"]');
+      if (vecTab) {
+        vecTab.style.display = '';
+        delete vecTab.dataset.pending;
+        vecTab.title = caps.vectorizeNative ? '浏览器 + 原生引擎均可用' : '浏览器引擎（无需服务）';
+      }
+      activateFirstVisible();
+    })
+    .catch(function () {
+      hideTab('video');
+      var vecTab = document.querySelector('.tab[data-id="vector"]');
+      if (vecTab) { vecTab.style.display = ''; delete vecTab.dataset.pending; }
+      activateFirstVisible();
+    });
+
+  document.querySelectorAll('.tab').forEach(function (t) {
+    t.onclick = function () {
+      document.querySelectorAll('.tab').forEach(function (b) { b.classList.remove('active'); });
+      this.classList.add('active');
+      document.querySelectorAll('.content iframe').forEach(function (f) { f.classList.remove('active'); });
+      var frame = document.getElementById(map[this.dataset.id]);
+      if (frame) frame.classList.add('active');
+    };
+  });
+})();
 </script>
 </body>
 </html>

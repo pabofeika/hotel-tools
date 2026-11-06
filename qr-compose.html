@@ -37,28 +37,28 @@ body{font-family:var(--font-sans);background:var(--bg-primary);min-height:100vh;
 .form-group,.field{margin-bottom:14px}
 .form-group:last-child,.field:last-of-type{margin-bottom:0}
 label,.field label{display:block;font-size:12px;font-weight:500;color:var(--text-secondary);margin-bottom:8px;letter-spacing:0.2px}
-input[type="text"],input[type="number"],select{width:100%;padding:11px 14px;background:var(--bg-input);border:1px solid var(--border-subtle);border-radius:var(--radius-md);color:var(--text-primary);font-size:14px;font-family:var(--font-sans);outline:none;transition:all var(--transition)}
+input[type="text"],input[type="number"],select{width:100%;padding:11px 14px;background:var(--bg-input);border:1px solid var(--border-subtle);border-radius:var(--radius-md);color:var(--text-primary);font-size:14px;font-family:var(--font-sans);outline:none;transition:background-color var(--transition),border-color var(--transition),color var(--transition),opacity var(--transition),transform var(--transition)}
 select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='rgba(255,255,255,0.32)'%3E%3Cpath d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:36px}
 input[type="number"]:focus,select:focus{border-color:var(--border-focus);background:var(--bg-input-focus);box-shadow:0 0 0 3px var(--accent-subtle)}
 .row,.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .row .form-group,.grid-2 .field{margin-bottom:0}
-.btn{width:100%;padding:13px;border:none;border-radius:var(--radius-xl);font-size:14px;font-weight:500;font-family:var(--font-sans);cursor:pointer;transition:all var(--transition);letter-spacing:0.2px}
+.btn{width:100%;padding:13px;border:none;border-radius:var(--radius-xl);font-size:14px;font-weight:500;font-family:var(--font-sans);cursor:pointer;transition:background-color var(--transition),border-color var(--transition),color var(--transition),opacity var(--transition),transform var(--transition);letter-spacing:0.2px}
 .btn-primary{background:var(--accent);color:#fff}
 .btn-primary:hover{background:var(--accent-hover)}
 .btn-primary:active{transform:scale(0.98);opacity:0.9}
 .btn-secondary{background:transparent;border:1px solid var(--border-default);color:var(--text-secondary);margin-top:8px}
 .btn-secondary:hover{background:var(--bg-surface-hover);color:var(--text-primary)}
 .btn:disabled{opacity:0.4;cursor:not-allowed}
-.mini{padding:6px 12px;border:1px solid var(--border-default);background:transparent;border-radius:var(--radius-sm);color:var(--text-secondary);font-size:11px;font-family:var(--font-sans);cursor:pointer;transition:all var(--transition);white-space:nowrap}
+.mini{padding:6px 12px;border:1px solid var(--border-default);background:transparent;border-radius:var(--radius-sm);color:var(--text-secondary);font-size:11px;font-family:var(--font-sans);cursor:pointer;transition:background-color var(--transition),border-color var(--transition),color var(--transition),opacity var(--transition),transform var(--transition);white-space:nowrap}
 .mini:hover{background:var(--bg-surface-hover);color:var(--text-primary)}
 .mini.active{background:var(--accent);border-color:var(--accent);color:#fff}
-.link-btn{padding:5px 12px;border:1px solid var(--border-default);background:transparent;border-radius:var(--radius-sm);color:var(--accent);font-size:11px;font-family:var(--font-sans);cursor:pointer;transition:all var(--transition)}
+.link-btn{padding:5px 12px;border:1px solid var(--border-default);background:transparent;border-radius:var(--radius-sm);color:var(--accent);font-size:11px;font-family:var(--font-sans);cursor:pointer;transition:background-color var(--transition),border-color var(--transition),color var(--transition),opacity var(--transition),transform var(--transition)}
 .link-btn:hover{background:var(--accent-subtle);border-color:var(--accent)}
 
 /* 上传 */
 .upload-wrap{display:block;position:relative}
 .upload-wrap input[type="file"]{display:none}
-.upload-area{padding:12px;background:var(--bg-surface);border:2px dashed var(--border-default);border-radius:var(--radius-md);text-align:center;cursor:pointer;transition:all var(--transition)}
+.upload-area{padding:12px;background:var(--bg-surface);border:2px dashed var(--border-default);border-radius:var(--radius-md);text-align:center;cursor:pointer;transition:background-color var(--transition),border-color var(--transition),color var(--transition),opacity var(--transition),transform var(--transition)}
 .upload-area:hover{border-color:var(--accent);background:var(--bg-surface-hover)}
 .upload-area.active{border-color:#30D158;background:rgba(48,209,88,0.06)}
 .upload-area.dragover{border-color:var(--accent);background:var(--accent-subtle)}
@@ -85,14 +85,14 @@ input[type="number"]:focus,select:focus{border-color:var(--border-focus);backgro
 .results{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px;max-height:52vh;overflow-y:auto;padding-right:4px}
 .results::-webkit-scrollbar{width:4px}
 .results::-webkit-scrollbar-thumb{background:var(--border-default);border-radius:2px}
-.res-card{background:var(--bg-input);border:1px solid var(--border-subtle);border-radius:var(--radius-md);overflow:hidden;transition:all var(--transition)}
+.res-card{background:var(--bg-input);border:1px solid var(--border-subtle);border-radius:var(--radius-md);overflow:hidden;transition:background-color var(--transition),border-color var(--transition),color var(--transition),opacity var(--transition),transform var(--transition)}
 .res-card:hover{border-color:var(--border-default)}
 .res-card .thumb{background:#0a0a0a;display:flex;align-items:center;justify-content:center;min-height:90px;padding:6px}
 .res-card .thumb img{max-width:100%;max-height:150px;display:block;border-radius:4px}
 .res-card .meta{display:flex;align-items:center;justify-content:space-between;gap:6px;padding:8px 10px;border-top:1px solid var(--border-subtle)}
 .res-card .name{font-size:11px;color:var(--text-secondary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1.4}
 .res-card .sub{font-size:10px;color:var(--text-tertiary);margin-top:2px}
-.icon-btn{flex:0 0 auto;width:26px;height:26px;border:1px solid var(--border-default);background:transparent;border-radius:var(--radius-sm);color:var(--accent);font-size:13px;cursor:pointer;transition:all var(--transition)}
+.icon-btn{flex:0 0 auto;width:26px;height:26px;border:1px solid var(--border-default);background:transparent;border-radius:var(--radius-sm);color:var(--accent);font-size:13px;cursor:pointer;transition:background-color var(--transition),border-color var(--transition),color var(--transition),opacity var(--transition),transform var(--transition)}
 .icon-btn:hover{background:var(--accent-subtle);border-color:var(--accent)}
 .empty{grid-column:1/-1;text-align:center;color:var(--text-tertiary);font-size:12px;padding:28px 10px}
 
@@ -106,17 +106,18 @@ input[type="number"]:focus,select:focus{border-color:var(--border-focus);backgro
 .tip{padding:11px 13px;background:rgba(255,149,0,0.08);border-radius:var(--radius-md);font-size:11px;color:rgba(255,149,0,0.75);line-height:1.6;margin-top:10px}
 
 /* Toast */
-.toast{position:fixed;left:50%;bottom:36px;transform:translateX(-50%) translateY(14px);background:rgba(28,28,30,0.96);border:1px solid var(--border-default);color:var(--text-primary);font-size:13px;padding:11px 20px;border-radius:var(--radius-md);opacity:0;pointer-events:none;transition:all 0.25s;z-index:999;backdrop-filter:blur(20px);max-width:80vw;text-align:center}
+.toast{position:fixed;left:50%;bottom:36px;transform:translateX(-50%) translateY(14px);background:rgba(28,28,30,0.96);border:1px solid var(--border-default);color:var(--text-primary);font-size:13px;padding:11px 20px;border-radius:var(--radius-md);opacity:0;pointer-events:none;transition:background-color 0.25s,border-color 0.25s,color 0.25s,opacity 0.25s,transform 0.25s;z-index:999;backdrop-filter:blur(20px);max-width:80vw;text-align:center}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
 h1{text-align:center;margin-bottom:6px;font-size:24px;font-weight:600;letter-spacing:-0.3px}
 .subtitle{text-align:center;font-size:12px;color:var(--text-tertiary);margin-bottom:18px}
 @media(max-width:940px){.layout{grid-template-columns:1fr}}
 </style>
+<link rel="stylesheet" href="./theme.css">
 </head>
 <body>
 <div class="container">
-  <h1>🧩 批量二维码合成</h1>
+  <h1>批量二维码合成</h1>
   <p class="subtitle">导入底图自动识别白色二维码区域 → 批量填入二维码 → 一键打包下载</p>
 
   <div class="layout">
@@ -131,7 +132,7 @@ h1{text-align:center;margin-bottom:6px;font-size:24px;font-weight:600;letter-spa
         </div>
         <label class="upload-wrap">
           <div class="upload-area" id="tplDrop">
-            <span class="upload-icon">🖼️</span>
+            
             <span class="upload-text" id="tplText">点击或拖入底图（必选）</span>
           </div>
           <input type="file" id="tplInput" accept="image/*">
@@ -171,18 +172,18 @@ h1{text-align:center;margin-bottom:6px;font-size:24px;font-weight:600;letter-spa
         <div class="section-title">二维码图片</div>
         <label class="upload-wrap">
           <div class="upload-area" id="drop">
-            <span class="upload-icon">📱</span>
+            
             <span class="upload-text">点击或拖入二维码（可多选）</span>
           </div>
           <input type="file" id="fileInput" accept="image/*" multiple>
         </label>
         <div class="progress" id="progress"><i></i></div>
-        <button class="btn btn-secondary" id="zipBtn" disabled style="margin-top:10px">📦 下载全部 ZIP</button>
-        <button class="btn btn-secondary" id="clearBtn" disabled>🗑 清空结果</button>
+        <button class="btn btn-secondary" id="zipBtn" disabled style="margin-top:10px">下载全部 ZIP</button>
+        <button class="btn btn-secondary" id="clearBtn" disabled>清空结果</button>
       </div>
 
       <div class="tip">
-        💡 每个二维码会填入所有被选中的白框。只想填一个时，点掉其它框即可。
+        每个二维码会填入所有被选中的白框。只想填一个时，点掉其它框即可。
       </div>
     </div>
 
@@ -196,7 +197,7 @@ h1{text-align:center;margin-bottom:6px;font-size:24px;font-weight:600;letter-spa
         <div class="canvas-wrap" id="tplFrame">
           <canvas id="tplCanvas" style="display:none"></canvas>
           <div class="ph" id="tplPlaceholder">
-            <div class="icon">🖼️</div>
+            
             <div>请先导入底图<br><span style="font-size:11px">导入后会自动识别图中的白色二维码区域</span></div>
           </div>
         </div>
@@ -684,7 +685,8 @@ h1{text-align:center;margin-bottom:6px;font-size:24px;font-weight:600;letter-spa
       var btn = document.createElement("button");
       btn.className = "icon-btn";
       btn.title = "下载这张";
-      btn.textContent = "↓";
+      btn.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12"/><path d="m6 10 6 6 6-6"/><path d="M4 20h16"/></svg>';
+      btn.setAttribute("aria-label", "下载这张");
       btn.addEventListener("click", function(){ downloadOne(item); });
 
       meta.appendChild(info);
@@ -917,7 +919,7 @@ h1{text-align:center;margin-bottom:6px;font-size:24px;font-weight:600;letter-spa
     var url = URL.createObjectURL(file);
     setTemplate(url, file.name).then(function(){
       URL.revokeObjectURL(url);
-      $("tplText").textContent = "✓ " + file.name;
+      $("tplText").textContent = file.name;
       $("tplDrop").classList.add("active");
       toast("底图已导入，已自动识别白框");
     }).catch(function(err){
@@ -984,7 +986,7 @@ h1{text-align:center;margin-bottom:6px;font-size:24px;font-weight:600;letter-spa
     var url = URL.createObjectURL(file);
     setTemplate(url, file.name).then(function(){
       URL.revokeObjectURL(url);
-      $("tplText").textContent = "✓ " + file.name;
+      $("tplText").textContent = file.name;
       $("tplDrop").classList.add("active");
       toast("底图已导入，已自动识别白框");
     }).catch(function(err){
@@ -1012,5 +1014,6 @@ h1{text-align:center;margin-bottom:6px;font-size:24px;font-weight:600;letter-spa
   });
 })();
 </script>
+<script src="./a11y.js" defer></script>
 </body>
 </html>

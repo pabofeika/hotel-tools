@@ -45,7 +45,7 @@ h1{font-size:24px;font-weight:600;margin-bottom:4px;letter-spacing:-0.3px}
   padding:36px 24px;
   text-align:center;
   cursor:pointer;
-  transition:all .2s;
+  transition:background-color .2s,border-color .2s,color .2s,opacity .2s,transform .2s;
   background:var(--bg-surface);
   position:relative;
   overflow:hidden;
@@ -81,7 +81,7 @@ video{
   cursor:pointer;
   font-size:16px;
   display:flex;align-items:center;justify-content:center;
-  transition:all .15s;
+  transition:background-color .15s,border-color .15s,color .15s,opacity .15s,transform .15s;
 }
 .play-btn:hover{background:var(--bg-hover)}
 .time-display{font-size:12px;color:var(--text-tertiary);font-variant-numeric:tabular-nums}
@@ -199,7 +199,7 @@ select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-bg)}
   padding:12px 24px;
   font-size:14px;font-weight:600;
   border:none;border-radius:var(--radius);
-  cursor:pointer;transition:all .15s;
+  cursor:pointer;transition:background-color .15s,border-color .15s,color .15s,opacity .15s,transform .15s;
   font-family:inherit;
   width:100%;margin-top:0;
 }
@@ -269,22 +269,23 @@ select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-bg)}
 .env-badge.checking{background:#f3f4f6;color:#6b7280}
 
 </style>
+<link rel="stylesheet" href="./theme.css">
 </head>
 <body>
 <div class="container">
-  <h1>📺 电视开机视频制作</h1>
+  <h1>电视开机视频制作</h1>
   <p class="subtitle">导入视频（≥ 15 秒）→ 截取片段（≤ 45 秒）→ 渲染设置 → 导出 .ts 格式</p>
-  <div class="env-badge" id="envBadge">⏳ 检测环境...</div>
+  <div class="env-badge" id="envBadge">检测环境…</div>
 
 
   <!-- FFmpeg 加载状态 -->
   <div class="ffmpeg-status show" id="ffmpegStatus">
-    📤 请上传视频文件，引擎将在上传后自动加载
+    请上传视频文件，引擎将在上传后自动加载
   </div>
 
   <!-- 上传 -->
   <div class="upload-zone" id="uploadZone">
-    <div class="upload-icon">🎬</div>
+    
     <p class="upload-text">拖拽或点击上传视频文件</p>
     <p class="upload-sub">支持 MP4 / MOV / AVI / MKV / WebM / FLV / WMV · 需 ≥ 15 秒</p>
     <p class="upload-info" id="uploadInfo"></p>
@@ -295,13 +296,13 @@ select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-bg)}
 
   <!-- 视频预览 -->
   <div class="preview-section" id="previewSection">
-    <div class="section-title">🎥 视频预览</div>
+    <div class="section-title">视频预览</div>
     <video id="videoPlayer" controls crossorigin="anonymous"></video>
   </div>
 
   <!-- 片段截取 -->
   <div class="trim-section" id="trimSection">
-    <div class="section-title">✂️ 片段截取 <span style="font-weight:400;color:var(--text-tertiary)">（最长 45 秒）</span></div>
+    <div class="section-title">片段截取 <span style="font-weight:400;color:var(--text-tertiary)">（最长 45 秒）</span></div>
     <div class="range-slider" id="rangeSlider">
       <div class="range-track"></div>
       <div class="range-fill" id="rangeFill"></div>
@@ -317,18 +318,20 @@ select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-bg)}
       <span>结束：<strong id="trimEnd">00:00.0</strong></span>
       <span>时长：<strong id="trimDuration">0.0s</strong> / 45s</span>
     </div>
-    <p class="trim-warn" id="trimWarn">⚠️ 截取时长不能超过 45 秒</p>
+    <p class="trim-warn" id="trimWarn">截取时长不能超过 45 秒</p>
   </div>
 
   <!-- 渲染设置 -->
   <div class="render-section" id="renderSection">
-    <div class="section-title">⚙️ 渲染设置</div>
+    <div class="section-title">渲染设置</div>
     <div class="settings-grid">
       <div class="field">
         <label>输出分辨率</label>
         <select id="resolution">
           <option value="1920x1080" selected>1920×1080 (Full HD)</option>
-          <option value="3840x2160">3840×2160 (4K)</option>
+          <option value="1280x720">1280×720 (HD)</option>
+          <option value="854x480">854×480 (SD)</option>
+          <option value="640x360">640×360 (省资源)</option>
         </select>
       </div>
       <div class="field">
@@ -354,14 +357,14 @@ select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-bg)}
 
   <!-- 转换 -->
   <div class="convert-section" id="convertSection">
-    <div class="section-title">🚀 导出</div>
-    <button class="btn btn-primary" id="convertBtn">▶ 开始转换为 .ts 格式</button>
+    <div class="section-title">导出</div>
+    <button class="btn btn-primary" id="convertBtn">开始转换为 .ts 格式</button>
     <div class="progress-wrap" id="progressWrap">
       <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
       <p class="progress-text" id="progressText">准备中...</p>
     </div>
     <div class="btn-down" id="btnDown">
-      <button class="btn btn-download show" id="downloadBtn">📥 下载 .ts 文件</button>
+      <button class="btn btn-download show" id="downloadBtn">下载 .ts 文件</button>
     </div>
   </div>
 </div>
@@ -382,20 +385,31 @@ var resolution=$('resolution'),quality=$('quality'),framerate=$('framerate');
 var convertBtn=$('convertBtn'),progressWrap=$('progressWrap'),progressFill=$('progressFill'),progressText=$('progressText');
 var btnDown=$('btnDown'),downloadBtn=$('downloadBtn');
 
-// ── Environment Check ──
+// ── Environment Check（按服务真实能力显示，而不是凭 ping） ──
 var backendAvailable = false;
+var capabilityLimits = {};
 (function() {
-  fetch('/api/ping').then(function(r) {
-    if (r.ok) {
-      backendAvailable = true;
-      envBadge.textContent = '✅ 环境就绪（后端 ffmpeg 可用）';
-      envBadge.className = 'env-badge ok';
-    }
-  }).catch(function() {
-    backendAvailable = false;
-    envBadge.innerHTML = '⚠️ 视频转换需本地启动 — 终端运行 <code>node server.js</code> 后访问 <code>localhost:8765</code>';
-    envBadge.className = 'env-badge no';
-  });
+  fetch('/api/capabilities', { cache: 'no-store' })
+    .then(function(r) { return r.ok ? r.json() : Promise.reject(); })
+    .then(function(data) {
+      var caps = (data && data.capabilities) || {};
+      capabilityLimits = caps.limits || {};
+      if (caps.video) {
+        backendAvailable = true;
+        envBadge.textContent = '环境就绪（服务器 FFmpeg 可用）';
+        envBadge.className = 'env-badge ok';
+      } else {
+        backendAvailable = false;
+        var missing = (caps.detail && caps.detail.ffmpeg) ? ('（' + caps.detail.ffmpeg + '）') : '';
+        envBadge.innerHTML = '视频引擎未就绪 ' + missing + ' — 请管理员检查服务器依赖';
+        envBadge.className = 'env-badge no';
+      }
+    })
+    .catch(function() {
+      backendAvailable = false;
+      envBadge.innerHTML = '未检测到工具服务 — 本地使用请运行 <code>node server.js</code> 后访问 <code>localhost:8765</code>';
+      envBadge.className = 'env-badge no';
+    });
 })();
 
 // ── State ──
@@ -481,7 +495,7 @@ function handleFile(file){
     renderSection.classList.add('show');
     convertSection.classList.add('show');
     convertBtn.disabled = false;
-    convertBtn.textContent = '▶ 开始转换为 .ts 格式';
+    convertBtn.textContent = '开始转换为 .ts 格式';
   };
   videoPlayer.onerror=function(){
     showNotice('无法播放此视频格式，可能是浏览器不支持该编码');
@@ -595,60 +609,83 @@ convertBtn.addEventListener('click',async function(){
     var crf=crfMap[settings.quality]||'23';
     outputFilename=videoFile.name.replace(/\.[^.]+$/,'')+'_boot.ts';
 
-    // 进度通过 XHR (XMLHttpRequest) 获取上传/下载进度
-    var xhr=new XMLHttpRequest();
+    // 提交为后台任务：先上传，再轮询状态，最后取结果。
+    // 不在一个请求里等转码完成，避免长时间占住网关连接。
+    var query='/api/jobs/video?start='+trimStart.toFixed(2)
+      +'&duration='+dur.toFixed(2)
+      +'&resolution='+encodeURIComponent(settings.resolution)
+      +'&crf='+encodeURIComponent(crf)
+      +'&fps='+encodeURIComponent(settings.framerate==='original'?'':settings.framerate);
 
-    await new Promise(function(resolve,reject){
-      xhr.open('POST','/api/convert?start='+trimStart.toFixed(2)+'&duration='+dur.toFixed(2)+'&resolution='+settings.resolution+'&crf='+crf+'&fps='+(settings.framerate==='original'?'':settings.framerate));
-      xhr.responseType='blob';
-      xhr.timeout=600000; // 10分钟超时（大视频）
+    // 1) 上传（用 XHR 才有上传进度）
+    var job=await new Promise(function(resolve,reject){
+      var xhr=new XMLHttpRequest();
+      xhr.open('POST',query);
+      xhr.setRequestHeader('Content-Type',videoFile.type||'application/octet-stream');
+      xhr.responseType='json';
+      xhr.timeout=300000;
 
       xhr.upload.addEventListener('progress',function(e){
         if(e.lengthComputable){
-          var pct=Math.round(e.loaded/e.total*30);
-          progressFill.style.width=pct+'%';
+          var pct=Math.round(e.loaded/e.total*100);
+          progressFill.style.width=Math.round(pct*0.25)+'%';
           progressText.textContent='上传中... '+pct+'%';
         }
       });
 
-      xhr.addEventListener('progress',function(e){
-        if(e.lengthComputable){
-          var pct=Math.round(30+e.loaded/e.total*65);
-          progressFill.style.width=pct+'%';
-          progressText.textContent='下载中... '+Math.round(e.loaded/e.total*100)+'%';
-        }
-      });
-
       xhr.addEventListener('load',function(){
-        if(xhr.status>=200&&xhr.status<300){
-          progressFill.style.width='100%';
-          outputBlob=xhr.response;
-          var sizeMB=(outputBlob.size/1024/1024).toFixed(1);
-          progressText.textContent='✅ 转换完成！文件大小: '+sizeMB+' MB';
-          btnDown.classList.add('show');
-          resolve();
-        }else{
-          // 尝试读取错误信息
-          var fr=new FileReader();
-          fr.onload=function(){reject(new Error(fr.result));};
-          fr.onerror=function(){reject(new Error('HTTP '+xhr.status));};
-          fr.readAsText(xhr.response);
-        }
+        var data=xhr.response;
+        if(xhr.status>=200&&xhr.status<300&&data&&data.ok) resolve(data);
+        else reject(new Error((data&&data.error)||('提交失败（HTTP '+xhr.status+'）')));
       });
-
-      xhr.addEventListener('error',function(){
-        reject(new Error('网络错误，请确认后端已启动（node server.js）'));
-      });
-
-      xhr.addEventListener('timeout',function(){
-        reject(new Error('转换超时（10分钟），请尝试更短片段或更低分辨率'));
-      });
-
+      xhr.addEventListener('error',function(){ reject(new Error('网络错误，请确认服务已启动')); });
+      xhr.addEventListener('timeout',function(){ reject(new Error('上传超时，请检查网络或减小文件')); });
       xhr.send(videoFile);
     });
 
+    // 2) 轮询状态（3 秒间隔，最多 6 分钟）
+    var headers={'x-job-token':job.token};
+    var deadline=Date.now()+6*60*1000;
+    while(true){
+      await new Promise(function(r){ setTimeout(r,3000); });
+      if(Date.now()>deadline) throw new Error('处理超时，请尝试更短片段或更低分辨率');
+
+      var st=await fetch('/api/jobs/'+job.id,{headers:headers,cache:'no-store'}).then(function(r){return r.json();});
+      if(!st||!st.ok) throw new Error((st&&st.error)||'查询任务状态失败');
+      var j=st.job||{};
+
+      if(j.state==='queued'){
+        progressFill.style.width='30%';
+        progressText.textContent='排队中…（前面还有任务，请稍候）';
+      }else if(j.state==='running'){
+        progressFill.style.width='65%';
+        progressText.textContent='处理中… '+(j.stage||'');
+      }else if(j.state==='success'){
+        progressFill.style.width='85%';
+        progressText.textContent='生成结果…';
+        break;
+      }else if(j.state==='failed'||j.state==='expired'){
+        throw new Error(j.error||'转换失败');
+      }else{
+        progressText.textContent='处理中…';
+      }
+    }
+
+    // 3) 取结果
+    var resp=await fetch('/api/jobs/'+job.id+'/result',{headers:headers,cache:'no-store'});
+    if(!resp.ok){
+      var msg='获取结果失败';
+      try{ var ej=await resp.json(); msg=ej.error||msg; }catch(e){}
+      throw new Error(msg);
+    }
+    outputBlob=await resp.blob();
+    progressFill.style.width='100%';
+    var sizeMB=(outputBlob.size/1024/1024).toFixed(1);
+    progressText.textContent='转换完成，文件大小: '+sizeMB+' MB';
+    btnDown.classList.add('show');
+
   }catch(err){
-    progressText.textContent='❌ 转换失败: '+err.message;
+    progressText.textContent='转换失败: '+err.message;
     showNotice('转换失败: '+err.message);
     console.error('Convert error:', err);
   }finally{
@@ -674,5 +711,6 @@ window.addEventListener('resize',function(){if(videoDuration)updateTrimUI();});
 
 })();
 </script>
+<script src="./a11y.js" defer></script>
 </body>
 </html>
