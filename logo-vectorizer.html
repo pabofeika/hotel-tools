@@ -124,6 +124,38 @@ select option{background:#1c1c1e;color:var(--text)}
 .ph{display:flex;flex-direction:column;align-items:center;gap:8px;color:var(--text-3);font-size:12px;line-height:1.6;text-align:center}
 .ph svg{width:20px;height:20px;color:var(--text-3);opacity:.8}
 
+
+/* 导出设置 */
+.export-panel{padding:16px 20px}
+.export-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:12px}
+.export-head h2{font-size:12px;line-height:16px;font-weight:500;color:var(--text-2)}
+.export-controls{display:flex;flex-wrap:wrap;align-items:flex-end;gap:10px 12px}
+.seg{display:inline-flex;border:1px solid var(--hair);border-radius:var(--radius-ctl);overflow:hidden;flex:none}
+.seg-btn{height:36px;padding:0 14px;border:0;background:transparent;color:var(--text-3);font-size:12px;font-family:inherit;cursor:pointer;transition:background-color 150ms var(--ease),color 150ms var(--ease)}
+.seg-btn + .seg-btn{border-left:1px solid var(--hair)}
+.seg-btn:hover{color:var(--text)}
+.seg-btn.active{background:var(--raised);color:var(--text)}
+.ec{display:flex;flex-direction:column;gap:6px;font-size:12px;line-height:16px;color:var(--text-3)}
+.ec select{height:36px;min-width:112px}
+.ec input[type=color]{width:52px;height:36px;padding:3px;background:var(--field);border:1px solid var(--hair);border-radius:var(--radius-ctl);cursor:pointer}
+.export-actions{display:flex;gap:8px;margin-left:auto;align-items:center}
+.export-actions .btn{width:auto;padding:0 16px;height:36px}
+.swatch-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:12px}
+.swatch-text{font-size:12px;color:var(--text-3)}
+.swatch-edit{position:relative;display:inline-flex;align-items:center;gap:6px;padding:3px 8px 3px 3px;border:1px solid var(--hair);border-radius:8px;cursor:pointer}
+.swatch-edit:hover{border-color:var(--hair-2)}
+.swatch-edit .swatch{width:18px;height:18px;border-radius:4px;border:1px solid var(--hair-2);flex:none}
+.swatch-code{font-family:var(--mono);font-size:11px;color:var(--text-3)}
+.swatch-input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;border:0;padding:0}
+.link-btn{align-self:center;background:none;border:0;color:var(--text-3);font-size:12px;font-family:inherit;cursor:pointer;text-decoration:underline;text-underline-offset:3px;padding:0}
+.link-btn:hover{color:var(--text)}
+@media(max-width:720px){
+  .export-actions{margin-left:0;width:100%}
+  .export-actions .btn{flex:1}
+  .ec{flex:1 1 40%}
+  .ec select{width:100%}
+}
+
 .guide{padding:0 4px}
 .guide h2{font-size:12px;line-height:16px;font-weight:500;color:var(--text-3);margin-bottom:12px}
 .guide dl{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
@@ -227,20 +259,6 @@ button:focus-visible{outline-offset:2px}
       <div class="block">
         <button class="btn btn-primary" id="convertBtn" disabled>开始矢量化</button>
         <div class="progress" id="progress"><i></i></div>
-        <div class="action-grid">
-          <button class="btn btn-quiet" id="downloadBtn" title="下载 SVG" disabled>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12"/><path d="m6 10 6 6 6-6"/><path d="M4 20h16"/></svg>
-            <span>下载</span>
-          </button>
-          <button class="btn btn-quiet" id="copyBtn" title="复制 SVG 代码" disabled>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
-            <span>复制</span>
-          </button>
-          <button class="btn btn-quiet" id="pngBtn" title="导出 PNG 2x" disabled>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
-            <span>PNG</span>
-          </button>
-        </div>
       </div>
     </section>
     <p class="note">
@@ -276,8 +294,53 @@ button:focus-visible{outline-offset:2px}
         </figure>
       </div>
       <div class="swatch-row" id="swatchRow" style="display:none">
-        <span class="swatch-text">色板</span>
+        <span class="swatch-text">颜色</span>
         <div class="swatches" id="swatches"></div>
+        <button class="link-btn" id="resetColorsBtn" type="button">恢复原色</button>
+      </div>
+    </div>
+
+    <div class="panel export-panel">
+      <div class="export-head">
+        <h2>导出</h2>
+        <span class="hint">SVG 可编辑 · PNG / WebP 按倍率栅格化</span>
+      </div>
+      <div class="export-controls">
+        <div class="ec ec-format">
+          <span>格式</span>
+          <div class="seg" id="fmtSeg" role="group" aria-label="导出格式">
+            <button class="seg-btn active" type="button" data-fmt="svg">SVG</button>
+            <button class="seg-btn" type="button" data-fmt="png">PNG</button>
+            <button class="seg-btn" type="button" data-fmt="webp">WebP</button>
+          </div>
+        </div>
+        <label class="ec">尺寸
+          <select id="exportSize">
+            <option value="original" selected>原图尺寸</option>
+            <option value="content">最小内容</option>
+          </select>
+        </label>
+        <label class="ec">背景
+          <select id="exportBg">
+            <option value="transparent" selected>透明</option>
+            <option value="white">白底（不透明）</option>
+            <option value="custom">自定义颜色</option>
+          </select>
+        </label>
+        <label class="ec" id="bgColorWrap" style="display:none">底色
+          <input type="color" id="exportBgColor" value="#ffffff">
+        </label>
+        <label class="ec" id="scaleWrap" style="display:none">倍率
+          <select id="exportScale">
+            <option value="1">1x</option>
+            <option value="2" selected>2x</option>
+            <option value="3">3x</option>
+          </select>
+        </label>
+        <div class="export-actions">
+          <button class="btn btn-primary" id="downloadBtn" disabled>下载</button>
+          <button class="btn btn-quiet" id="copyBtn" disabled>复制 SVG</button>
+        </div>
       </div>
     </div>
 
@@ -319,6 +382,13 @@ button:focus-visible{outline-offset:2px}
   var currentSvg = null;
   var currentName = "logo";
   var currentDetail = "standard";
+  var currentVersion = "11";
+  var baseSvg = null;
+  var exportFormat = "svg";
+  var exportSizeMode = "original";
+  var exportBgMode = "transparent";
+  var exportBgColor = "#ffffff";
+  var exportScale = 2;
   var busy = false;
 
   /* ═══════════════ 引擎检测（按服务真实能力，而不是凭 ping） ═══════════════ */
@@ -499,7 +569,6 @@ button:focus-visible{outline-offset:2px}
     $("swatchRow").style.display = "none";
     $("downloadBtn").disabled = true;
     $("copyBtn").disabled = true;
-    $("pngBtn").disabled = true;
     $("convertBtn").disabled = false;
   }
 
@@ -548,9 +617,104 @@ button:focus-visible{outline-offset:2px}
     });
   });
 
+  function svgDataUrl(svg){
+    return "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svg)));
+  }
+
+  function setPreview(svg){
+    $("outImg").src = svgDataUrl(svg);
+  }
+
+  function svgDoc(text){
+    var doc = new DOMParser().parseFromString(text, "image/svg+xml");
+    if (doc.querySelector("parsererror")) throw new Error("SVG 解析失败");
+    return doc;
+  }
+
+  function serializeDoc(doc){
+    return '<?xml version="1.0" encoding="UTF-8"?>\n' + new XMLSerializer().serializeToString(doc.documentElement);
+  }
+
+  function uniqueFills(svg){
+    var doc = svgDoc(svg);
+    var seen = {}, out = [];
+    doc.querySelectorAll("path, g").forEach(function(el){
+      var fill = (el.getAttribute("fill") || "").toUpperCase();
+      if (/^#[0-9A-F]{6}$/.test(fill) && !seen[fill]){ seen[fill] = 1; out.push(fill); }
+    });
+    return out;
+  }
+
+  function recolour(oldHex, newHex){
+    var doc = svgDoc(currentSvg);
+    var changed = false;
+    doc.querySelectorAll("path, g").forEach(function(el){
+      if ((el.getAttribute("fill") || "").toUpperCase() === oldHex){
+        el.setAttribute("fill", newHex);
+        changed = true;
+      }
+    });
+    if (changed){
+      currentSvg = serializeDoc(doc);
+      setPreview(currentSvg);
+    }
+  }
+
+  function renderColors(){
+    var fills = uniqueFills(baseSvg);
+    $("metaColors").innerHTML = "颜色 <b>" + fills.length + "</b> 种";
+    var box = $("swatches");
+    box.innerHTML = "";
+    if (!fills.length){ $("swatchRow").style.display = "none"; return; }
+    $("swatchRow").style.display = "flex";
+    fills.forEach(function(hex){
+      var wrap = document.createElement("label");
+      wrap.className = "swatch-edit";
+      wrap.title = "修改颜色 " + hex;
+
+      var input = document.createElement("input");
+      input.type = "color";
+      input.className = "swatch-input";
+      input.value = hex;
+      input.setAttribute("aria-label", "修改颜色 " + hex);
+
+      var sw = document.createElement("span");
+      sw.className = "swatch";
+      sw.style.background = hex;
+
+      var code = document.createElement("span");
+      code.className = "swatch-code";
+      code.textContent = hex;
+
+      input.addEventListener("input", function(){
+        var next = input.value.toUpperCase();
+        recolour(hex, next);
+        hex = next;
+        sw.style.background = next;
+        code.textContent = next;
+        input.setAttribute("aria-label", "修改颜色 " + next);
+      });
+
+      wrap.appendChild(input);
+      wrap.appendChild(sw);
+      wrap.appendChild(code);
+      box.appendChild(wrap);
+    });
+  }
+
+  $("resetColorsBtn").addEventListener("click", function(){
+    if (!baseSvg) return;
+    currentSvg = baseSvg;
+    setPreview(currentSvg);
+    renderColors();
+    toast("已恢复原色");
+  });
+
   function showResult(data, ms){
-    var b64 = btoa(unescape(encodeURIComponent(data.svg)));
-    $("outImg").src = "data:image/svg+xml;base64," + b64;
+    baseSvg = data.svg;
+    currentSvg = data.svg;
+    currentVersion = String(data.version || (window.ToolsVectorizer && window.ToolsVectorizer.version) || "11").split("-")[0];
+    setPreview(currentSvg);
     $("outImg").style.display = "block";
     $("outPh").style.display = "none";
 
@@ -561,103 +725,223 @@ button:focus-visible{outline-offset:2px}
       : ("引擎 v" + (data.version || (window.ToolsVectorizer && window.ToolsVectorizer.version) || "?"));
     $("metaElapsed").innerHTML = "耗时 <b>" + (data.elapsed != null ? data.elapsed + "s" : (ms + "ms")) + "</b>";
 
-    var colors = data.colors || [];
-    // 本地引擎返回的颜色统计可能只有一个代表色：以 SVG 里的 fill 为准
-    if (data.svg && colors.length < 2){
-      var uniq = {}, m, re = /fill="#([0-9A-Fa-f]{6})"/g;
-      while ((m = re.exec(data.svg))) uniq["#" + m[1].toUpperCase()] = 1;
-      var parsed = Object.keys(uniq).map(function(hex){ return { hex: hex }; });
-      if (parsed.length) colors = parsed;
-    }
-    $("metaColors").innerHTML = "颜色 <b>" + colors.length + "</b> 种";
-
-    if (colors.length){
-      $("swatchRow").style.display = "flex";
-      var box = $("swatches");
-      box.innerHTML = "";
-      colors.slice(0, 8).forEach(function(c){
-        var d = document.createElement("div");
-        d.className = "swatch";
-        d.style.background = c.hex;
-        d.title = c.pixels != null ? (c.hex + " · " + c.pixels + " px") : c.hex;
-        box.appendChild(d);
-      });
-      var txt = document.createElement("span");
-      txt.style.cssText = "font-size:12px;color:var(--text-3);font-family:var(--mono);margin-left:2px";
-      txt.textContent = colors.map(function(c){ return c.hex; }).join(" ");
-      box.appendChild(txt);
-    } else {
-      $("swatchRow").style.display = "none";
-    }
-
+    renderColors();
     $("downloadBtn").disabled = false;
     $("copyBtn").disabled = false;
-    $("pngBtn").disabled = false;
+    updateExportUI();
 
     if (data.warning) toast("提示：" + data.warning);
   }
 
   /* ═══════════════ 导出 ═══════════════ */
-  $("downloadBtn").addEventListener("click", function(){
-    if (!currentSvg) return;
-    var blob = new Blob([currentSvg], { type: "image/svg+xml;charset=utf-8" });
+  function downloadBlob(blob, filename){
     var url = URL.createObjectURL(blob);
     var a = document.createElement("a");
     a.href = url;
-    a.download = currentName + "-v11-" + (currentDetail || "standard") + ".svg";
+    a.download = filename;
     document.body.appendChild(a);
     a.click();
     a.remove();
     setTimeout(function(){ URL.revokeObjectURL(url); }, 4000);
+  }
+
+  function svgImage(text){
+    return new Promise(function(resolve, reject){
+      var img = new Image();
+      img.onload = function(){ resolve(img); };
+      img.onerror = function(){ reject(new Error("SVG 无法解码")); };
+      img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(text);
+    });
+  }
+
+  async function buildExport(){
+    var doc = new DOMParser().parseFromString(currentSvg, "image/svg+xml");
+    if (doc.querySelector("parsererror")) throw new Error("SVG 解析失败");
+    var svg = doc.documentElement;
+
+    var vb = (svg.getAttribute("viewBox") || "").trim().split(/\s+/).map(Number);
+    if (vb.length !== 4 || vb.some(function(n){ return !isFinite(n); })){
+      var w0 = parseFloat(svg.getAttribute("width")) || 1;
+      var h0 = parseFloat(svg.getAttribute("height")) || 1;
+      vb = [0, 0, w0, h0];
+    }
+    var vx = vb[0], vy = vb[1], vw = vb[2], vh = vb[3];
+    var W = parseFloat(svg.getAttribute("width")) || vw;
+    var H = parseFloat(svg.getAttribute("height")) || vh;
+    var sx = W / vw, sy = H / vh;
+
+    // 去掉整块背景矩形（含原生输出里包在 g 内的 rect），背景改由导出选项决定
+    var host = document.createElement("div");
+    host.style.cssText = "position:absolute;left:-99999px;top:0;visibility:hidden;width:" + W + "px;height:" + H + "px;";
+    host.appendChild(svg);
+    document.body.appendChild(host);
+    Array.prototype.slice.call(svg.querySelectorAll("rect")).forEach(function(r){
+      var b = r.getBBox();
+      var m = r.getCTM();
+      if (!m) return;
+      var xs = [], ys = [];
+      [[b.x, b.y], [b.x + b.width, b.y], [b.x, b.y + b.height], [b.x + b.width, b.y + b.height]].forEach(function(pt){
+        xs.push(m.a * pt[0] + m.c * pt[1] + m.e);
+        ys.push(m.b * pt[0] + m.d * pt[1] + m.f);
+      });
+      var minX = Math.min.apply(null, xs), maxX = Math.max.apply(null, xs);
+      var minY = Math.min.apply(null, ys), maxY = Math.max.apply(null, ys);
+      if (Math.abs(minX - vx) < 2 && Math.abs(minY - vy) < 2 &&
+          Math.abs(maxX - (vx + vw)) < 2 && Math.abs(maxY - (vy + vh)) < 2){
+        r.parentNode.removeChild(r);
+      }
+    });
+    host.removeChild(svg);
+    document.body.removeChild(host);
+
+    var clean = new XMLSerializer().serializeToString(svg);
+    var box = { x: vx, y: vy, w: vw, h: vh };
+
+    if (exportSizeMode === "content"){
+      var img = await svgImage(clean);
+      var cw = Math.max(1, Math.round(W));
+      var ch = Math.max(1, Math.round(H));
+      var c = document.createElement("canvas");
+      c.width = cw; c.height = ch;
+      var cx = c.getContext("2d");
+      cx.clearRect(0, 0, cw, ch);
+      cx.drawImage(img, 0, 0, cw, ch);
+      var data = cx.getImageData(0, 0, cw, ch).data;
+      var minX = cw, minY = ch, maxX = -1, maxY = -1;
+      for (var y = 0; y < ch; y++){
+        for (var x = 0; x < cw; x++){
+          if (data[(y * cw + x) * 4 + 3] > 10){
+            if (x < minX) minX = x;
+            if (x > maxX) maxX = x;
+            if (y < minY) minY = y;
+            if (y > maxY) maxY = y;
+          }
+        }
+      }
+      if (maxX >= minX && maxY >= minY){
+        box = {
+          x: vx + minX / cw * vw,
+          y: vy + minY / ch * vh,
+          w: (maxX - minX + 1) / cw * vw,
+          h: (maxY - minY + 1) / ch * vh
+        };
+      }
+    }
+
+    var outW = exportSizeMode === "content" ? Math.max(1, Math.round(box.w * sx)) : Math.round(W);
+    var outH = exportSizeMode === "content" ? Math.max(1, Math.round(box.h * sy)) : Math.round(H);
+
+    svg.setAttribute("width", outW);
+    svg.setAttribute("height", outH);
+    svg.setAttribute("viewBox", [box.x, box.y, box.w, box.h].map(function(n){
+      return +n.toFixed(3);
+    }).join(" "));
+
+    if (exportBgMode !== "transparent"){
+      var rect = doc.createElementNS("http://www.w3.org/2000/svg", "rect");
+      rect.setAttribute("x", box.x);
+      rect.setAttribute("y", box.y);
+      rect.setAttribute("width", box.w);
+      rect.setAttribute("height", box.h);
+      rect.setAttribute("fill", exportBgMode === "white" ? "#FFFFFF" : exportBgColor.toUpperCase());
+      var ref = svg.firstChild;
+      while (ref && ref.nodeType === 1 && (ref.tagName === "title" || ref.tagName === "desc")){
+        ref = ref.nextSibling;
+      }
+      svg.insertBefore(rect, ref);
+    }
+
+    return {
+      svg: '<?xml version="1.0" encoding="UTF-8"?>\n' + new XMLSerializer().serializeToString(svg),
+      w: outW,
+      h: outH
+    };
+  }
+
+  function updateExportUI(){
+    document.querySelectorAll(".seg-btn").forEach(function(b){
+      b.classList.toggle("active", b.dataset.fmt === exportFormat);
+    });
+    $("scaleWrap").style.display = exportFormat === "svg" ? "none" : "";
+    $("bgColorWrap").style.display = exportBgMode === "custom" ? "" : "none";
+    $("downloadBtn").textContent = "下载 " + exportFormat.toUpperCase();
+    $("copyBtn").style.display = exportFormat === "svg" ? "" : "none";
+  }
+
+  document.querySelectorAll(".seg-btn").forEach(function(btn){
+    btn.addEventListener("click", function(){
+      exportFormat = this.dataset.fmt;
+      updateExportUI();
+    });
+  });
+
+  $("exportSize").addEventListener("change", function(){ exportSizeMode = this.value; });
+  $("exportBg").addEventListener("change", function(){ exportBgMode = this.value; updateExportUI(); });
+  $("exportBgColor").addEventListener("input", function(){ exportBgColor = this.value; });
+  $("exportScale").addEventListener("change", function(){ exportScale = parseInt(this.value, 10) || 2; });
+
+  $("downloadBtn").addEventListener("click", function(){
+    if (!currentSvg) return;
+    buildExport().then(function(built){
+      var base = currentName + "-v" + currentVersion + "-" + (currentDetail || "standard") +
+        "-" + (exportSizeMode === "content" ? "min" : "full");
+
+      if (exportFormat === "svg"){
+        downloadBlob(new Blob([built.svg], { type: "image/svg+xml;charset=utf-8" }), base + ".svg");
+        toast("已导出 SVG");
+        return;
+      }
+
+      return svgImage(built.svg).then(function(img){
+        var canvas = document.createElement("canvas");
+        canvas.width = Math.max(1, Math.round(built.w * exportScale));
+        canvas.height = Math.max(1, Math.round(built.h * exportScale));
+        var ctx = canvas.getContext("2d");
+        if (exportBgMode !== "transparent"){
+          ctx.fillStyle = exportBgMode === "white" ? "#FFFFFF" : exportBgColor;
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = "high";
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+        var mime = exportFormat === "png" ? "image/png" : "image/webp";
+        canvas.toBlob(function(blob){
+          if (!blob){ toast("导出失败"); return; }
+          var ext = exportFormat;
+          if (exportFormat === "webp" && blob.type !== "image/webp"){
+            toast("当前浏览器不支持 WebP，已改为 PNG");
+            ext = "png";
+          }
+          downloadBlob(blob, base + "@" + exportScale + "x." + ext);
+          toast("已导出 " + ext.toUpperCase());
+        }, mime, exportFormat === "webp" ? 0.92 : undefined);
+      });
+    }).catch(function(err){
+      toast(err.message || "导出失败");
+    });
   });
 
   $("copyBtn").addEventListener("click", function(){
     if (!currentSvg) return;
-    var done = function(){ toast("SVG 代码已复制到剪贴板"); };
-    if (navigator.clipboard && navigator.clipboard.writeText){
-      navigator.clipboard.writeText(currentSvg).then(done).catch(function(){ toast("复制失败，请用下载按钮"); });
-    } else {
-      var ta = document.createElement("textarea");
-      ta.value = currentSvg;
-      ta.style.position = "fixed";
-      ta.style.opacity = "0";
-      document.body.appendChild(ta);
-      ta.select();
-      try { document.execCommand("copy"); done(); } catch (e) { toast("复制失败，请用下载按钮"); }
-      ta.remove();
-    }
+    buildExport().then(function(built){
+      var done = function(){ toast("已复制导出 SVG"); };
+      if (navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(built.svg).then(done).catch(function(){ toast("复制失败"); });
+      } else {
+        var ta = document.createElement("textarea");
+        ta.value = built.svg;
+        ta.style.position = "fixed";
+        ta.style.opacity = "0";
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand("copy"); done(); } catch (e) { toast("复制失败"); }
+        ta.remove();
+      }
+    }).catch(function(err){ toast(err.message || "复制失败"); });
   });
 
-  $("pngBtn").addEventListener("click", function(){
-    if (!currentSvg) return;
-    var b64 = btoa(unescape(encodeURIComponent(currentSvg)));
-    var img = new Image();
-    img.onload = function(){
-      var scale = 2;
-      var w = img.naturalWidth || 800;
-      var h = img.naturalHeight || 600;
-      var c = document.createElement("canvas");
-      c.width = Math.round(w * scale);
-      c.height = Math.round(h * scale);
-      var ctx = c.getContext("2d");
-      ctx.imageSmoothingEnabled = true;
-      ctx.imageSmoothingQuality = "high";
-      ctx.drawImage(img, 0, 0, c.width, c.height);
-      c.toBlob(function(blob){
-        if (!blob){ toast("导出 PNG 失败"); return; }
-        var url = URL.createObjectURL(blob);
-        var a = document.createElement("a");
-        a.href = url;
-        a.download = currentName + "@2x.png";
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        setTimeout(function(){ URL.revokeObjectURL(url); }, 4000);
-      }, "image/png");
-    };
-    img.onerror = function(){ toast("导出 PNG 失败：SVG 无法解码"); };
-    img.src = "data:image/svg+xml;base64," + b64;
-  });
+  updateExportUI();
 
   /* ═══════════════ 启动 ═══════════════ */
   if (typeof Potrace === "undefined"){
