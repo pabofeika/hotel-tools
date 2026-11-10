@@ -165,6 +165,13 @@ h1{text-align:center;margin-bottom:6px;font-size:24px;font-weight:600;letter-spa
             <input id="padding" type="number" value="0" min="0" max="80" step="1">
           </div>
         </div>
+        <div class="field" style="margin-top:12px">
+          <label for="exportFmt">导出格式</label>
+          <select id="exportFmt">
+            <option value="png" selected>PNG · 无损</option>
+            <option value="webp">WebP · 高压缩</option>
+          </select>
+        </div>
       </div>
 
       <!-- 二维码 -->
@@ -727,10 +734,22 @@ h1{text-align:center;margin-bottom:6px;font-size:24px;font-weight:600;letter-spa
     setTimeout(function(){ URL.revokeObjectURL(a.href); }, 4000);
   }
 
+  function exportFormat(){
+    var v = document.getElementById("exportFmt").value;
+    if (v !== "webp") v = "png";
+    return {
+      mime: v === "webp" ? "image/webp" : "image/png",
+      quality: v === "webp" ? 0.92 : 1
+    };
+  }
+
   function downloadOne(item){
+    var f = exportFormat();
     item.canvas.toBlob(function(blob){
-      if (blob) downloadBlob(blob, item.name + ".png");
-    }, "image/png");
+      if (!blob) return;
+      var ext = blob.type === "image/webp" ? "webp" : "png";
+      downloadBlob(blob, item.name + "." + ext);
+    }, f.mime, f.quality);
   }
 
   function addFiles(files){
@@ -881,18 +900,21 @@ h1{text-align:center;margin-bottom:6px;font-size:24px;font-weight:600;letter-spa
     var used = new Map();
     var entries = [];
     var chain = Promise.resolve();
+    var f = exportFormat();
 
     items.forEach(function(item){
       chain = chain.then(function(){
         return new Promise(function(resolve){
           item.canvas.toBlob(function(blob){
-            var name = item.name + ".png";
+            if (!blob) { resolve(); return; }
+            var ext = blob.type === "image/webp" ? "webp" : "png";
+            var name = item.name + "." + ext;
             var count = used.get(name) || 0;
             used.set(name, count + 1);
-            if (count) name = item.name + "-" + (count + 1) + ".png";
+            if (count) name = item.name + "-" + (count + 1) + "." + ext;
             entries.push({ name: name, blob: blob });
             resolve();
-          }, "image/png");
+          }, f.mime, f.quality);
         });
       });
     });

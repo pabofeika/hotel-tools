@@ -148,6 +148,12 @@ h1{text-align:center;margin-bottom:24px;font-size:24px;font-weight:600;color:var
     </div>
   </div>
 
+  <div class="field"><label for="exportFmt">导出格式</label>
+  <select id="exportFmt">
+    <option value="png" selected>PNG · 无损</option>
+    <option value="webp">WebP · 高压缩</option>
+  </select></div>
+
   <button class="btn btn-primary" id="dlBtn">下载图片</button>
   <button class="btn btn-secondary" id="resetBtn">重置</button>
 </div>
@@ -280,10 +286,17 @@ $('textColor').addEventListener('change', render);
 // 下载
 $('dlBtn').onclick = function() {
   if (!bgLoaded) { alert('请先加载底图'); return; }
-  var a = document.createElement('a');
-  a.download = '卡片文本_' + Date.now() + '.png';
-  a.href = cv.toDataURL('image/png', 1);
-  a.click();
+  var fmt = $('exportFmt').value;
+  var mime = fmt === 'webp' ? 'image/webp' : 'image/png';
+  cv.toBlob(function(blob){
+    if (!blob) return;
+    var ext = blob.type === 'image/webp' ? 'webp' : 'png';
+    var a = document.createElement('a');
+    a.download = '卡片文本_' + Date.now() + '.' + ext;
+    a.href = URL.createObjectURL(blob);
+    a.click();
+    setTimeout(function(){ URL.revokeObjectURL(a.href); }, 4000);
+  }, mime, fmt === 'webp' ? 0.92 : 1);
 };
 
 // 重置
