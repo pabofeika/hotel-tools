@@ -63,6 +63,7 @@ h1{text-align:center;margin-bottom:24px;font-size:24px;font-weight:600;color:var
 .info-row{display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--bg-input);border-radius:var(--radius-md);font-size:12px;color:var(--text-secondary)}
 .info-row .val{color:var(--accent);font-weight:500}
 </style>
+<link rel="preload" href="./AlimamaShuHeiTi.ttf" as="font" type="font/ttf" crossorigin>
 <link rel="stylesheet" href="./theme.css">
 </head>
 <body>
@@ -208,18 +209,21 @@ textColor.addEventListener('input',render);
 // 初始预览背景
 document.getElementById('previewArea').style.background=previewBg.value;
 
-	// Initial render — use requestAnimationFrame to ensure DOM is ready
-	// Use a timeout as fallback since fonts.ready may not resolve if no
-	// external fonts are loaded asynchronously
-	var _rendered = false;
-	function _initRender() {
-	  if (_rendered) return;
-	  _rendered = true;
-	  render();
+	// 立即先画一版（字体未到时是系统字体），字体加载完成后再重绘。
+	// 必须显式 fonts.load：canvas 使用不会触发 @font-face 下载，
+	// 只等 document.fonts.ready 可能永远不会加载字体。
+	function _renderAll(){ try { render(); } catch (e) {} }
+	requestAnimationFrame(_renderAll);
+	if (document.fonts && document.fonts.load) {
+	  document.fonts.load('60px "AlimamaLogo"').then(_renderAll).catch(function(){});
+	  document.fonts.load('20px "AlimamaLogo"').then(_renderAll).catch(function(){});
+	  document.fonts.ready.then(_renderAll);
+	  if (document.fonts.addEventListener) {
+	    document.fonts.addEventListener('loadingdone', _renderAll);
+	  }
 	}
-	document.fonts.ready.then(_initRender);
-	// Fallback: if fonts.ready doesn't fire within 1s, render anyway
-	setTimeout(_initRender, 1000);
+	// 兜底：弱网下字体可能晚到，完成后仍会由 loadingdone 重绘
+	setTimeout(_renderAll, 1500);
 </script>
 <script src="./a11y.js" defer></script>
 </body>
